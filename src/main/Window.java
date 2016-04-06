@@ -24,6 +24,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import util.Colorer;
+import util.Resources;
+
 /*
  * Class models a window with an exterior JFrame and interior JPanel
  */
