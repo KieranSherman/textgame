@@ -1,19 +1,35 @@
 package network;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class Server extends Thread {
 	
-	private static int portNumber = 4444;
+	private int portNumber;
+	private Socket clientSocket;
+	private ServerSocket serverSocket;
+	
+	public Server() {
+		portNumber = 4444;
+	}
+	
+	public Server(int portNumber) {
+		this.portNumber = portNumber;
+	}
 
-	public static void main(String [] args) throws Exception {
-		ServerSocket serverSocket = new ServerSocket(portNumber);
-		Socket clientSocket = serverSocket.accept();
+	@Override
+	public void run() {
+		try {
+			serverSocket = new ServerSocket(portNumber);
+			clientSocket = serverSocket.accept();
 			
-		System.out.println("connection from "+clientSocket.getInetAddress());
-		
-		serverSocket.close();
+			System.out.println("connection from "+clientSocket.getInetAddress());
+			
+			serverSocket.close();
+		} catch (IOException e) {
+			System.err.println("server unable to initialize");
+		}
 	}
 	
 }
