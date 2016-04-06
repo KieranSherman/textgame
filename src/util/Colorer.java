@@ -1,7 +1,9 @@
-package main;
+package util;
 
 import java.awt.Color;
 import java.util.ArrayList;
+
+import main.Word;
 
 public class Colorer {
 	

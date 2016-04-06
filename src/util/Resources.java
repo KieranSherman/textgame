@@ -1,4 +1,4 @@
-package main;
+package util;
 
 import java.awt.Font;
 import java.awt.image.BufferedImage;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.Colorer.ColorRules;
+import util.Colorer.ColorRules;
 
 public class Resources {
 	// height and width of window screen.  1.618 = phi (golden rectangle)
