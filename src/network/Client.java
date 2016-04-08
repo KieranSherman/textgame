@@ -14,9 +14,13 @@ public class Client extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
+	public static void main(String [] args) {
+		new Client().start();
+	}
+	
 	public Client() {
 		this.hostName = "localhost";
-		this.portNumber = 4444;
+		this.portNumber = 9999;
 	}
 	
 	public Client(String hostName) {
@@ -34,26 +38,40 @@ public class Client extends Thread {
 		try {
 			socket = new Socket(hostName, portNumber);
 			
-			sInput = new ObjectInputStream(socket.getInputStream());
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
+			sOutput.flush();
 			
-			Thread serverListener = new Thread(new ServerListener());
-			serverListener.start();
+			sInput = new ObjectInputStream(socket.getInputStream());
+
+			new Thread(new ServerListener()).start();
+			writeObject("logout");
 			
-			sendMessage("hello server");
-			
-			socket.close();
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
 		}
 	}
 	
-	public void sendMessage(String message) {
+	public void writeObject(Object object) {
 		try {
-			sOutput.writeObject(message);
+			sOutput.writeObject(object);
+			sOutput.reset();
+			sOutput.flush();
 		} catch (Exception e) {
-			System.err.print("error sending message: "+message);
+			System.err.print("error sending object: "+object);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T readObject() {
+		try {
+			return (T) sInput.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public void disconnect() {
@@ -76,6 +94,8 @@ public class Client extends Thread {
 	private class ServerListener extends Thread {
 		@Override
 		public void run() {
+			System.out.println("Client is listening for server");
+			
 			while(true) {
 				try {
 					String msg = (String)sInput.readObject();
