@@ -6,7 +6,7 @@
 
 Game Setup:
 World
-⋅⋅* Randomly generated
+..* Randomly generated
 ⋅⋅⋅+ Cave
         +House
         +Forest
