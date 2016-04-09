@@ -1,4 +1,4 @@
-package network;
+package network.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import network.bridge.ServerBridge;
+import util.Resources;
+import util.exceptions.ResourcesNotInitializedException;
+import util.out.Logger;
 
 public class Server extends Thread {
 	
@@ -17,7 +19,7 @@ public class Server extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
-	private ServerBridge serverBridge;
+	private Logger logger;
 	
 	public Server() {
 		this.portNumber = 9999;
@@ -26,13 +28,16 @@ public class Server extends Thread {
 	public Server(int portNumber) {
 		this.portNumber = portNumber;
 	}
-
-	public void setBridge(ServerBridge serverBridge) {
-		this.serverBridge = serverBridge;
-	}
 	
 	@Override
 	public void run() {
+		try {
+			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
 		try {
 			serverSocket = new ServerSocket(portNumber);
 			clientSocket = serverSocket.accept();
@@ -43,10 +48,12 @@ public class Server extends Thread {
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
 			while(true) {
-				String msg = read();
+				String msg = readObject();
 				
 				if(msg.equalsIgnoreCase("logout"))
 					break;
+				
+				logger.appendText(msg);
 			}
 			
 			serverSocket.close();
@@ -57,7 +64,7 @@ public class Server extends Thread {
 		}
 	}
 	
-	public void writeObject(Object object) {
+	protected void writeObject(Object object) {
 		if(!clientSocket.isConnected()) {
 			close();
 			return;
@@ -72,15 +79,8 @@ public class Server extends Thread {
 		}
 	}
 	
-	private <T> T read() {
-		if(serverBridge != null)
-			return serverBridge.readObject();
-		else
-			return readObject();
-	}
-	
 	@SuppressWarnings("unchecked")
-	public <T> T readObject() {
+	protected <T> T readObject() {
 		try {
 			return (T) sInput.readObject();
 		} catch (ClassNotFoundException e) {

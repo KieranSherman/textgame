@@ -1,4 +1,4 @@
-package network.bridge;
+package network;
 
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -9,10 +9,6 @@ import util.out.Logger;
  */
 public abstract class Bridge {
 	
-	public enum BridgeType {
-		CLIENT, SERVER;
-	}
-	
 	protected Logger logger;
 	
 	public Bridge() {
@@ -22,11 +18,6 @@ public abstract class Bridge {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	}
-	
-	//to be used from Window.class
-	public void appendText(String str) {
-		logger.appendText(str);
 	}
 	
 	public abstract void writeObject(Object obj);

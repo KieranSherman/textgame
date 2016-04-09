@@ -1,6 +1,6 @@
 package util.out;
 
-import main.Window;
+import main.ui.Window;
 
 /*
  * Logger class has direct access to the Game's Window

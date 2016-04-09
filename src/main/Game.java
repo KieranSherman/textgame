@@ -1,6 +1,6 @@
 package main;
 
-import main.Window;
+import main.ui.Window;
 
 public class Game {
 		
