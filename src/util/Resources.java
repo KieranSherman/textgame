@@ -27,6 +27,8 @@ public class Resources {
 	private static boolean initialized = false;
 	
 	public static void init(Window window) {
+		initialized = true;
+
 		colorer = new Colorer();
 		logger = new Logger(window);
 		adapter = new Adapter();
@@ -34,8 +36,6 @@ public class Resources {
 		loadActionWords("src/files/Actions.txt");
 		loadPlaceWords("src/files/Places.txt");
 		overrideOutput();
-		
-		initialized = true;
 	}
 	
 	private static void overrideOutput() {

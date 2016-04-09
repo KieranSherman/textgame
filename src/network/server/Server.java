@@ -3,6 +3,7 @@ package network.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,6 +14,7 @@ import network.packet.PacketTypes;
 import network.packet.types.Packet03Text;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
+import util.out.Logger;
 
 public class Server extends Thread {
 	
@@ -36,8 +38,10 @@ public class Server extends Thread {
 	@Override
 	public void run() {
 		Adapter adapter = null;
+		Logger logger = null;
 		try {
 			adapter = Resources.getAdapter();
+			logger = Resources.getLogger();
 		} catch (ResourcesNotInitializedException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -45,6 +49,7 @@ public class Server extends Thread {
 		
 		try {
 			serverSocket = new ServerSocket(portNumber);
+			logger.appendText("server started at "+InetAddress.getLocalHost()+":"+serverSocket.getLocalPort());
 			clientSocket = serverSocket.accept();
 			open = true;
 			
@@ -53,10 +58,10 @@ public class Server extends Thread {
 			
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
-			adapter.sendPacket(new Packet03Text("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
+			sendPacket(new Packet03Text("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
 			
 			while(true) {
-				Packet packet = (Packet) readObject();
+				Packet packet = getPacket();
 				
 				if(packet.getType() == PacketTypes.DISCONNECT)
 					break;
@@ -72,33 +77,39 @@ public class Server extends Thread {
 		}
 	}
 	
-	public void writeObject(Object object) {
+	public void sendPacket(Packet packet) {
+		System.out.println("SERVER: attempting to send packet: "+packet.getData());
+		
+		if(clientSocket == null) {
+			System.err.println("no client connected");
+			return;
+		}
+		
 		if(!clientSocket.isConnected()) {
 			close();
 			return;
 		}
 		
 		try {
-			sOutput.writeObject(object);
+			sOutput.writeObject(packet);
 			sOutput.reset();
 			sOutput.flush();
 		} catch (IOException e) {
-			System.err.println("error sending message: "+object);
+			System.err.println("error sending message: "+packet);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected <T> T readObject() {
-		Object obj = null;
+	protected Packet getPacket() {
+		Packet packet = null;
 		try {
-			obj = sInput.readObject();
+			packet = (Packet) sInput.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			close();
 		}
 		
-		return (T) obj;
+		return packet;
 	}
 	
 	public void close() {

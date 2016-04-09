@@ -1,6 +1,9 @@
 package network.packet;
 
-public abstract class Packet {
+import java.io.Serializable;
+
+public abstract class Packet implements Serializable {
+	private static final long serialVersionUID = 1L;
 	
 	private PacketTypes packetType;
 	
