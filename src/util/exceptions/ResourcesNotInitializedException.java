@@ -1,4 +1,4 @@
-package util;
+package util.exceptions;
 
 public class ResourcesNotInitializedException extends Exception {
 
