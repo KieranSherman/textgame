@@ -1,11 +1,13 @@
-package network;
+package network.client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import network.bridge.ClientBridge;
+import util.Resources;
+import util.exceptions.ResourcesNotInitializedException;
+import util.out.Logger;
 
 public class Client extends Thread {
 	
@@ -16,7 +18,9 @@ public class Client extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
-	private ClientBridge clientBridge;
+	private Logger logger;
+	
+	private boolean connected;
 	
 	public Client() {
 		this.hostName = "localhost";
@@ -33,27 +37,36 @@ public class Client extends Thread {
 		this.portNumber = portNumber;
 	}
 	
-	public void setBridge(ClientBridge clientBridge) {
-		this.clientBridge = clientBridge;
-	}
-	
 	@Override
 	public void run() {
 		try {
+			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
+		try {
 			socket = new Socket(hostName, portNumber);
+			connected = true;
 			
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
 			sOutput.flush();
 			
 			sInput = new ObjectInputStream(socket.getInputStream());
 
-			new Thread(new ServerListener()).start();
+			while(true) {
+				String msg = readObject();
+				logger.appendText(msg);
+			}
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
+		} finally {
+			disconnect();
 		}
 	}
 	
-	public void writeObject(Object obj) {
+	protected void writeObject(Object obj) {
 		try {
 			sOutput.writeObject(obj);
 			sOutput.reset();
@@ -63,24 +76,18 @@ public class Client extends Thread {
 		}
 	}
 	
-	public <T> T read() {
-		if(clientBridge != null)
-			return clientBridge.readObject();
-		else
-			return readObject();
-	}
-	
 	@SuppressWarnings("unchecked")
 	public <T> T readObject() {
+		Object obj = null;
 		try {
-			return (T) sInput.readObject();
+			obj = sInput.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			disconnect();
+		} 
 		
-		return null;
+		return (T) obj;
 	}
 	
 	public void disconnect() {
@@ -95,25 +102,14 @@ public class Client extends Thread {
 				socket.close();
 		} catch (Exception e) {
 			System.err.println("error disconnecting");
-		} finally {
-			System.out.println("you have disconnected");
-		}
+			System.exit(1);
+		} 
+		
+		if(connected)
+			System.out.println("client disconnected");
+		
+		connected = false;
+		
 	}
 	
-	private class ServerListener extends Thread {
-		@Override
-		public void run() {
-			while(true) {
-				try {
-					String msg = (String) read();
-					System.out.println(msg);
-					System.out.print("> ");
-				} catch (Exception e) {
-					System.out.println("server has closed the connection");
-					break;
-				}
-			}
-		}
-	}
-
 }

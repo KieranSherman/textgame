@@ -1,6 +1,6 @@
-package network.bridge;
+package network.client;
 
-import network.Client;
+import network.Bridge;
 
 public class ClientBridge extends Bridge {
 	
@@ -13,9 +13,6 @@ public class ClientBridge extends Bridge {
 
 	@Override
 	public void writeObject(Object obj) {
-		if(obj instanceof String)
-			super.logger.appendText((String) obj);
-		
 		client.writeObject(obj);
 	}
 

@@ -1,6 +1,6 @@
-package network.bridge;
+package network.server;
 
-import network.Server;
+import network.Bridge;
 
 public class ServerBridge extends Bridge {
 	
@@ -12,16 +12,11 @@ public class ServerBridge extends Bridge {
 	}
 
 	@Override
-	//to be used from Server.class
 	public void writeObject(Object obj) {
-		if(obj instanceof String)
-			super.logger.appendText((String) obj);
-		
 		server.writeObject(obj);
 	}
 
 	@Override
-	//to be used from Server.class
 	public <T> T readObject() {
 		Object obj = server.readObject();
 		

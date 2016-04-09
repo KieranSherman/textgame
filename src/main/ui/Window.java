@@ -1,4 +1,4 @@
-package main;
+package main.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,10 +25,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import network.Client;
-import network.Server;
-import network.bridge.ClientBridge;
-import network.bridge.ServerBridge;
+import network.Adapter;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -49,11 +46,7 @@ public class Window extends JPanel {
 	
 	private Colorer colorer;			//Parser determines coloring
 	
-	private Server server;				//server
-	private Client client;				//client
-	
-	private ServerBridge serverB;		//server bridge
-	private ClientBridge clientB;		//client bridge
+	private Adapter adapter;
 	
 	public Window() {
 		Resources.init(this);
@@ -64,14 +57,17 @@ public class Window extends JPanel {
 	 * Initializes all members of the Window
 	 */
 	private void init() {
-		UIManager.put("ScrollBarUI", "main.ScrollBarUI");
-		JPanel panel = this;
+		Window panel = this;
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				UIManager.put("ScrollBarUI", "main.ui.ScrollBarUI");
+				adapter = new Adapter();
+
 				window = new JFrame("");
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.setResizable(false);
+				window.addWindowListener(new WindowHandler(panel));
 				
 				panel.setBackground(new Color(15, 15, 15));
 				panel.setLayout(new BorderLayout());
@@ -94,7 +90,7 @@ public class Window extends JPanel {
 	 * Initializes the text pane
 	 */
 	private void init_textPane() {
-		JPanel panel = this;
+		Window panel = this;
 
 		doc = new DefaultStyledDocument();
 		textPane = new JTextPane(doc);
@@ -162,6 +158,8 @@ public class Window extends JPanel {
 		textField.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				adapter.writeObject(textField.getText());
+				
 				appendText("> "+textField.getText());
 				setText("");
 			}
@@ -181,16 +179,15 @@ public class Window extends JPanel {
 	 * Appends str to the end of textPane
 	 */
 	public void appendText(final String str) {
-		if(parseCommand(str))
+		if(str == null || parseCommand(str))
 			return;
 
-		String [] split = str.split("\\s+");
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				String [] split = str.split("\\s+");
+
 				try {
 					for(String s : split) {
-						
 						StyleConstants.setForeground(style, colorer.getColor(s));
 						doc.insertString(doc.getLength(), s+" ", style);
 					}
@@ -218,37 +215,29 @@ public class Window extends JPanel {
 		
 		if(args[0].equals("server")) {
 			if(args.length == 1)
-				server = new Server();
+				adapter.createServer();
 			if(args.length == 2)
-				server = new Server(Integer.parseInt(args[1]));
+				adapter.createServer(Integer.parseInt(args[1]));
 			
-			serverB = new ServerBridge(server);
-			server.setBridge(serverB);
-			
-			Thread serverThread = new Thread(server);
-			serverThread.start();
-
-			appendText("server initialized");
+			adapter.startServer();
 		}
 		
 		if(args[0].equals("client")) {
 			if(args.length == 1)
-				client = new Client();
+				adapter.createClient();
 			else if(args.length == 2)
-				client = new Client(args[1]);
+				adapter.createClient(args[1]);
 			else if (args.length == 3)
-				client = new Client(args[1], Integer.parseInt(args[2]));
+				adapter.createClient(args[1], Integer.parseInt(args[2]));
 			
-			clientB = new ClientBridge(client);
-			client.setBridge(clientB);
-			
-			Thread clientThread = new Thread(client);
-			clientThread.start();
-			
-			appendText("client initialized");
+			adapter.startClient();
 		}
 		
 		return true;
+	}
+	
+	public void closeConnections() {
+		adapter.close();
 	}
 
 }
