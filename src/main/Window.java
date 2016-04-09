@@ -52,6 +52,9 @@ public class Window extends JPanel {
 	private Server server;
 	private Client client;
 	
+	private ServerBridge serverB;
+	private ClientBridge clientB;
+	
 	public Window() {
 		Resources.init(this);
 		this.init();
@@ -119,6 +122,12 @@ public class Window extends JPanel {
 				textField.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						if(client != null)
+							client.write(textField.getText());
+						
+						if(server != null)
+							server.write(textField.getText());
+						
 						appendText("> "+textField.getText().substring(6));
 						
 						setText("out:: ");
@@ -205,7 +214,8 @@ public class Window extends JPanel {
 			if(args.length == 2)
 				server = new Server(Integer.parseInt(args[1]));
 			
-			server.setBridge(new ServerBridge(server));
+			serverB = new ServerBridge(server);
+			server.setBridge(serverB);
 			
 			Thread serverThread = new Thread(server);
 			serverThread.start();
@@ -221,7 +231,8 @@ public class Window extends JPanel {
 			else if (args.length == 3)
 				client = new Client(args[1], Integer.parseInt(args[2]));
 			
-			client.setBridge(new ClientBridge(client));
+			clientB = new ClientBridge(client);
+			client.setBridge(clientB);
 			
 			Thread clientThread = new Thread(client);
 			clientThread.start();
