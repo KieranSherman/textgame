@@ -62,7 +62,12 @@ public class Window extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				UIManager.put("ScrollBarUI", "main.ui.ScrollBarUI");
-				adapter = new Adapter();
+				try {
+					adapter = Resources.getAdapter();
+				} catch (ResourcesNotInitializedException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
 
 				window = new JFrame("");
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,11 +120,11 @@ public class Window extends JPanel {
 				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.RED);
 		Border compound = BorderFactory.createCompoundBorder(b, textPane.getBorder());
 		
-		textPane.setBorder(compound);
-
 		JScrollPane scroll = new JScrollPane(textPane);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scroll.setBorder(null);
+		scroll.getVerticalScrollBar().setUI(new ScrollBarUI());
+		scroll.setBackground(new Color(15, 15, 15));
+		scroll.setBorder(compound);
 		
 		panel.add(scroll, BorderLayout.CENTER);
 	}

@@ -2,6 +2,7 @@ package network;
 
 import network.client.Client;
 import network.client.ClientBridge;
+import network.packet.Packet;
 import network.server.Server;
 import network.server.ServerBridge;
 
@@ -15,37 +16,67 @@ public class Adapter {
 	
 	public void createClient() {
 		client = new Client();
-		bridge(NetworkType.CLIENT);
+		bridge(NetworkTypes.CLIENT);
 	}
 	
 	public void createClient(String hostName) {
 		client = new Client(hostName);
-		bridge(NetworkType.CLIENT);
+		bridge(NetworkTypes.CLIENT);
 	}
 	
 	public void createClient(String hostName, int portNumber) {
 		client = new Client(hostName, portNumber);
-		bridge(NetworkType.CLIENT);
+		bridge(NetworkTypes.CLIENT);
 	}
 	
 	public void startClient() {
-		new Thread(client).start();
 		System.out.println("running client");
+		new Thread(client).start();
 	}
 	
 	public void createServer() {
 		server = new Server();
-		bridge(NetworkType.SERVER);
+		bridge(NetworkTypes.SERVER);
 	}
 	
 	public void createServer(int portNumber) {
 		server = new Server(portNumber);
-		bridge(NetworkType.SERVER);
+		bridge(NetworkTypes.SERVER);
 	}
 	
 	public void startServer() {
-		new Thread(server).start();
 		System.out.println("running server");
+		new Thread(server).start();
+	}
+	
+	public void sendPacket(Packet packet) {
+		if(server == null && client == null)
+			return;
+		
+		if(server == null && client != null)
+			client_bridge.sendPacket(packet);
+		
+		if(server != null && client == null)
+			server_bridge.sendPacket(packet);
+		
+		if(server != null && client != null)
+			client_bridge.sendPacket(packet);
+	}
+	
+	public void sendPacket(NetworkTypes networkType, Packet packet) {
+		if(networkType == NetworkTypes.CLIENT && client != null)
+			client_bridge.sendPacket(packet);
+		
+		if(networkType == NetworkTypes.SERVER && server != null)
+			server_bridge.sendPacket(packet);
+	}
+	
+	public void parsePacket(NetworkTypes networkTypes, Packet packet) {
+		if(networkTypes == NetworkTypes.CLIENT)
+			client_bridge.parsePacket(packet);
+		
+		if(networkTypes == NetworkTypes.SERVER)
+			server_bridge.parsePacket(packet);
 	}
 	
 	public void writeObject(Object obj) {
@@ -62,27 +93,33 @@ public class Adapter {
 			client_bridge.writeObject(obj);
 	}
 	
-	public void writeObject(NetworkType networkType, Object obj) {
-		if(networkType == NetworkType.CLIENT)
+	public void writeObject(NetworkTypes networkType, Object obj) {
+		if(networkType == NetworkTypes.CLIENT && client != null)
 			client_bridge.writeObject(obj);
 		
-		if(networkType == NetworkType.SERVER)
+		if(networkType == NetworkTypes.SERVER && server != null)
 			server_bridge.writeObject(obj);
 	}
 	
 	public void close() {
-		if(client != null)
+		if(client != null) {
 			client.disconnect();
+			client = null;
+			client_bridge = null;
+		}
 		
-		if(server != null)
+		if(server != null) {
 			server.close();
+			server = null;
+			server_bridge = null;
+		}
 	}
 	
-	private void bridge(NetworkType networkType) {
-		if(networkType == NetworkType.CLIENT)
+	private void bridge(NetworkTypes networkType) {
+		if(networkType == NetworkTypes.CLIENT)
 			client_bridge = new ClientBridge(client);
 		
-		if(networkType == NetworkType.SERVER)
+		if(networkType == NetworkTypes.SERVER)
 			server_bridge = new ServerBridge(server);
 	}
 	
