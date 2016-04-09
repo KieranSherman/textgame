@@ -6,10 +6,10 @@
 
 Game Setup:  
 World  
-     - Randomly generated  
-     + Cave  
-     + House  
-        +Forest  
+&nbsp;&nbsp;&nbsp;&nbsp;-Randomly generated  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Cave  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+House  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Forest  
 Items  
     -Door  
     -Table  
