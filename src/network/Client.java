@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import bridge.ClientBridge;
+
 public class Client extends Thread {
 	
 	private String hostName;
@@ -14,9 +16,7 @@ public class Client extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
-	public static void main(String [] args) {
-		new Client().start();
-	}
+	private ClientBridge clientBridge;
 	
 	public Client() {
 		this.hostName = "localhost";
@@ -33,6 +33,10 @@ public class Client extends Thread {
 		this.portNumber = portNumber;
 	}
 	
+	public void setBridge(ClientBridge clientBridge) {
+		this.clientBridge = clientBridge;
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -44,21 +48,34 @@ public class Client extends Thread {
 			sInput = new ObjectInputStream(socket.getInputStream());
 
 			new Thread(new ServerListener()).start();
-			writeObject("logout");
-			
+			write("logout");
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
 		}
 	}
 	
-	public void writeObject(Object object) {
+	private void write(Object obj) {
+		if(clientBridge != null)
+			clientBridge.writeObject(obj);
+		else
+			writeObject(obj);
+	}
+	
+	public void writeObject(Object obj) {
 		try {
-			sOutput.writeObject(object);
+			sOutput.writeObject(obj);
 			sOutput.reset();
 			sOutput.flush();
 		} catch (Exception e) {
-			System.err.print("error sending object: "+object);
+			System.err.print("error sending object: "+obj);
 		}
+	}
+	
+	public <T> T read() {
+		if(clientBridge != null)
+			return clientBridge.readObject();
+		else
+			return readObject();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -94,11 +111,9 @@ public class Client extends Thread {
 	private class ServerListener extends Thread {
 		@Override
 		public void run() {
-			System.out.println("Client is listening for server");
-			
 			while(true) {
 				try {
-					String msg = (String)sInput.readObject();
+					String msg = (String) read();
 					System.out.println(msg);
 					System.out.print("> ");
 				} catch (Exception e) {

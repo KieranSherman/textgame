@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import bridge.ServerBridge;
+
 public class Server extends Thread {
 	
 	private int portNumber;
@@ -15,9 +17,7 @@ public class Server extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
-	public static void main(String [] args) {
-		new Server().start();
-	}
+	private ServerBridge serverBridge;
 	
 	public Server() {
 		this.portNumber = 9999;
@@ -27,6 +27,10 @@ public class Server extends Thread {
 		this.portNumber = portNumber;
 	}
 
+	public void setBridge(ServerBridge serverBridge) {
+		this.serverBridge = serverBridge;
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -39,9 +43,9 @@ public class Server extends Thread {
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
 			while(true) {
-				String msg = readObject();
+				String msg = read();
 				
-				writeObject("server received: "+msg);
+				write("server received: "+msg);
 				
 				if(msg.equalsIgnoreCase("logout"))
 					break;
@@ -55,7 +59,14 @@ public class Server extends Thread {
 		}
 	}
 	
-	private void writeObject(Object object) {
+	private void write(Object obj) {
+		if(serverBridge != null)
+			serverBridge.writeObject(obj);
+		else
+			writeObject(obj);
+	}
+	
+	public void writeObject(Object object) {
 		if(!clientSocket.isConnected()) {
 			close();
 			return;
@@ -68,6 +79,13 @@ public class Server extends Thread {
 		} catch (IOException e) {
 			System.err.println("error sending message: "+object);
 		}
+	}
+	
+	private <T> T read() {
+		if(serverBridge != null)
+			return serverBridge.readObject();
+		else
+			return readObject();
 	}
 	
 	@SuppressWarnings("unchecked")
