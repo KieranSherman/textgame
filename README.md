@@ -1,7 +1,9 @@
 # textgame
 
 ~~Rejected~~
+
 *Approved*
+
 **Implemented**
 
 Game Setup:
