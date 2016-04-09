@@ -98,9 +98,10 @@ public class Client extends Thread {
 				socket.close();
 		} catch (Exception e) {
 			System.err.println("error disconnecting");
-		} finally {
-			System.out.println("you have disconnected");
-		}
+			System.exit(1);
+		} 
+		
+		System.out.println("client disconnected");
 	}
 	
 }

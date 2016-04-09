@@ -57,7 +57,7 @@ public class Window extends JPanel {
 	 * Initializes all members of the Window
 	 */
 	private void init() {
-		JPanel panel = this;
+		Window panel = this;
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -67,6 +67,7 @@ public class Window extends JPanel {
 				window = new JFrame("");
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.setResizable(false);
+				window.addWindowListener(new WindowHandler(panel));
 				
 				panel.setBackground(new Color(15, 15, 15));
 				panel.setLayout(new BorderLayout());
@@ -89,7 +90,7 @@ public class Window extends JPanel {
 	 * Initializes the text pane
 	 */
 	private void init_textPane() {
-		JPanel panel = this;
+		Window panel = this;
 
 		doc = new DefaultStyledDocument();
 		textPane = new JTextPane(doc);
@@ -233,6 +234,10 @@ public class Window extends JPanel {
 		}
 		
 		return true;
+	}
+	
+	public void closeConnections() {
+		adapter.close();
 	}
 
 }

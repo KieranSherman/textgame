@@ -92,7 +92,7 @@ public class Server extends Thread {
 		return null;
 	}
 	
-	private void close() {
+	public void close() {
 		try {
 			if(sOutput != null)
 				sOutput.close();
@@ -104,7 +104,10 @@ public class Server extends Thread {
 				clientSocket.close();
 		} catch (Exception e) {
 			System.err.println("error closing server");
+			System.exit(1);
 		}
+		
+		System.out.println("server closed");
 	}
 	
 }

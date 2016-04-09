@@ -70,6 +70,14 @@ public class Adapter {
 			server_bridge.writeObject(obj);
 	}
 	
+	public void close() {
+		if(client != null)
+			client.disconnect();
+		
+		if(server != null)
+			server.close();
+	}
+	
 	private void bridge(NetworkType networkType) {
 		if(networkType == NetworkType.CLIENT)
 			client_bridge = new ClientBridge(client);
