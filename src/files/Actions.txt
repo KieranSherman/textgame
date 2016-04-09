@@ -1,1 +1,15 @@
-move,walk,run,
+action walk[direction]
+action run[direction]
+action sprint[direction]
+action jog[direction]
+action crawl[direction]
+action jump[direction]
+action sneak[direction]
+action cry
+action search[place]
+action hide[place]
+
+
+direction north south east west up down
+place under[location] in[location] behind[location]
+location box tree table chair rock plant

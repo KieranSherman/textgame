@@ -7,15 +7,15 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -64,6 +64,7 @@ public class Window extends JPanel {
 	 * Initializes all members of the Window
 	 */
 	private void init() {
+		UIManager.put("ScrollBarUI", "main.ScrollBarUI");
 		JPanel panel = this;
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -131,49 +132,39 @@ public class Window extends JPanel {
 	 * Initializes the text field
 	 */
 	private void init_textField() {
-		JPanel panel = this;
-		
-		textField = new JTextField("out:: ");
-		textField.setFont(Resources.def);
-		textField.setBackground(new Color(15, 15, 15));
-		textField.setForeground(Color.WHITE);
-		textField.setCaretColor(Color.WHITE);
-		
-		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER, 
-				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
-		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
-		
-		textField.setBorder(compound);
-		
-		textField.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				appendText("> "+textField.getText().substring(6));
-				setText("out:: ");
-			}
-		});
-		
-		textField.addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if(!textField.getText().startsWith("out:: "))
-					setText("out:: ");
-			}
-			@Override
-			public void keyTyped(KeyEvent e) {}
-			@Override
-			public void keyPressed(KeyEvent e) {
-				int keyCode = e.getKeyCode();
-				
-				if(keyCode == KeyEvent.VK_BACK_SPACE) {
-					if(textField.getText().equals("out:: "))
-						setText("out:: ");
-				}
-			}
-		});
-		
-		panel.add(textField, BorderLayout.SOUTH);
+        JPanel inputField = new JPanel();
+        inputField.setLayout(new BorderLayout());
+        inputField.setBackground(new Color(15, 15, 15));
+        inputField.setForeground(Color.WHITE);
+        
+        JLabel promptText = new JLabel("out:: ");
+        promptText.setForeground(Color.WHITE);
+        promptText.setFont(Resources.def);
+        inputField.add(promptText, BorderLayout.WEST);
+        
+        textField = new JTextField();
+        textField.setFont(Resources.def);
+        textField.setBackground(new Color(15, 15, 15));
+        textField.setForeground(Color.WHITE);
+        textField.setCaretColor(Color.WHITE);
+        textField.setBorder(null);
+        inputField.add(textField, BorderLayout.CENTER);
+        
+        b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER,
+                                             TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
+        compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
+        
+        inputField.setBorder(compound);
+        
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                appendText("> "+textField.getText());
+                setText("");
+            }
+        });
+        
+        panel.add(inputField, BorderLayout.SOUTH);
 	}
 	
 	/*
