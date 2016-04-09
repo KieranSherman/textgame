@@ -48,13 +48,12 @@ public class Client extends Thread {
 			sInput = new ObjectInputStream(socket.getInputStream());
 
 			new Thread(new ServerListener()).start();
-			write("logout");
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
 		}
 	}
 	
-	private void write(Object obj) {
+	public void write(Object obj) {
 		if(clientBridge != null)
 			clientBridge.writeObject(obj);
 		else

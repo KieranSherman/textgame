@@ -59,7 +59,7 @@ public class Server extends Thread {
 		}
 	}
 	
-	private void write(Object obj) {
+	public void write(Object obj) {
 		if(serverBridge != null)
 			serverBridge.writeObject(obj);
 		else
