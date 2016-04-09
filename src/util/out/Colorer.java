@@ -3,7 +3,7 @@ package util.out;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import main.Word;
+import util.Word;
 
 /*
  * Class holds Words and determines their color 
