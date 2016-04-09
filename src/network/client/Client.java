@@ -59,15 +59,15 @@ public class Client extends Thread {
 			
 			sInput = new ObjectInputStream(socket.getInputStream());
 			
-			adapter.sendPacket(new Packet03Text("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
+			sendPacket(new Packet03Text("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
 
 			while(true) {
-				Packet packet = (Packet) readObject();
+				Packet packet = getPacket();
 				
-				if(packet.getType() == PacketTypes.DISCONNECT)
+				if(packet != null && packet.getType() == PacketTypes.DISCONNECT)
 					break;
 				
-				adapter.parsePacket(NetworkTypes.SERVER, packet);
+				adapter.parsePacket(NetworkTypes.CLIENT, packet);
 			}
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
@@ -76,28 +76,29 @@ public class Client extends Thread {
 		}
 	}
 	
-	public void writeObject(Object obj) {
+	public void sendPacket(Packet packet) {
+		System.out.println("CLIENT: attempting to send packet: "+packet.getData());
+
 		try {
-			sOutput.writeObject(obj);
+			sOutput.writeObject(packet);
 			sOutput.reset();
 			sOutput.flush();
 		} catch (Exception e) {
-			System.err.print("error sending object: "+obj);
+			System.err.print("error sending object: "+packet);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected <T> T readObject() {
-		Object obj = null;
+	protected Packet getPacket() {
+		Packet packet = null;
 		try {
-			obj = sInput.readObject();
+			packet = (Packet) sInput.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			disconnect();
 		} 
 		
-		return (T) obj;
+		return packet;
 	}
 	
 	public void disconnect() {

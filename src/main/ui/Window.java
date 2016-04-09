@@ -26,6 +26,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import network.Adapter;
+import network.packet.types.Packet03Text;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -163,10 +164,13 @@ public class Window extends JPanel {
 		textField.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				adapter.writeObject(textField.getText());
-				
-				appendText("> "+textField.getText());
+				String str = textField.getText();
+
+				appendText("> "+str);
 				setText("");
+				
+				if(!isCommand(str))
+					adapter.sendPacket(new Packet03Text(str));
 			}
 		});
 		
@@ -186,7 +190,7 @@ public class Window extends JPanel {
 	public void appendText(final String str) {
 		if(str == null || parseCommand(str))
 			return;
-
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				String [] split = str.split("\\s+");
@@ -212,7 +216,7 @@ public class Window extends JPanel {
 	private boolean parseCommand(String str) {
 		str = str.substring(2);
 		
-		if(!str.startsWith("!"))
+		if(!isCommand(str))
 			return false;
 		
 		str = str.toLowerCase().substring(1);
@@ -239,6 +243,10 @@ public class Window extends JPanel {
 		}
 		
 		return true;
+	}
+	
+	private boolean isCommand(String str) {
+		return str.startsWith("!");
 	}
 	
 	public void closeConnections() {
