@@ -6,9 +6,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import main.Window;
-import util.Colorer.ColorRules;
+import util.bridge.StreamCapturer;
+import util.exceptions.ResourcesNotInitializedException;
+import util.out.Colorer;
+import util.out.Logger;
+import util.out.Colorer.ColorRules;
 
 public class Resources {
 	// height and width of window screen.  1.618 = phi (golden rectangle)
@@ -25,10 +30,19 @@ public class Resources {
 		colorer = new Colorer();
 		logger = new Logger(window);
 		
-		loadActionWords("src/Actions.txt");
-		loadPlaceWords("src/Places.txt");
+		loadActionWords("src/files/Actions.txt");
+		loadPlaceWords("src/files/Places.txt");
+		overrideOutput();
 		
 		initialized = true;
+	}
+	
+	private static void overrideOutput() {
+		PrintStream stdOut = System.out;
+		PrintStream stdErr = System.err;
+		
+        System.setOut(new PrintStream(new StreamCapturer("STDOUT", logger, stdOut)));
+        System.setErr(new PrintStream(new StreamCapturer("STDERR", logger, stdErr)));
 	}
 	
 	private static void loadActionWords(String filePath) {

@@ -2,7 +2,7 @@ package main;
 
 import java.awt.Color;
 
-import util.Colorer.ColorRules;
+import util.out.Colorer.ColorRules;
 
 public class Word {
 	

@@ -1,17 +1,13 @@
 package bridge;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
-import util.Logger;
 import util.Resources;
-import util.ResourcesNotInitializedException;
+import util.exceptions.ResourcesNotInitializedException;
+import util.out.Logger;
 
 /*
  * Class bridges the GUI and the Network
  */
-public abstract class Bridge extends OutputStream {
+public abstract class Bridge {
 	
 	protected Logger logger;
 	
@@ -22,14 +18,7 @@ public abstract class Bridge extends OutputStream {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
-		overrideOutput();
 	}
-	
-	@Override
-    public void write(int b) throws IOException {
-        appendText(String.valueOf((char)b));
-    }
 	
 	//to be used from Window.class
 	public void appendText(String str) {
@@ -38,11 +27,4 @@ public abstract class Bridge extends OutputStream {
 	
 	public abstract void writeObject(Object obj);
 	public abstract <T> T readObject();
-	
-	private void overrideOutput() {
-		PrintStream printStream = new PrintStream(this);
-		
-		System.setOut(printStream);
-		System.setErr(printStream);
-	}
 }
