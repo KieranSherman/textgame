@@ -6,9 +6,9 @@
 
 Game Setup:  
 World  
-    -Randomly generated  
-        +Cave  
-        +House  
+  -Randomly generated  
+  +Cave  
+  +House  
         +Forest  
 Items  
     -Door  
