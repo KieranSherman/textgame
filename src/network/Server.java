@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import bridge.ServerBridge;
+import network.bridge.ServerBridge;
 
 public class Server extends Thread {
 	
@@ -45,8 +45,6 @@ public class Server extends Thread {
 			while(true) {
 				String msg = read();
 				
-				write("server received: "+msg);
-				
 				if(msg.equalsIgnoreCase("logout"))
 					break;
 			}
@@ -57,13 +55,6 @@ public class Server extends Thread {
 		} finally {
 			close();
 		}
-	}
-	
-	public void write(Object obj) {
-		if(serverBridge != null)
-			serverBridge.writeObject(obj);
-		else
-			writeObject(obj);
 	}
 	
 	public void writeObject(Object object) {

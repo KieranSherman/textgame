@@ -25,10 +25,10 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import bridge.ClientBridge;
-import bridge.ServerBridge;
 import network.Client;
 import network.Server;
+import network.bridge.ClientBridge;
+import network.bridge.ServerBridge;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -40,7 +40,7 @@ public class Window extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private JFrame window;				//JFrame container
-	private JTextPane textPane;			//Pane for output
+	private JTextPane textPane;			//Pane to display output
 	private JTextField textField;		//Field for input
 	
 	private DefaultStyledDocument doc;	//*
@@ -49,18 +49,20 @@ public class Window extends JPanel {
 	
 	private Colorer colorer;			//Parser determines coloring
 	
-	private Server server;
-	private Client client;
+	private Server server;				//server
+	private Client client;				//client
 	
-	private ServerBridge serverB;
-	private ClientBridge clientB;
+	private ServerBridge serverB;		//server bridge
+	private ClientBridge clientB;		//client bridge
 	
 	public Window() {
 		Resources.init(this);
 		this.init();
 	}
 	
-	//POST: members initialized
+	/*
+	 * Initializes all members of the Window
+	 */
 	private void init() {
 		UIManager.put("ScrollBarUI", "main.ScrollBarUI");
 		JPanel panel = this;
@@ -74,81 +76,8 @@ public class Window extends JPanel {
 				panel.setBackground(new Color(15, 15, 15));
 				panel.setLayout(new BorderLayout());
 		
-				doc = new DefaultStyledDocument();
-				textPane = new JTextPane(doc);
-				context = new StyleContext();
-				style = context.addStyle("TextGame", null);
-				
-				try {
-					colorer = Resources.getColorer();
-				} catch (ResourcesNotInitializedException e) {
-					e.printStackTrace();
-					System.exit(1);
-				}
-				
-				textPane.setEditable(false);
-				textPane.setFont(Resources.def);
-				textPane.setBackground(new Color(15, 15, 15));
-				textPane.setForeground(Color.WHITE);
-				textPane.setMargin(new Insets(0, 10, 0, 10));
-				
-				Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-				Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", TitledBorder.CENTER, 
-						TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.RED);
-				Border compound = BorderFactory.createCompoundBorder(b, textPane.getBorder());
-				
-				JScrollPane scroll = new JScrollPane(textPane);
-				scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-				scroll.getVerticalScrollBar().setUI(new ScrollBarUI());
-				scroll.setBackground(new Color(15, 15, 15));
-				scroll.setBorder(compound);
-				
-				panel.add(scroll, BorderLayout.CENTER);
-				
-				// - TEXTFIELD - //
-				
-				JPanel inputField = new JPanel();
-				inputField.setLayout(new BorderLayout());
-				inputField.setBackground(new Color(15, 15, 15));
-				inputField.setForeground(Color.WHITE);
-				
-				JLabel promptText = new JLabel("out:: ");
-				promptText.setForeground(Color.WHITE);
-				promptText.setFont(Resources.def);
-				inputField.add(promptText, BorderLayout.WEST);
-				
-				textField = new JTextField();
-				textField.setFont(Resources.def);
-				textField.setBackground(new Color(15, 15, 15));
-				textField.setForeground(Color.WHITE);
-				textField.setCaretColor(Color.WHITE);
-				textField.setBorder(null);
-				inputField.add(textField, BorderLayout.CENTER);
-				
-				b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER, 
-						TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
-				compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
-				
-				inputField.setBorder(compound);
-				
-				textField.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(client != null)
-							client.write(textField.getText());
-						
-						if(server != null)
-							server.write(textField.getText());
-						
-						appendText("> "+textField.getText());
-						
-						setText("");
-					}
-				});
-				
-				panel.add(inputField, BorderLayout.SOUTH);
-				
-				// - WINDOW - //
+				init_textPane();
+				init_textField();
 				
 				window.add(panel);
 				window.pack();
@@ -161,14 +90,96 @@ public class Window extends JPanel {
 		});
 	}
 	
-	//PRE: str != null
-	//POST: sets the text field text to str
+	/*
+	 * Initializes the text pane
+	 */
+	private void init_textPane() {
+		JPanel panel = this;
+
+		doc = new DefaultStyledDocument();
+		textPane = new JTextPane(doc);
+		context = new StyleContext();
+		style = context.addStyle("TextGame", null);
+		
+		try {
+			colorer = Resources.getColorer();
+		} catch (ResourcesNotInitializedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		textPane.setEditable(false);
+		textPane.setFont(Resources.def);
+		textPane.setBackground(new Color(15, 15, 15));
+		textPane.setForeground(Color.WHITE);
+		textPane.setMargin(new Insets(0, 10, 0, 10));
+		
+		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", TitledBorder.CENTER, 
+				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.RED);
+		Border compound = BorderFactory.createCompoundBorder(b, textPane.getBorder());
+		
+		textPane.setBorder(compound);
+
+		JScrollPane scroll = new JScrollPane(textPane);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setBorder(null);
+		
+		panel.add(scroll, BorderLayout.CENTER);
+	}
+	
+	/*
+	 * Initializes the text field
+	 */
+	private void init_textField() {
+		JPanel panel = this;
+		
+		JPanel inputField = new JPanel();
+		inputField.setLayout(new BorderLayout());
+		inputField.setBackground(new Color(15, 15, 15));
+		inputField.setForeground(Color.WHITE);
+		
+		JLabel promptText = new JLabel("out:: ");
+		promptText.setForeground(Color.WHITE);
+		promptText.setFont(Resources.def);
+		inputField.add(promptText, BorderLayout.WEST);
+		
+		textField = new JTextField();
+		textField.setFont(Resources.def);
+		textField.setBackground(new Color(15, 15, 15));
+		textField.setForeground(Color.WHITE);
+		textField.setCaretColor(Color.WHITE);
+		textField.setBorder(null);
+		inputField.add(textField, BorderLayout.CENTER);
+		
+		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER, 
+				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
+		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
+		
+		inputField.setBorder(compound);
+		
+		textField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				appendText("> "+textField.getText());
+				setText("");
+			}
+		});
+		
+		panel.add(inputField, BorderLayout.SOUTH);
+	}
+	
+	/*
+	 * Sets the text of textField to str
+	 */
 	private void setText(String str) {
 		textField.setText(str);
 	}
 	
-	//PRE: str != null
-	//POST: colors and appends str to the text pane
+	/*
+	 * Appends str to the end of textPane
+	 */
 	public void appendText(final String str) {
 		if(parseCommand(str))
 			return;
@@ -192,6 +203,10 @@ public class Window extends JPanel {
 		});
 	}
 	
+	/*
+	 * Checks to see if str is a command and executes
+	 * the necessary action
+	 */
 	private boolean parseCommand(String str) {
 		str = str.substring(2);
 		

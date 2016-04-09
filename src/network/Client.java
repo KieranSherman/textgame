@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import bridge.ClientBridge;
+import network.bridge.ClientBridge;
 
 public class Client extends Thread {
 	
@@ -51,13 +51,6 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
 		}
-	}
-	
-	public void write(Object obj) {
-		if(clientBridge != null)
-			clientBridge.writeObject(obj);
-		else
-			writeObject(obj);
 	}
 	
 	public void writeObject(Object obj) {
