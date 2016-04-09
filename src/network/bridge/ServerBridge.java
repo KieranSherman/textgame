@@ -1,4 +1,4 @@
-package bridge;
+package network.bridge;
 
 import network.Server;
 

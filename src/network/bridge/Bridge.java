@@ -1,4 +1,4 @@
-package bridge;
+package network.bridge;
 
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -8,6 +8,10 @@ import util.out.Logger;
  * Class bridges the GUI and the Network
  */
 public abstract class Bridge {
+	
+	public enum BridgeType {
+		CLIENT, SERVER;
+	}
 	
 	protected Logger logger;
 	

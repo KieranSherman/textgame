@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import main.Window;
-import util.bridge.StreamCapturer;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
 import util.out.Logger;

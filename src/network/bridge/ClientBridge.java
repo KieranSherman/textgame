@@ -1,4 +1,4 @@
-package bridge;
+package network.bridge;
 
 import network.Client;
 
@@ -12,7 +12,6 @@ public class ClientBridge extends Bridge {
 	}
 
 	@Override
-	//to be used from Client.class
 	public void writeObject(Object obj) {
 		if(obj instanceof String)
 			super.logger.appendText((String) obj);
@@ -21,7 +20,6 @@ public class ClientBridge extends Bridge {
 	}
 
 	@Override
-	//to be used from Client.class
 	public <T> T readObject() {
 		Object obj = client.readObject();
 		
