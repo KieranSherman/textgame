@@ -134,40 +134,40 @@ public class Window extends JPanel {
 	private void init_textField() {
 		JPanel panel = this;
 		
-        JPanel inputField = new JPanel();
-        inputField.setLayout(new BorderLayout());
-        inputField.setBackground(new Color(15, 15, 15));
-        inputField.setForeground(Color.WHITE);
-        
-        JLabel promptText = new JLabel("out:: ");
-        promptText.setForeground(Color.WHITE);
-        promptText.setFont(Resources.def);
-        inputField.add(promptText, BorderLayout.WEST);
-        
-        textField = new JTextField();
-        textField.setFont(Resources.def);
-        textField.setBackground(new Color(15, 15, 15));
-        textField.setForeground(Color.WHITE);
-        textField.setCaretColor(Color.WHITE);
-        textField.setBorder(null);
-        inputField.add(textField, BorderLayout.CENTER);
-        
+		JPanel inputField = new JPanel();
+		inputField.setLayout(new BorderLayout());
+		inputField.setBackground(new Color(15, 15, 15));
+		inputField.setForeground(Color.WHITE);
+		
+		JLabel promptText = new JLabel("out:: ");
+		promptText.setForeground(Color.WHITE);
+		promptText.setFont(Resources.def);
+		inputField.add(promptText, BorderLayout.WEST);
+		
+		textField = new JTextField();
+		textField.setFont(Resources.def);
+		textField.setBackground(new Color(15, 15, 15));
+		textField.setForeground(Color.WHITE);
+		textField.setCaretColor(Color.WHITE);
+		textField.setBorder(null);
+		inputField.add(textField, BorderLayout.CENTER);
+		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-        Border b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER,
-                                             TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
-        Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
-        
-        inputField.setBorder(compound);
-        
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                appendText("> "+textField.getText());
-                setText("");
-            }
-        });
-        
-        panel.add(inputField, BorderLayout.SOUTH);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER, 
+				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
+		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
+		
+		inputField.setBorder(compound);
+		
+		textField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				appendText("> "+textField.getText());
+				setText("");
+			}
+		});
+		
+		panel.add(inputField, BorderLayout.SOUTH);
 	}
 	
 	/*
