@@ -3,6 +3,9 @@ package main.ui;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+/*
+ * Class handles what happens on window events
+ */
 public class WindowHandler implements WindowListener {
 	
 	private Window window;
@@ -15,6 +18,9 @@ public class WindowHandler implements WindowListener {
 	public void windowOpened(WindowEvent e) {}
 
 	@Override
+	/*
+	 * Closes connections when window is closing
+	 */
 	public void windowClosing(WindowEvent e) {
 		window.closeConnections();
 	}

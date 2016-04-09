@@ -11,21 +11,24 @@ import network.Adapter;
 import network.NetworkTypes;
 import network.packet.Packet;
 import network.packet.PacketTypes;
-import network.packet.types.Packet03Text;
+import network.packet.types.Packet01Login;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
 
+/*
+ * Class models a threadable server in a network
+ */
 public class Server extends Thread {
 	
-	private int portNumber;
-	private Socket clientSocket;
-	private ServerSocket serverSocket;
+	private int portNumber;				//port number
+	private Socket clientSocket;		//socket the client connects from
+	private ServerSocket serverSocket;	//socket the client connects to
 	
-	private ObjectInputStream sInput;
-	private ObjectOutputStream sOutput;
+	private ObjectInputStream sInput;	//input stream
+	private ObjectOutputStream sOutput;	//output stream
 	
-	private boolean open;
+	private boolean open;				//whether or not the server is open
 	
 	public Server() {
 		this.portNumber = 9999;
@@ -36,6 +39,10 @@ public class Server extends Thread {
 	}
 	
 	@Override
+	/*
+	 * opens a server; waits for incoming connections;
+	 * sends confirmation login packet; receives and parses packets
+	 */
 	public void run() {
 		Adapter adapter = null;
 		Logger logger = null;
@@ -58,7 +65,7 @@ public class Server extends Thread {
 			
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
-			sendPacket(new Packet03Text("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
+			sendPacket(new Packet01Login("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
 			
 			while(true) {
 				Packet packet = getPacket();
@@ -77,6 +84,9 @@ public class Server extends Thread {
 		}
 	}
 	
+	/*
+	 * sends a packet over the output stream
+	 */
 	public void sendPacket(Packet packet) {
 		System.out.println("SERVER: attempting to send packet: "+packet.getData());
 		
@@ -99,6 +109,9 @@ public class Server extends Thread {
 		}
 	}
 	
+	/*
+	 * returns the packet from the input stream
+	 */
 	protected Packet getPacket() {
 		Packet packet = null;
 		try {
@@ -112,6 +125,9 @@ public class Server extends Thread {
 		return packet;
 	}
 	
+	/*
+	 * closes the server
+	 */
 	public void close() {
 		try {
 			if(sOutput != null)

@@ -5,24 +5,34 @@ import java.util.ArrayList;
 
 import main.Word;
 
+/*
+ * Class holds Words and determines their color 
+ */
 public class Colorer {
 	
-	private ArrayList<Word> words;
+	private ArrayList<Word> words;		//words
 	
 	public Colorer() {
 		words = new ArrayList<Word>();
-		
-		words.add(new Word("move", ColorRules.ACTION));
 	}
 	
+	/*
+	 * Add a word to the list
+	 */
 	public void addWord(Word word) {
 		words.add(word);
 	}
 	
+	/*
+	 * Add a word to the list with a specific ColorRule
+	 */
 	public void addWord(String word, ColorRules cr) {
 		words.add(new Word(word, cr));
 	}
 	
+	/*
+	 * Return the color of the word
+	 */
 	public Color getColor(String str) {
 		for(Word word : words)
 			if(word.equals(str))
@@ -31,6 +41,9 @@ public class Colorer {
 		return Color.WHITE;
 	}
 	
+	/*
+	 * Coloring rules for different types of words
+	 */
 	public enum ColorRules {
 		ACTION(Color.RED), PLACE(Color.GREEN);
 		
@@ -40,6 +53,9 @@ public class Colorer {
 			this.c = c;
 		}
 		
+		/*
+		 * return the color
+		 */
 		public Color getColor() {
 			return this.c;
 		}

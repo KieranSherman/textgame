@@ -5,48 +5,80 @@ import network.packet.Packet;
 import network.packet.PacketReceiver;
 import network.server.Server;
 
+/*
+ * Class models a network-UI adapter, bridging the two
+ */
 public class Adapter  {
 
-	private static Server server;
-	private static Client client;
+	private static Server server;		//server object
+	private static Client client;		//client object
 	
-	private static PacketReceiver packetReceiver;
+	private static PacketReceiver packetReceiver;	//packet receiver
 	
 	public Adapter() {
 		packetReceiver = new PacketReceiver();
 	}
 	
+	/*
+	 * Create a client
+	 */
 	public void createClient() {
 		client = new Client();
 	}
 	
+	/*
+	 * Create a client connecting to hostName
+	 */
 	public void createClient(String hostName) {
 		client = new Client(hostName);
 	}
 	
+	/*
+	 * Create a client connection hostName:portNumber
+	 */
 	public void createClient(String hostName, int portNumber) {
 		client = new Client(hostName, portNumber);
 	}
 	
+	/*
+	 * Start the client on a thread
+	 */
 	public void startClient() {
 		System.out.println("running client");
 		new Thread(client).start();
 	}
 	
+	/*
+	 * Create a server
+	 */
 	public void createServer() {
 		server = new Server();
 	}
 	
+	/*
+	 * Create a server on 127.0.0.1:portNumber
+	 */
 	public void createServer(int portNumber) {
 		server = new Server(portNumber);
 	}
 	
+	/*
+	 * Start the server on a thread
+	 */
 	public void startServer() {
 		System.out.println("running server");
 		new Thread(server).start();
 	}
 	
-	public void sendPacket(Packet packet) {		
+	/*
+	 * Send a packet
+	 */
+	public synchronized void sendPacket(Packet packet) {
+		if(packet == null) {
+			System.err.println("error constructing packet");
+			return;
+		}
+		
 		if(server == null && client == null)
 			return;
 		
@@ -63,7 +95,15 @@ public class Adapter  {
 			client.sendPacket(packet);
 	}
 	
-	public void parsePacket(NetworkTypes networkTypes, Packet packet) {
+	/*
+	 * Parse a packet
+	 */
+	public synchronized void parsePacket(NetworkTypes networkTypes, Packet packet) {
+		if(packet == null) {
+			System.err.println("error deconstructing packet");
+			return;
+		}
+		
 		if(networkTypes == NetworkTypes.CLIENT && client != null)
 			packetReceiver.parsePacket(NetworkTypes.CLIENT, packet);
 		
@@ -71,6 +111,9 @@ public class Adapter  {
 			packetReceiver.parsePacket(NetworkTypes.SERVER, packet);
 	}
 
+	/*
+	 * Close down connections
+	 */
 	public void close() {
 		if(client != null) {
 			client.disconnect();

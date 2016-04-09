@@ -5,6 +5,9 @@ import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
 
+/*
+ * Class handles packets after they've been received
+ */
 public class PacketReceiver {
 	
 	private Logger logger;
@@ -21,7 +24,7 @@ public class PacketReceiver {
 	/*
 	 * Parse a packet 
 	 */
-	public void parsePacket(NetworkTypes networkType, Packet packet) {
+	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(networkType == NetworkTypes.SERVER)
 			parseServerPacket(packet);
 		
@@ -32,7 +35,7 @@ public class PacketReceiver {
 	/*
 	 * Parse a packet received from the server
 	 */
-	private void parseServerPacket(Packet packet) {
+	private synchronized void parseServerPacket(Packet packet) {
 		switch(packet.getType()) {
 			case LOGIN: {
 				logger.appendText("you have connected.");
@@ -51,7 +54,7 @@ public class PacketReceiver {
 	/*
 	 * Parse a packet received from the client
 	 */
-	private void parseClientPacket(Packet packet) {
+	private synchronized void parseClientPacket(Packet packet) {
 		switch(packet.getType()) {
 			case LOGIN: {
 				logger.appendText((String) packet.getData()+" has connected.");

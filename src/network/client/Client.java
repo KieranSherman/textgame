@@ -9,21 +9,24 @@ import network.Adapter;
 import network.NetworkTypes;
 import network.packet.Packet;
 import network.packet.PacketTypes;
-import network.packet.types.Packet03Text;
+import network.packet.types.Packet01Login;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 
+/*
+ * Class models a threadable client in a network
+ */
 public class Client extends Thread {
 	
-	private String hostName;
-	private int portNumber;
-	private Socket socket;
+	private String hostName;			//ip address
+	private int portNumber;				//port number
 	
-	private ObjectInputStream sInput;
-	private ObjectOutputStream sOutput;
+	private Socket socket;				//TCP socket	
 	
+	private ObjectInputStream sInput;	//socket's input stream
+	private ObjectOutputStream sOutput;	//socket's output stream
 	
-	private boolean connected;
+	private boolean connected;			//whether or not the client is connected to a server
 	
 	public Client() {
 		this.hostName = "localhost";
@@ -41,6 +44,10 @@ public class Client extends Thread {
 	}
 	
 	@Override
+	/*
+	 * connects to server on hostName, portNumber; opens the input/output streams;
+	 * sends a confirmation login packet; receives and parses packets 
+	 */
 	public void run() {
 		Adapter adapter = null;
 		try {
@@ -59,7 +66,7 @@ public class Client extends Thread {
 			
 			sInput = new ObjectInputStream(socket.getInputStream());
 			
-			sendPacket(new Packet03Text("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
+			sendPacket(new Packet01Login("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
 
 			while(true) {
 				Packet packet = getPacket();
@@ -76,6 +83,9 @@ public class Client extends Thread {
 		}
 	}
 	
+	/*
+	 * sends a packet over the output stream
+	 */
 	public void sendPacket(Packet packet) {
 		System.out.println("CLIENT: attempting to send packet: "+packet.getData());
 
@@ -88,6 +98,9 @@ public class Client extends Thread {
 		}
 	}
 	
+	/*
+	 * returns the packet from the input stream
+	 */
 	protected Packet getPacket() {
 		Packet packet = null;
 		try {
@@ -101,6 +114,9 @@ public class Client extends Thread {
 		return packet;
 	}
 	
+	/*
+	 * disconnects from the server
+	 */
 	public void disconnect() {
 		try {
 			if(sInput != null)

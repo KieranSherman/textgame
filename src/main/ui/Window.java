@@ -3,7 +3,6 @@ package main.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,7 +46,7 @@ public class Window extends JPanel {
 	
 	private Colorer colorer;			//Parser determines coloring
 	
-	private Adapter adapter;
+	private Adapter adapter;			//Network adapter
 	
 	public Window() {
 		Resources.init(this);
@@ -55,7 +54,7 @@ public class Window extends JPanel {
 	}
 	
 	/*
-	 * Initializes all members of the Window
+	 * Initializes all components of the Window
 	 */
 	private void init() {
 		Window panel = this;
@@ -86,6 +85,9 @@ public class Window extends JPanel {
 				window.setSize(Resources.WIDTH, Resources.HEIGHT);
 				window.setLocationByPlatform(true);
 				window.setLocationRelativeTo(null);
+				window.setAlwaysOnTop(true);
+				
+				textField.requestFocus();
 				
 				window.setVisible(true);
 			}
@@ -111,14 +113,14 @@ public class Window extends JPanel {
 		}
 		
 		textPane.setEditable(false);
-		textPane.setFont(Resources.def);
+		textPane.setFont(Resources.USER_OUTPUT);
 		textPane.setBackground(new Color(15, 15, 15));
 		textPane.setForeground(Color.WHITE);
 		textPane.setMargin(new Insets(0, 10, 0, 10));
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-		Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", TitledBorder.CENTER, 
-				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.RED);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", 
+				TitledBorder.CENTER, TitledBorder.TOP, Resources.UI, Resources.DARK_RED);
 		Border compound = BorderFactory.createCompoundBorder(b, textPane.getBorder());
 		
 		JScrollPane scroll = new JScrollPane(textPane);
@@ -143,11 +145,11 @@ public class Window extends JPanel {
 		
 		JLabel promptText = new JLabel("out:: ");
 		promptText.setForeground(Color.WHITE);
-		promptText.setFont(Resources.def);
+		promptText.setFont(Resources.USER_OUTPUT);
 		inputField.add(promptText, BorderLayout.WEST);
 		
 		textField = new JTextField();
-		textField.setFont(Resources.def);
+		textField.setFont(Resources.USER_OUTPUT);
 		textField.setBackground(new Color(15, 15, 15));
 		textField.setForeground(Color.WHITE);
 		textField.setCaretColor(Color.WHITE);
@@ -155,8 +157,8 @@ public class Window extends JPanel {
 		inputField.add(textField, BorderLayout.CENTER);
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", TitledBorder.CENTER, 
-				TitledBorder.TOP, new Font("Dense", Font.BOLD, 15), Color.GREEN);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", 
+				TitledBorder.CENTER, TitledBorder.TOP, Resources.UI, Resources.DARK_GREEN);
 		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
 		
 		inputField.setBorder(compound);
@@ -169,7 +171,7 @@ public class Window extends JPanel {
 				appendText("> "+str);
 				setText("");
 				
-				if(!isCommand(str))
+				if(!isCommand(str) && str != null)
 					adapter.sendPacket(new Packet03Text(str));
 			}
 		});
@@ -214,6 +216,9 @@ public class Window extends JPanel {
 	 * the necessary action
 	 */
 	private boolean parseCommand(String str) {
+		if(str == null)
+			return false;
+		
 		str = str.substring(2);
 		
 		if(!isCommand(str))
@@ -245,10 +250,16 @@ public class Window extends JPanel {
 		return true;
 	}
 	
+	/*
+	 * Returns whether or not the String is a command
+	 */
 	private boolean isCommand(String str) {
 		return str.startsWith("!");
 	}
 	
+	/*
+	 * Closes the connection from the adapter
+	 */
 	public void closeConnections() {
 		adapter.close();
 	}
