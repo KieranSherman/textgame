@@ -11,25 +11,25 @@ World
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+House  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Forest  
 Items  
-    -Door  
-    -Table  
-    -Etc.  
+&nbsp;&nbsp;&nbsp;&nbsp;-Door  
+&nbsp;&nbsp;&nbsp;&nbsp;-Table  
+&nbsp;&nbsp;&nbsp;&nbsp;-Etc.  
 Mechanics  
-    -Real Time  
-        +Cooldowns (Turn based or time based)  
-            ~Healing  
-            ~Running  
+&nbsp;&nbsp;&nbsp;&nbsp;-Real Time  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Cooldowns (Turn based or time based)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~Healing  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~Running  
 Character  
-    -Name  
-        +Random or chosen  
-    -Demographics  
-        +Age  
-        +Gender  
+&nbsp;&nbsp;&nbsp;&nbsp;-Name  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Random or chosen  
+&nbsp;&nbsp;&nbsp;&nbsp;-Demographics  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Age  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Gender  
 Objective  
-    -Escape alive  
+&nbsp;&nbsp;&nbsp;&nbsp;-Escape alive  
 Story (Some ideas)  
-    -Awaken alone in the dark with no memory  
-    -You are being chased  
+&nbsp;&nbsp;&nbsp;&nbsp;-Awaken alone in the dark with no memory  
+&nbsp;&nbsp;&nbsp;&nbsp;-You are being chased  
 
 Ideas:  
 Multiplayer would be cool  
