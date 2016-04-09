@@ -6,9 +6,13 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import network.Adapter;
+import network.NetworkTypes;
+import network.packet.Packet;
+import network.packet.PacketTypes;
+import network.packet.types.Packet03Text;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
-import util.out.Logger;
 
 public class Server extends Thread {
 	
@@ -18,8 +22,6 @@ public class Server extends Thread {
 	
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
-	
-	private Logger logger;
 	
 	private boolean open;
 	
@@ -33,8 +35,9 @@ public class Server extends Thread {
 	
 	@Override
 	public void run() {
+		Adapter adapter = null;
 		try {
-			logger = Resources.getLogger();
+			adapter = Resources.getAdapter();
 		} catch (ResourcesNotInitializedException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -50,13 +53,15 @@ public class Server extends Thread {
 			
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
+			adapter.sendPacket(new Packet03Text("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
+			
 			while(true) {
-				String msg = readObject();
+				Packet packet = (Packet) readObject();
 				
-				if(msg.equalsIgnoreCase("logout"))
+				if(packet.getType() == PacketTypes.DISCONNECT)
 					break;
 				
-				logger.appendText(msg);
+				adapter.parsePacket(NetworkTypes.SERVER, packet);
 			}
 			
 			serverSocket.close();
@@ -67,7 +72,7 @@ public class Server extends Thread {
 		}
 	}
 	
-	protected void writeObject(Object object) {
+	public void writeObject(Object object) {
 		if(!clientSocket.isConnected()) {
 			close();
 			return;

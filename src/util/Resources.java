@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import main.ui.Window;
+import network.Adapter;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
 import util.out.Colorer.ColorRules;
@@ -21,12 +22,14 @@ public class Resources {
 
 	private static Colorer colorer;
 	private static Logger logger;
+	private static Adapter adapter;
 	
 	private static boolean initialized = false;
 	
 	public static void init(Window window) {
 		colorer = new Colorer();
 		logger = new Logger(window);
+		adapter = new Adapter();
 		
 		loadActionWords("src/files/Actions.txt");
 		loadPlaceWords("src/files/Places.txt");
@@ -89,6 +92,13 @@ public class Resources {
 			return null;
 		
 		return logger;
+	}
+	
+	public static Adapter getAdapter() throws ResourcesNotInitializedException {
+		if(!checkInit())
+			return null;
+		
+		return adapter;
 	}
 
 	private static boolean checkInit() throws ResourcesNotInitializedException {

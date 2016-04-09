@@ -5,9 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import network.Adapter;
+import network.NetworkTypes;
+import network.packet.Packet;
+import network.packet.PacketTypes;
+import network.packet.types.Packet03Text;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
-import util.out.Logger;
 
 public class Client extends Thread {
 	
@@ -18,7 +22,6 @@ public class Client extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
-	private Logger logger;
 	
 	private boolean connected;
 	
@@ -39,8 +42,9 @@ public class Client extends Thread {
 	
 	@Override
 	public void run() {
+		Adapter adapter = null;
 		try {
-			logger = Resources.getLogger();
+			adapter = Resources.getAdapter();
 		} catch (ResourcesNotInitializedException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -54,10 +58,16 @@ public class Client extends Thread {
 			sOutput.flush();
 			
 			sInput = new ObjectInputStream(socket.getInputStream());
+			
+			adapter.sendPacket(new Packet03Text("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
 
 			while(true) {
-				String msg = readObject();
-				logger.appendText(msg);
+				Packet packet = (Packet) readObject();
+				
+				if(packet.getType() == PacketTypes.DISCONNECT)
+					break;
+				
+				adapter.parsePacket(NetworkTypes.SERVER, packet);
 			}
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
@@ -66,7 +76,7 @@ public class Client extends Thread {
 		}
 	}
 	
-	protected void writeObject(Object obj) {
+	public void writeObject(Object obj) {
 		try {
 			sOutput.writeObject(obj);
 			sOutput.reset();
@@ -77,7 +87,7 @@ public class Client extends Thread {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T readObject() {
+	protected <T> T readObject() {
 		Object obj = null;
 		try {
 			obj = sInput.readObject();
