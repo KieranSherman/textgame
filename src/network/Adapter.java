@@ -9,7 +9,9 @@ public class Adapter {
 	private Server server;
 	private Client client;
 	
+	@SuppressWarnings("unused")
 	private ServerBridge server_bridge;
+	@SuppressWarnings("unused")
 	private ClientBridge client_bridge;
 	
 	public void createClient() {
