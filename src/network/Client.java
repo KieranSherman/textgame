@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import bridge.ClientBridge;
+
 public class Client extends Thread {
 	
 	private String hostName;
@@ -14,9 +16,11 @@ public class Client extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
+	private ClientBridge clientBridge;
+	
 	public Client() {
 		this.hostName = "localhost";
-		this.portNumber = 4444;
+		this.portNumber = 9999;
 	}
 	
 	public Client(String hostName) {
@@ -29,31 +33,62 @@ public class Client extends Thread {
 		this.portNumber = portNumber;
 	}
 	
+	public void setBridge(ClientBridge clientBridge) {
+		this.clientBridge = clientBridge;
+	}
+	
 	@Override
 	public void run() {
 		try {
 			socket = new Socket(hostName, portNumber);
 			
-			sInput = new ObjectInputStream(socket.getInputStream());
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
+			sOutput.flush();
 			
-			Thread serverListener = new Thread(new ServerListener());
-			serverListener.start();
-			
-			sendMessage("hello server");
-			
-			socket.close();
+			sInput = new ObjectInputStream(socket.getInputStream());
+
+			new Thread(new ServerListener()).start();
+			write("logout");
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
 		}
 	}
 	
-	public void sendMessage(String message) {
+	private void write(Object obj) {
+		if(clientBridge != null)
+			clientBridge.writeObject(obj);
+		else
+			writeObject(obj);
+	}
+	
+	public void writeObject(Object obj) {
 		try {
-			sOutput.writeObject(message);
+			sOutput.writeObject(obj);
+			sOutput.reset();
+			sOutput.flush();
 		} catch (Exception e) {
-			System.err.print("error sending message: "+message);
+			System.err.print("error sending object: "+obj);
 		}
+	}
+	
+	public <T> T read() {
+		if(clientBridge != null)
+			return clientBridge.readObject();
+		else
+			return readObject();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T readObject() {
+		try {
+			return (T) sInput.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public void disconnect() {
@@ -78,7 +113,7 @@ public class Client extends Thread {
 		public void run() {
 			while(true) {
 				try {
-					String msg = (String)sInput.readObject();
+					String msg = (String) read();
 					System.out.println(msg);
 					System.out.print("> ");
 				} catch (Exception e) {

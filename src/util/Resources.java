@@ -1,15 +1,13 @@
 package util;
 
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
+import main.Window;
 import util.Colorer.ColorRules;
 
 public class Resources {
@@ -17,30 +15,27 @@ public class Resources {
 	public final static int HEIGHT = 400, WIDTH = (int)(HEIGHT*1.618);
 	public final static int BEVEL = 5;
 	public final static Font def = new Font("Courier", Font.PLAIN, 12);
-	public static Colorer colorer;
+
+	private static Colorer colorer;
+	private static Logger logger;
 	
-	public static BufferedImage loadImage(String path) {
-		try {
-			return ImageIO.read(new File(path));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
+	private static boolean initialized = false;
 	
-	public static void init() {
+	public static void init(Window window) {
 		colorer = new Colorer();
+		logger = new Logger(window);
 		
-		loadActionWords("src/Actions_WR.txt");
-		loadPlaceWords("src/Places_WR.txt");
+		loadActionWords("src/Actions.txt");
+		loadPlaceWords("src/Places.txt");
+		
+		initialized = true;
 	}
 	
-	public static void loadActionWords(String filePath) {
+	private static void loadActionWords(String filePath) {
 		loadWords(filePath, ColorRules.ACTION);
 	}
 	
-	public static void loadPlaceWords(String filePath) {
+	private static void loadPlaceWords(String filePath) {
 		loadWords(filePath, ColorRules.PLACE);
 	}
 	
@@ -69,5 +64,25 @@ public class Resources {
 		
 		return text.split(",");
 	}
+	
+	public static Colorer getColorer() throws ResourcesNotInitializedException {
+		if(!checkInit())
+			return null;
+		
+		return colorer;
+	}
+	
+	public static Logger getLogger() throws ResourcesNotInitializedException {
+		if(!checkInit())
+			return null;
+		
+		return logger;
+	}
 
+	private static boolean checkInit() throws ResourcesNotInitializedException {
+		if(!initialized)
+			throw new ResourcesNotInitializedException("You must initialize Resources.class before using it!");
+		
+		return initialized;
+	}
 }

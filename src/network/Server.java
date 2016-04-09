@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import bridge.ServerBridge;
+
 public class Server extends Thread {
 	
 	private int portNumber;
@@ -15,30 +17,38 @@ public class Server extends Thread {
 	private ObjectInputStream sInput;
 	private ObjectOutputStream sOutput;
 	
+	private ServerBridge serverBridge;
+	
 	public Server() {
-		portNumber = 4444;
+		this.portNumber = 9999;
 	}
 	
 	public Server(int portNumber) {
 		this.portNumber = portNumber;
 	}
 
+	public void setBridge(ServerBridge serverBridge) {
+		this.serverBridge = serverBridge;
+	}
+	
 	@Override
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(portNumber);
 			clientSocket = serverSocket.accept();
 			
-			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			sOutput = new ObjectOutputStream(clientSocket.getOutputStream());
+			sOutput.flush();
+			
+			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
 			while(true) {
-				String msg = (String)sInput.readObject();
+				String msg = read();
 				
-				if(msg.equals("logout"))
+				write("server received: "+msg);
+				
+				if(msg.equalsIgnoreCase("logout"))
 					break;
-				else
-					sendMessage("server received: "+msg);
 			}
 			
 			serverSocket.close();
@@ -49,17 +59,46 @@ public class Server extends Thread {
 		}
 	}
 	
-	private void sendMessage(String message) {
+	private void write(Object obj) {
+		if(serverBridge != null)
+			serverBridge.writeObject(obj);
+		else
+			writeObject(obj);
+	}
+	
+	public void writeObject(Object object) {
 		if(!clientSocket.isConnected()) {
 			close();
 			return;
 		}
 		
 		try {
-			sOutput.writeObject(message);
+			sOutput.writeObject(object);
+			sOutput.reset();
+			sOutput.flush();
 		} catch (IOException e) {
-			System.err.println("error sending message: "+message);
+			System.err.println("error sending message: "+object);
 		}
+	}
+	
+	private <T> T read() {
+		if(serverBridge != null)
+			return serverBridge.readObject();
+		else
+			return readObject();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T readObject() {
+		try {
+			return (T) sInput.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private void close() {

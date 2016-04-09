@@ -1,1 +1,0 @@
-move,jump,walk,run,sprint,jog,crawl,stagger,limp,sneak,tiptoe,shuffle,fly,advance,

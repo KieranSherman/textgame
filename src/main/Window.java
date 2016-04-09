@@ -24,8 +24,13 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import bridge.ClientBridge;
+import bridge.ServerBridge;
+import network.Client;
+import network.Server;
 import util.Colorer;
 import util.Resources;
+import util.ResourcesNotInitializedException;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
@@ -33,18 +38,22 @@ import util.Resources;
 public class Window extends JPanel {	
 	private static final long serialVersionUID = 1L;
 	
-	private JFrame window;		//JFrame container
-	private JTextPane textPane;
-	private JTextField textField;
-	private DefaultStyledDocument doc;
-	private StyleContext context;
-	private Style style;
-	private Colorer colorer;
+	private JFrame window;				//JFrame container
+	private JTextPane textPane;			//Pane for output
+	private JTextField textField;		//Field for input
+	
+	private DefaultStyledDocument doc;	//*
+	private StyleContext context;		//* Styled for coloring output
+	private Style style;				//*
+	
+	private Colorer colorer;			//Parser determines coloring
+	
+	private Server server;
+	private Client client;
 	
 	public Window() {
-		Resources.init();
-		
-		init();
+		Resources.init(this);
+		this.init();
 	}
 	
 	//POST: members initialized
@@ -60,7 +69,13 @@ public class Window extends JPanel {
 		textPane = new JTextPane(doc);
 		context = new StyleContext();
 		style = context.addStyle("TextGame", null);
-		colorer = Resources.colorer;
+		
+		try {
+			colorer = Resources.getColorer();
+		} catch (ResourcesNotInitializedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		textPane.setEditable(false);
 		textPane.setFont(Resources.def);
@@ -136,15 +151,23 @@ public class Window extends JPanel {
 		window.setVisible(true);
 	}
 	
-	public void setText(String str) {
+	//PRE: str != null
+	//POST: sets the text field text to str
+	private void setText(String str) {
 		textField.setText(str);
 	}
 	
+	//PRE: str != null
+	//POST: colors and appends str to the text pane
 	public void appendText(String str) {
+		if(parseCommand(str))
+			return;
+
 		String [] split = str.split("\\s+");
 		
 		try {
 			for(String s : split) {
+				
 				StyleConstants.setForeground(style, colorer.getColor(s));
 				doc.insertString(doc.getLength(), s+" ", style);
 			}
@@ -153,6 +176,48 @@ public class Window extends JPanel {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private boolean parseCommand(String str) {
+		str = str.substring(2);
+		
+		if(!str.startsWith("!"))
+			return false;
+		
+		str = str.toLowerCase().substring(1);
+		String [] args = str.split("\\s+");
+		
+		if(args[0].equals("server")) {
+			if(args.length == 1)
+				server = new Server();
+			if(args.length == 2)
+				server = new Server(Integer.parseInt(args[1]));
+			
+			server.setBridge(new ServerBridge(server));
+			
+			Thread serverThread = new Thread(server);
+			serverThread.start();
+
+			appendText("server initialized");
+		}
+		
+		if(args[0].equals("client")) {
+			if(args.length == 1)
+				client = new Client();
+			else if(args.length == 2)
+				client = new Client(args[1]);
+			else if (args.length == 3)
+				client = new Client(args[1], Integer.parseInt(args[2]));
+			
+			client.setBridge(new ClientBridge(client));
+			
+			Thread clientThread = new Thread(client);
+			clientThread.start();
+			
+			appendText("client initialized");
+		}
+		
+		return true;
 	}
 
 }
