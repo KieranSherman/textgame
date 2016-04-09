@@ -1,53 +1,21 @@
 package network.packet;
 
 import network.NetworkTypes;
-import network.client.Client;
-import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
 
 public class PacketReceiver {
 	
-	private Server server;
-	private Client client;
-	
 	private Logger logger;
 	
-	private PacketReceiver() {
+	public PacketReceiver() {
 		try {
 			logger = Resources.getLogger();
 		} catch (ResourcesNotInitializedException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	}
-	
-	public PacketReceiver(Server server) {
-		this();
-		this.server = server;
-	}
-	
-	public PacketReceiver(Client client) {
-		this();
-		this.client = client;
-	}
-	
-	/*
-	 * Parse a packet
-	 */
-	public void parsePacket(Packet packet) {
-		if(server == null && client == null)
-			return;
-		
-		if(server == null && client != null)
-			parseClientPacket(packet);
-		
-		if(server != null && client == null)
-			parseServerPacket(packet);
-			
-		if(server != null && client != null)
-			parseClientPacket(packet);
 	}
 	
 	/*
@@ -73,6 +41,10 @@ public class PacketReceiver {
 			case DISCONNECT: {
 				logger.appendText("you have disconnected.");
 			}
+			
+			case TEXT: {
+				logger.appendText((String) packet.getData());
+			}
 		}
 	}
 	
@@ -82,11 +54,15 @@ public class PacketReceiver {
 	private void parseClientPacket(Packet packet) {
 		switch(packet.getType()) {
 			case LOGIN: {
-				logger.appendText(packet.getData()+" has connected.");
+				logger.appendText((String) packet.getData()+" has connected.");
 			}
 			
 			case DISCONNECT: {
-				logger.appendText(packet.getData()+" has disconnected.");
+				logger.appendText((String) packet.getData()+" has disconnected.");
+			}
+			
+			case TEXT: {
+				logger.appendText((String) packet.getData()); 
 			}
 		}
 	}
