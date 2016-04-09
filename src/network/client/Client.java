@@ -20,6 +20,8 @@ public class Client extends Thread {
 	
 	private Logger logger;
 	
+	private boolean connected;
+	
 	public Client() {
 		this.hostName = "localhost";
 		this.portNumber = 9999;
@@ -46,6 +48,7 @@ public class Client extends Thread {
 		
 		try {
 			socket = new Socket(hostName, portNumber);
+			connected = true;
 			
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
 			sOutput.flush();
@@ -75,15 +78,16 @@ public class Client extends Thread {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T readObject() {
+		Object obj = null;
 		try {
-			return (T) sInput.readObject();
+			obj = sInput.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			disconnect();
+		} 
 		
-		return null;
+		return (T) obj;
 	}
 	
 	public void disconnect() {
@@ -101,7 +105,11 @@ public class Client extends Thread {
 			System.exit(1);
 		} 
 		
-		System.out.println("client disconnected");
+		if(connected)
+			System.out.println("client disconnected");
+		
+		connected = false;
+		
 	}
 	
 }

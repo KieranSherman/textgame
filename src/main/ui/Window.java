@@ -179,7 +179,7 @@ public class Window extends JPanel {
 	 * Appends str to the end of textPane
 	 */
 	public void appendText(final String str) {
-		if(parseCommand(str))
+		if(str == null || parseCommand(str))
 			return;
 
 		EventQueue.invokeLater(new Runnable() {

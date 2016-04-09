@@ -21,6 +21,8 @@ public class Server extends Thread {
 	
 	private Logger logger;
 	
+	private boolean open;
+	
 	public Server() {
 		this.portNumber = 9999;
 	}
@@ -41,6 +43,7 @@ public class Server extends Thread {
 		try {
 			serverSocket = new ServerSocket(portNumber);
 			clientSocket = serverSocket.accept();
+			open = true;
 			
 			sOutput = new ObjectOutputStream(clientSocket.getOutputStream());
 			sOutput.flush();
@@ -58,7 +61,7 @@ public class Server extends Thread {
 			
 			serverSocket.close();
 		} catch (Exception e) {
-			System.err.println("server unable to initialize");
+			System.err.println("server encountered problems");
 		} finally {
 			close();
 		}
@@ -81,15 +84,16 @@ public class Server extends Thread {
 	
 	@SuppressWarnings("unchecked")
 	protected <T> T readObject() {
+		Object obj = null;
 		try {
-			return (T) sInput.readObject();
+			obj = sInput.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			close();
 		}
 		
-		return null;
+		return (T) obj;
 	}
 	
 	public void close() {
@@ -107,7 +111,10 @@ public class Server extends Thread {
 			System.exit(1);
 		}
 		
-		System.out.println("server closed");
+		if(open)
+			System.out.println("server closed");
+
+		open = false;
 	}
 	
 }
