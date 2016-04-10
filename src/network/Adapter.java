@@ -9,7 +9,7 @@ import network.server.Server;
  * Class models a network-UI adapter, bridging the two
  */
 public class Adapter  {
-
+	
 	private Server server;		//server object
 	private Client client;		//client object
 	
