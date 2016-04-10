@@ -56,7 +56,7 @@ public class Server extends Thread {
 		
 		try {
 			serverSocket = new ServerSocket(portNumber);
-			logger.appendText("server started at "+InetAddress.getLocalHost()+":"+serverSocket.getLocalPort());
+			logger.appendText("server started at "+InetAddress.getLocalHost().getHostAddress()+":"+serverSocket.getLocalPort());
 			clientSocket = serverSocket.accept();
 			open = true;
 			
@@ -65,7 +65,7 @@ public class Server extends Thread {
 			
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
-			sendPacket(new Packet01Login("you have connected from ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
+			sendPacket(new Packet01Login("you have connected from ["+clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort()+"]"));
 			
 			while(true) {
 				Packet packet = getPacket();

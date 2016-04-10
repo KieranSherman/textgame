@@ -3,6 +3,7 @@ package network.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import network.Adapter;
@@ -66,7 +67,7 @@ public class Client extends Thread {
 			
 			sInput = new ObjectInputStream(socket.getInputStream());
 			
-			sendPacket(new Packet01Login("client has connected from ["+socket.getInetAddress()+":"+socket.getPort()+"]"));
+			sendPacket(new Packet01Login("client has connected from "+InetAddress.getLocalHost().getHostAddress()+":"+socket.getPort()));
 
 			while(true) {
 				Packet packet = getPacket();

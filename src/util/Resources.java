@@ -23,7 +23,7 @@ public class Resources {
 	public final static int HEIGHT = 400, WIDTH = (int)(HEIGHT*1.618);	//height and width of window
 	
 	public final static Font USER_OUTPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
-	public final static Font UI = loadFont("src/files/fonts/vador.ttf").deriveFont(12f); //font for UI
+	public final static Font UI = loadFont("src/files/fonts/vador.ttf").deriveFont(15f); //font for UI
 	
 	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
 	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
