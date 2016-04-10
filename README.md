@@ -29,7 +29,7 @@ Objective
 &nbsp;&nbsp;&nbsp;&nbsp;-Escape alive  
 Story (Some ideas)  
 &nbsp;&nbsp;&nbsp;&nbsp;-Awaken alone in the dark with no memory  
-&nbsp;&nbsp;&nbsp;&nbsp;-You are being chased
+&nbsp;&nbsp;&nbsp;&nbsp;-You are being chased  
 *Muliplayer*  
 Graphics  
 Sound / Music  
