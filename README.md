@@ -21,9 +21,8 @@ Mechanics
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~*Running*  
 *Character*  
 &nbsp;&nbsp;&nbsp;&nbsp;-*Name*  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+~~Random~~ or *chosen*  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+*chosen*  
 &nbsp;&nbsp;&nbsp;&nbsp;-Demographics  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+~~Age~~  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Gender  
 *Objective*  
 &nbsp;&nbsp;&nbsp;&nbsp;-*Escape alive*  
