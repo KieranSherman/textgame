@@ -10,8 +10,8 @@ import network.server.Server;
  */
 public class Adapter  {
 
-	private static Server server;		//server object
-	private static Client client;		//client object
+	private Server server;		//server object
+	private Client client;		//client object
 	
 	private static PacketReceiver packetReceiver;	//packet receiver
 	
@@ -99,11 +99,6 @@ public class Adapter  {
 	 * Parse a packet
 	 */
 	public synchronized void parsePacket(NetworkTypes networkTypes, Packet packet) {
-		if(packet == null) {
-			System.err.println("error deconstructing packet");
-			return;
-		}
-		
 		if(networkTypes == NetworkTypes.CLIENT && client != null)
 			packetReceiver.parsePacket(NetworkTypes.CLIENT, packet);
 		

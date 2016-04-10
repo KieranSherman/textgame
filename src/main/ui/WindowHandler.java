@@ -19,7 +19,7 @@ public class WindowHandler implements WindowListener {
 
 	@Override
 	/*
-	 * Closes connections when window is closing
+	 * closes connections when window is closing
 	 */
 	public void windowClosing(WindowEvent e) {
 		window.closeConnections();
@@ -35,7 +35,12 @@ public class WindowHandler implements WindowListener {
 	public void windowDeiconified(WindowEvent e) {}
 
 	@Override
-	public void windowActivated(WindowEvent e) {}
+	/*
+	 * request textField focus upon window activation
+	 */
+	public void windowActivated(WindowEvent e) {
+		window.textField.requestFocus();
+	}
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {}

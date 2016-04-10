@@ -3,6 +3,7 @@ package network.packet;
 import network.NetworkTypes;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
+import util.out.Formatter;
 import util.out.Logger;
 
 /*
@@ -25,10 +26,10 @@ public class PacketReceiver {
 	 * Parse a packet 
 	 */
 	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
-		if(networkType == NetworkTypes.SERVER)
+		if(networkType == NetworkTypes.CLIENT)
 			parseServerPacket(packet);
 		
-		if(networkType == NetworkTypes.CLIENT)
+		if(networkType == NetworkTypes.SERVER)
 			parseClientPacket(packet);
 	}
 	
@@ -38,15 +39,27 @@ public class PacketReceiver {
 	private synchronized void parseServerPacket(Packet packet) {
 		switch(packet.getType()) {
 			case LOGIN: {
-				logger.appendText("you have connected.");
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.LOGIN);
+				
+				logger.appendText(str);
+				break;
 			}
 			
 			case DISCONNECT: {
-				logger.appendText("you have disconnected.");
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.DISCONNECT);
+				
+				logger.appendText(str);
+				break;
 			}
 			
 			case TEXT: {
-				logger.appendText((String) packet.getData());
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.TEXT);
+				
+				logger.appendText(str);
+				break;
 			}
 		}
 	}
@@ -57,15 +70,27 @@ public class PacketReceiver {
 	private synchronized void parseClientPacket(Packet packet) {
 		switch(packet.getType()) {
 			case LOGIN: {
-				logger.appendText((String) packet.getData()+" has connected.");
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.LOGIN);
+				
+				logger.appendText(str);
+				break;
 			}
 			
 			case DISCONNECT: {
-				logger.appendText((String) packet.getData()+" has disconnected.");
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.DISCONNECT);
+				
+				logger.appendText(str);
+				break;
 			}
 			
 			case TEXT: {
-				logger.appendText((String) packet.getData()); 
+				String str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.TEXT);
+				
+				logger.appendText(str); 
+				break;
 			}
 		}
 	}

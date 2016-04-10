@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -25,10 +27,12 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import network.Adapter;
+import network.packet.PacketTypes;
 import network.packet.types.Packet03Text;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
+import util.out.Formatter;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
@@ -37,8 +41,9 @@ public class Window extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private JFrame window;				//JFrame container
-	private JTextPane textPane;			//Pane to display output
-	private JTextField textField;		//Field for input
+	
+	public JTextPane textPane;			//Pane to display output
+	public JTextField textField;		//Field for input
 	
 	private DefaultStyledDocument doc;	//*
 	private StyleContext context;		//* Styled for coloring output
@@ -117,6 +122,20 @@ public class Window extends JPanel {
 		textPane.setBackground(new Color(15, 15, 15));
 		textPane.setForeground(Color.WHITE);
 		textPane.setMargin(new Insets(0, 10, 0, 10));
+		textPane.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textField.requestFocus();
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+		});
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
 		Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", 
@@ -187,23 +206,29 @@ public class Window extends JPanel {
 	}
 	
 	/*
-	 * Appends str to the end of textPane
+	 * Appends str to the end of textPane; acts as
+	 * filter to method: insertTextToDoc()
 	 */
-	public void appendText(final String str) {
-		if(str == null || parseCommand(str))
+	public void appendText(final String toAppend) {
+		if(toAppend == null || parseCommand(toAppend) || parsePacket(toAppend))
 			return;
+	
+		for(String str : toAppend.split("\\s+")) {
+			StyleConstants.setForeground(style, colorer.getColor(str));
+			insertTextToDoc(str+" ");
+		}
 		
+		insertTextToDoc("\n");
+	}
+	
+	/*
+	 * Inserts text into the styled doc
+	 */
+	private void insertTextToDoc(String str) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				String [] split = str.split("\\s+");
-
 				try {
-					for(String s : split) {
-						StyleConstants.setForeground(style, colorer.getColor(s));
-						doc.insertString(doc.getLength(), s+" ", style);
-					}
-					
-					doc.insertString(doc.getLength(), "\n", null);
+					doc.insertString(doc.getLength(), str, style);
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
@@ -234,6 +259,7 @@ public class Window extends JPanel {
 				adapter.createServer(Integer.parseInt(args[1]));
 			
 			adapter.startServer();
+			window.setTitle("running server");
 		}
 		
 		if(args[0].equals("client")) {
@@ -245,7 +271,38 @@ public class Window extends JPanel {
 				adapter.createClient(args[1], Integer.parseInt(args[2]));
 			
 			adapter.startClient();
+			window.setTitle("running client");
 		}
+		
+		if(args[0].equals("logout")) {
+			adapter.close();
+		}
+		
+		return true;
+	}
+	
+	/*
+	 * Checks to see if str is from a packet
+	 */
+	private boolean parsePacket(String str) {
+		int offset = 0;
+		
+		if(str.startsWith(Formatter.getFormat(PacketTypes.LOGIN))) {
+			StyleConstants.setForeground(style, Color.CYAN);
+			offset = Formatter.getFormat(PacketTypes.LOGIN).length();
+		} else 
+		if(str.startsWith(Formatter.getFormat(PacketTypes.DISCONNECT))) {
+			StyleConstants.setForeground(style, Color.GRAY);
+			offset = Formatter.getFormat(PacketTypes.DISCONNECT).length();
+		} else 
+		if(str.startsWith(Formatter.getFormat(PacketTypes.TEXT))) {
+			StyleConstants.setForeground(style, Color.MAGENTA);
+			offset = Formatter.getFormat(PacketTypes.TEXT).length();
+		} else {
+			return false;
+		}
+		
+		insertTextToDoc(str.substring(offset)+"\n");
 		
 		return true;
 	}

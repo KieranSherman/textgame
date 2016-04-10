@@ -73,11 +73,12 @@ public class Server extends Thread {
 				if(packet.getType() == PacketTypes.DISCONNECT)
 					break;
 				
-				adapter.parsePacket(NetworkTypes.SERVER, packet);
+				if(packet != null)
+					adapter.parsePacket(NetworkTypes.SERVER, packet);
 			}
 			
 			serverSocket.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.err.println("server encountered problems");
 		} finally {
 			close();
@@ -88,7 +89,8 @@ public class Server extends Thread {
 	 * sends a packet over the output stream
 	 */
 	public void sendPacket(Packet packet) {
-		System.out.println("SERVER: attempting to send packet: "+packet.getData());
+		if(packet == null)
+			return;
 		
 		if(clientSocket == null) {
 			System.err.println("no client connected");
@@ -105,7 +107,8 @@ public class Server extends Thread {
 			sOutput.reset();
 			sOutput.flush();
 		} catch (IOException e) {
-			System.err.println("error sending message: "+packet);
+			System.err.println("error sending packet: ["+packet+", "+packet.getData()+"]");
+			packet = null;
 		}
 	}
 	
@@ -138,8 +141,8 @@ public class Server extends Thread {
 			
 			if(clientSocket != null)
 				clientSocket.close();
-		} catch (Exception e) {
-			System.err.println("error closing server");
+		} catch (IOException e) {
+			System.err.println("fatal error closing server");
 			System.exit(1);
 		}
 		
