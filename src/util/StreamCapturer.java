@@ -6,12 +6,15 @@ import java.io.PrintStream;
 
 import util.out.Logger;
 
+/*
+ * Class overrides a stream
+ */
 public class StreamCapturer extends OutputStream {
 
-	private StringBuilder buffer;
-    private String prefix;
-    private Logger logger;
-    private PrintStream old;
+	private StringBuilder buffer;		//string builder
+    private String prefix;				//prefix
+    private Logger logger;				//logger
+    private PrintStream old;			//old print stream
 
     public StreamCapturer(String prefix, Logger logger, PrintStream old) {
         this.prefix = prefix;
@@ -23,6 +26,9 @@ public class StreamCapturer extends OutputStream {
     }
 
     @Override
+    /*
+     * writes values to the logger
+     */
     public void write(int b) throws IOException {
         char c = (char) b;
         String value = Character.toString(c);

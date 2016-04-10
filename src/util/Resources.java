@@ -1,6 +1,8 @@
 package util;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,17 +16,25 @@ import util.out.Colorer;
 import util.out.Colorer.ColorRules;
 import util.out.Logger;
 
+/*
+ * Class holds resources used throughout classes
+ */
 public class Resources {
-	// height and width of window screen.  1.618 = phi (golden rectangle)
-	public final static int HEIGHT = 400, WIDTH = (int)(HEIGHT*1.618);
-	public final static int BEVEL = 5;
-	public final static Font def = new Font("Courier", Font.PLAIN, 12);
-
-	private static Colorer colorer;
-	private static Logger logger;
-	private static Adapter adapter;
+	public final static int HEIGHT = 400, WIDTH = (int)(HEIGHT*1.618);	//height and width of window
 	
-	private static boolean initialized = false;
+	public final static Font USER_OUTPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
+	public final static Font UI = loadFont("src/files/fonts/vador.ttf").deriveFont(12f); //font for UI
+	
+	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
+	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
+	
+	private static Colorer colorer;					//Colorer object to color user input
+	private static Logger logger;					//Logger to append text to user output window
+	private static Adapter adapter;					//Adapter to bridge between network and UI
+	
+	private static boolean initialized = false;		//whether or not the call to init() has been made
+	
+	private Resources() {}							//prevent instantiation of Resources object
 	
 	public static void init(Window window) {
 		initialized = true;
@@ -38,6 +48,9 @@ public class Resources {
 		overrideOutput();
 	}
 	
+	/*
+	 * Directs standard out and standard error to the logger
+	 */
 	private static void overrideOutput() {
 		//PrintStream stdOut = System.out;
 		//PrintStream stdErr = System.err;
@@ -46,19 +59,46 @@ public class Resources {
 		//System.setErr(new PrintStream(new StreamCapturer("STDERR", logger, stdErr)));
 	}
 	
+	/*
+	 * Loads font from filePath
+	 */
+	private static Font loadFont(String filePath) {
+		try {
+			return Font.createFont(Font.TRUETYPE_FONT, new File(filePath));
+		} catch (FontFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * Load the action words
+	 */
 	private static void loadActionWords(String filePath) {
 		loadWords(filePath, ColorRules.ACTION);
 	}
 	
+	/*
+	 * Load the place words
+	 */
 	private static void loadPlaceWords(String filePath) {
 		loadWords(filePath, ColorRules.PLACE);
 	}
 	
+	/*
+	 * Load Word objects into Colorer
+	 */
 	private static void loadWords(String filePath, ColorRules cr) {
 		for(String word : parseText(filePath))
 			colorer.addWord(word, cr);
 	}
 	
+	/*
+	 * Parse text from a file at filePath
+	 */
 	private static String[] parseText(String filePath) {
 		FileReader fr = null;
 		try {
@@ -80,6 +120,9 @@ public class Resources {
 		return text.split(",");
 	}
 	
+	/*
+	 * Returns the colorer
+	 */
 	public static Colorer getColorer() throws ResourcesNotInitializedException {
 		if(!checkInit())
 			return null;
@@ -87,6 +130,9 @@ public class Resources {
 		return colorer;
 	}
 	
+	/*
+	 * Returns the logger
+	 */
 	public static Logger getLogger() throws ResourcesNotInitializedException {
 		if(!checkInit())
 			return null;
@@ -94,6 +140,9 @@ public class Resources {
 		return logger;
 	}
 	
+	/*
+	 * Returns the adapter
+	 */
 	public static Adapter getAdapter() throws ResourcesNotInitializedException {
 		if(!checkInit())
 			return null;
@@ -101,6 +150,9 @@ public class Resources {
 		return adapter;
 	}
 
+	/*
+	 * Check whether a call to init() has been made
+	 */
 	private static boolean checkInit() throws ResourcesNotInitializedException {
 		if(!initialized)
 			throw new ResourcesNotInitializedException("You must initialize Resources.class before using it!");

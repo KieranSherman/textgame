@@ -9,6 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+/*
+ * Class sets the UI for a scroll bar
+ */
 public class ScrollBarUI extends BasicScrollBarUI {
 	
 	protected JButton createZeroButton() {
