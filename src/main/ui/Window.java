@@ -19,6 +19,7 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -104,6 +105,7 @@ public class Window extends JPanel {
 	 */
 	private void init_textPane() {
 		Window panel = this;
+		panel.setBorder(new LineBorder(Color.BLACK, 2, true));
 
 		doc = new DefaultStyledDocument();
 		textPane = new JTextPane(doc);
