@@ -30,6 +30,6 @@ Objective
 Story (Some ideas)  
 &nbsp;&nbsp;&nbsp;&nbsp;-Awaken alone in the dark with no memory  
 &nbsp;&nbsp;&nbsp;&nbsp;-You are being chased
-*Muliplayer*
-Graphics
-Sound / Music
+*Muliplayer*  
+Graphics  
+Sound / Music  
