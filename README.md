@@ -18,18 +18,18 @@ Mechanics
 &nbsp;&nbsp;&nbsp;&nbsp;*-Real Time*  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*+Cooldowns (Turn based or time based)*  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~Healing  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~*Running*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~*Running*  
 *Character*  
 &nbsp;&nbsp;&nbsp;&nbsp;-*Name*  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+~~Random~~ or *chosen*  
 &nbsp;&nbsp;&nbsp;&nbsp;-Demographics  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+~~Age~~  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+Gender  
-*Objective*
-&nbsp;&nbsp;&nbsp;&nbsp;-*Escape alive*
-Story (Some ideas)
-&nbsp;&nbsp;&nbsp;&nbsp;-*Awaken alone in the dark with no memory*
-&nbsp;&nbsp;&nbsp;&nbsp;-*You are being chased* 
+*Objective*  
+&nbsp;&nbsp;&nbsp;&nbsp;-*Escape alive*  
+Story (Some ideas)  
+&nbsp;&nbsp;&nbsp;&nbsp;-*Awaken alone in the dark with no memory*  
+&nbsp;&nbsp;&nbsp;&nbsp;-*You are being chased*  
 *Multiplayer*  
 *Graphics*  
-*Sound / Music*
+*Sound / Music*  
