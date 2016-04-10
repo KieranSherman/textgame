@@ -39,6 +39,7 @@ import util.out.Formatter;
  * Class models a window with an exterior JFrame and interior JPanel
  */
 public class Window extends JPanel {	
+	
 	private static final long serialVersionUID = 1L;
 	
 	private JFrame window;				//JFrame container
@@ -51,7 +52,6 @@ public class Window extends JPanel {
 	private Style style;				//*
 	
 	private Colorer colorer;			//Parser determines coloring
-	
 	private Adapter adapter;			//Network adapter
 	
 	public Window() {
@@ -211,7 +211,7 @@ public class Window extends JPanel {
 	 * Appends str to the end of textPane; acts as
 	 * filter to method: insertTextToDoc()
 	 */
-	public void appendText(final String toAppend) {
+	public void appendText(String toAppend) {
 		if(toAppend == null || parseCommand(toAppend) || parsePacket(toAppend))
 			return;
 	

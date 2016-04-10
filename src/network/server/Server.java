@@ -65,7 +65,7 @@ public class Server extends Thread {
 			
 			sInput = new ObjectInputStream(clientSocket.getInputStream());
 			
-			sendPacket(new Packet01Login("you have connected from ["+clientSocket.getInetAddress().getHostAddress()+":"+clientSocket.getPort()+"]"));
+			sendPacket(new Packet01Login("you have connected to ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
 			
 			while(true) {
 				Packet packet = getPacket();
