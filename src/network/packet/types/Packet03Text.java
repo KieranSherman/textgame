@@ -3,6 +3,9 @@ package network.packet.types;
 import network.packet.Packet;
 import network.packet.PacketTypes;
 
+/*
+ * Class models a text packet
+ */
 public class Packet03Text extends Packet {
 	private static final long serialVersionUID = 1L;
 
@@ -19,6 +22,9 @@ public class Packet03Text extends Packet {
 
 	@Override
 	@SuppressWarnings("unchecked")
+	/*
+	 * returns the packet's data
+	 */
 	public <T> T getData() {
 		return (T) data;
 	}

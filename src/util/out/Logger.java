@@ -13,9 +13,11 @@ public class Logger {
 		Logger.window = window;
 	}
 	
+	/*
+	 * appends text to the text pane
+	 */
 	public void appendText(String str) {
 		window.appendText(str);
 	}
-	
 	
 }

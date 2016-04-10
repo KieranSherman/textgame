@@ -1,0 +1,60 @@
+											Class and Package Hierarchy Overview
+=================================================================================================================================
+
+src
+	-files <<<<							...			> package contains all non *.java files
+		--fonts							...				>> package contains all fonts
+			**vador.ttf					...					** font used for UI
+			
+		--reference						...				>> packages contains all files used for general referencing
+			**Class Hierarchy.txt		...					*** detailed explanation of package and file hierarchy
+					
+		*Actions.txt					...				* file containing Action words
+		*Places.txt						...				* file containing Place words
+
+	-main <<<<							...			> package contains all classes used in initialization
+		--ui							...				>> package contains classes relevant to the UI
+			**ScrollBarUI.java			...					** sets the scroll bar look
+			**Window.java				...					** displays the UI window
+			**WindowHandler.java		...					** listens to the UI window
+		
+		*Game.java						...				* controls the game logic
+		*Main.java						...				* starts the program
+		
+	-network <<<<						...			> package contains all networking classes
+		--client						...				>> package contains all client classes
+			**Client.java				...					** models a client
+			
+		--packet						...				>> package contains all packet classes
+			---types					...					>>> package contains different types of packets
+				***Packet01Login.java							*** packet used for login
+				***Packet02Disconnect.java						*** packet used for disconnecting
+				***Packet03Text.java							*** packet used for general display of text
+			
+			**Packet.java				...					** abstract class modelling a packet
+			**PacketReceiver.java		...					** handles packets after they are received
+			**PacketTypes.java			...					** enum specifying packet types
+			
+		--server						...				>> package contains all server classes
+			**Server.java				...					** models a server
+		
+		*Adapter.java					...				* bridges the UI and networking features
+		*NetworkTypes.java				...				* enum specifying network types
+	
+	-util <<<<							...			> package contains all utility classes
+		--exceptions					...				>> package contains all exception classes
+			**ResourcesNotInitializedException.java			** thrown when Resources.class is not initialized
+		
+		--out							...				>> package contains all classes used for output
+			**Colorer.java				...					** colors words
+			**Formatter.java			...					** formats text before display
+			**Logger.java				...					** displays text
+			
+		*Resources.java					...				* statically loaded members for easy access
+		*StreamCapturer.java			...				* stream modifier to redirect stdout to UI
+		*Word.java						...				* models a word
+		
+		
+=================================================================================================================================
+
+		
