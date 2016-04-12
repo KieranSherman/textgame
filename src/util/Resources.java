@@ -3,12 +3,16 @@ package util;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import main.ui.BootThread;
 import main.ui.Window;
 import network.Adapter;
 import util.exceptions.ResourcesNotInitializedException;
@@ -35,12 +39,14 @@ public class Resources {
 	private static boolean initialized = false;		//whether or not the call to init() has been made
 	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
-	public static final String VERSION = "v1.19";
+	public static final String VERSION = loadVersion("src/files/reference/Reference.txt");
+	
+	public static final BufferedImage bootImage = loadImage("src/files/imgs/pngs/booting1.png");
+	public static final boolean boot = loadBoot("src/files/reference/Reference.txt");
 	
 	private Resources() {}							//prevent instantiation of Resources object
 	
 	public static void init(Window window) {
-		System.out.println("Initializing resources...\n");
 		initialized = true;
 
 		colorer = new Colorer();
@@ -50,8 +56,6 @@ public class Resources {
 		loadActionWords("src/files/Actions.txt");
 		loadPlaceWords("src/files/Places.txt");
 		overrideOutput();
-		
-		System.out.println("\n...resources initialized");
 	}
 	
 	/*
@@ -103,6 +107,42 @@ public class Resources {
 	}
 	
 	/*
+	 * Loads the VERISON String from the Class Hierarchy
+	 */
+	private static String loadVersion(String filePath) {
+		String[] lines = parseText(filePath);
+		for(int i = 0; i < lines.length-1; i++) {
+			if(lines[i].equalsIgnoreCase("version:"))
+				return lines[i+1];
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * Loads the BOOT String from the Class Hierarchy
+	 */
+	private static boolean loadBoot(String filePath) {
+		String[] lines = parseText(filePath);
+		for(int i = 0; i < lines.length-1; i++) {
+			if(lines[i].equalsIgnoreCase("boot:"))
+				return Boolean.parseBoolean(lines[i+1]);
+		}
+		
+		return false;
+	}
+	
+	private static BufferedImage loadImage(String filePath) {
+		try {
+			return ImageIO.read(new File(filePath));
+		} catch (IOException e) {
+			System.err.println("error loading image");
+		}
+		
+		return null;
+	}
+	
+	/*
 	 * Parse text from a file at filePath
 	 */
 	private static String[] parseText(String filePath) {
@@ -137,6 +177,7 @@ public class Resources {
 		if(!checkInit())
 			return null;
 		
+		BootThread.queueInfo("colorer loaded");
 		return colorer;
 	}
 	
@@ -147,6 +188,7 @@ public class Resources {
 		if(!checkInit())
 			return null;
 		
+		BootThread.queueInfo("logger loaded");
 		return logger;
 	}
 	
@@ -157,6 +199,7 @@ public class Resources {
 		if(!checkInit())
 			return null;
 		
+		BootThread.queueInfo("adapter loaded");
 		return adapter;
 	}
 
@@ -168,5 +211,11 @@ public class Resources {
 			throw new ResourcesNotInitializedException("You must initialize Resources.class before using it!");
 		
 		return initialized;
+	}
+	
+	public static void sleep(int milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (Exception e) {}
 	}
 }

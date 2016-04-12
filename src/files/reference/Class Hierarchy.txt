@@ -1,3 +1,4 @@
+=================================================================================================================================
 											Class and Package Hierarchy Overview
 =================================================================================================================================
 
@@ -7,7 +8,8 @@ src
 			**vador.ttf					...					** font used for UI
 			
 		--reference						...				>> packages contains all files used for general referencing
-			**Class Hierarchy.txt		...					*** detailed explanation of package and file hierarchy
+			**Class Hierarchy.txt		...					** detailed explanation of package and file hierarchy
+			**Reference.txt				...					** file containing all references loaded by Resources.java
 					
 		*Actions.txt					...				* file containing Action words
 		*Places.txt						...				* file containing Place words

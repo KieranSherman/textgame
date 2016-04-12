@@ -55,9 +55,39 @@ public class Window extends JPanel {
 	private Colorer colorer;			//Parser determines coloring
 	private Adapter adapter;			//Network adapter
 	
+	private BootThread bootThread;
+
+	
 	public Window() {
+		boot();
+		
 		Resources.init(this);
 		this.init();
+		
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {}
+		}
+		
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				window.setVisible(true);
+			}
+		});
+		
+		if(bootThread != null)
+			bootThread.close();
+	}
+	
+	/*
+	 * Handles boot
+	 */
+	private void boot() {
+		if(Resources.boot) {
+			bootThread = new BootThread();
+			Resources.sleep(1000);
+		}
 	}
 	
 	/*
@@ -75,7 +105,7 @@ public class Window extends JPanel {
 					e.printStackTrace();
 					System.exit(1);
 				}
-
+				
 				window = new JFrame(Resources.VERSION);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.setResizable(false);
@@ -96,7 +126,8 @@ public class Window extends JPanel {
 				
 				textField.requestFocus();
 				
-				window.setVisible(true);
+				BootThread.queueInfo("window initialized");
+				BootThread.startWindow(panel);
 			}
 		});
 	}
@@ -152,6 +183,8 @@ public class Window extends JPanel {
 		scroll.setBorder(compound);
 		
 		panel.add(scroll, BorderLayout.CENTER);
+		
+		BootThread.queueInfo("textPane loaded");
 	}
 	
 	/*
@@ -199,6 +232,8 @@ public class Window extends JPanel {
 		});
 		
 		panel.add(inputField, BorderLayout.SOUTH);
+		
+		BootThread.queueInfo("textField loaded");
 	}
 	
 	/*
