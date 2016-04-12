@@ -1,4 +1,4 @@
-package network.client;
+package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -63,7 +63,7 @@ public class ClientSender {
 	/*
 	 * closes the output stream
 	 */
-	protected void close() {
+	public void close() {
 		if(sOutput != null) {
 			sendPacket(new Packet03Message("client disconnected"));
 

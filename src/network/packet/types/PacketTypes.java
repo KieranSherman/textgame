@@ -1,4 +1,4 @@
-package network.packet;
+package network.packet.types;
 
 /*
  * Different types of packets

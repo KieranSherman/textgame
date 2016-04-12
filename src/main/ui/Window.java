@@ -29,9 +29,9 @@ import javax.swing.text.StyleContext;
 
 import network.Adapter;
 import network.packet.Packet;
-import network.packet.PacketTypes;
 import network.packet.types.Packet03Message;
 import network.packet.types.Packet04Action;
+import network.packet.types.PacketTypes;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;

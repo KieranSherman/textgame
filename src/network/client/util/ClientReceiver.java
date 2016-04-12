@@ -1,4 +1,4 @@
-package network.client;
+package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,7 +55,7 @@ public class ClientReceiver extends Thread {
 	/*
 	 * closes the input stream
 	 */
-	protected void close() {
+	public void close() {
 		if(sInput != null)
 			try {
 				sInput.close();

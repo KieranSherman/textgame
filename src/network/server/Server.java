@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import network.Adapter;
 import network.packet.Packet;
+import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;

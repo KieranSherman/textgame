@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 import network.Adapter;
+import network.client.util.ClientReceiver;
+import network.client.util.ClientSender;
 import network.packet.Packet;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;

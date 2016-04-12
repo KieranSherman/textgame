@@ -1,7 +1,7 @@
 package util.out;
 
 import main.ui.Window;
-import network.packet.PacketTypes;
+import network.packet.types.PacketTypes;
 
 /*
  * Logger class has direct access to the Game's Window

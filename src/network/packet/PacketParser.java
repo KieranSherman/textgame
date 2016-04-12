@@ -2,6 +2,7 @@ package network.packet;
 
 import network.NetworkTypes;
 import network.client.Client;
+import network.packet.types.PacketTypes;
 import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;

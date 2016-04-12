@@ -1,6 +1,6 @@
 package util.out;
 
-import network.packet.PacketTypes;
+import network.packet.types.PacketTypes;
 
 /*
  * Class will adjust String before outputting it to text area
