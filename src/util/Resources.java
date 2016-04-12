@@ -34,9 +34,12 @@ public class Resources {
 	
 	private static boolean initialized = false;		//whether or not the call to init() has been made
 	
+	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
+	
 	private Resources() {}							//prevent instantiation of Resources object
 	
 	public static void init(Window window) {
+		System.out.println("Initializing resources...\n");
 		initialized = true;
 
 		colorer = new Colorer();
@@ -46,6 +49,8 @@ public class Resources {
 		loadActionWords("src/files/Actions.txt");
 		loadPlaceWords("src/files/Places.txt");
 		overrideOutput();
+		
+		System.out.println("\n...resources initialized");
 	}
 	
 	/*
@@ -111,13 +116,17 @@ public class Resources {
 		String line, text = "";
 		
 		try {
-			while((line = br.readLine()) != null)
-				text += line+"\n";
+			while((line = br.readLine()) != null) {
+				if(line.indexOf("//") != -1)
+					line = line.substring(0, line.indexOf("//"));
+				
+				text += line += "\n";
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return text.split(",");
+		return text.split(parseDelimiter);
 	}
 	
 	/*

@@ -4,18 +4,18 @@ import network.packet.Packet;
 import network.packet.PacketTypes;
 
 /*
- * Class models a disconnect packet
+ * Class models a text packet
  */
-public class Packet02Disconnect extends Packet {
+public class Packet03Message extends Packet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String data;
 	
-	private Packet02Disconnect() {
-		super(PacketTypes.DISCONNECT);
+	private Packet03Message() {
+		super(PacketTypes.MESSAGE);
 	}
 	
-	public Packet02Disconnect(String data) {
+	public Packet03Message(String data) {
 		this();
 		this.data = data;
 	}
@@ -28,5 +28,4 @@ public class Packet02Disconnect extends Packet {
 	public <T> T getData() {
 		return (T) data;
 	}
-
 }

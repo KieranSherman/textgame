@@ -1,17 +1,13 @@
 package network.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import network.Adapter;
-import network.NetworkTypes;
 import network.packet.Packet;
-import network.packet.PacketTypes;
-import network.packet.types.Packet01Login;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
@@ -25,10 +21,7 @@ public class Server extends Thread {
 	private Socket clientSocket;		//socket the client connects from
 	private ServerSocket serverSocket;	//socket the client connects to
 	
-	private ObjectInputStream sInput;	//input stream
-	private ObjectOutputStream sOutput;	//output stream
-	
-	private boolean open;				//whether or not the server is open
+	private ArrayList<ServerConnection> serverConnections;
 	
 	public Server() {
 		this.portNumber = 9999;
@@ -44,11 +37,19 @@ public class Server extends Thread {
 	 * sends confirmation login packet; receives and parses packets
 	 */
 	public void run() {
-		Adapter adapter = null;
+		serverConnections = new ArrayList<ServerConnection>();
+
 		Logger logger = null;
 		try {
-			adapter = Resources.getAdapter();
 			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
+		Adapter adapter = null;
+		try {
+			adapter = Resources.getAdapter();
 		} catch (ResourcesNotInitializedException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -57,99 +58,60 @@ public class Server extends Thread {
 		try {
 			serverSocket = new ServerSocket(portNumber);
 			logger.appendText("server started at "+InetAddress.getLocalHost().getHostAddress()+":"+serverSocket.getLocalPort());
-			clientSocket = serverSocket.accept();
-			open = true;
-			
-			sOutput = new ObjectOutputStream(clientSocket.getOutputStream());
-			sOutput.flush();
-			
-			sInput = new ObjectInputStream(clientSocket.getInputStream());
-			
-			sendPacket(new Packet01Login("you have connected to ["+clientSocket.getInetAddress()+":"+clientSocket.getPort()+"]"));
-			
-			while(true) {
-				Packet packet = getPacket();
-				
-				if(packet.getType() == PacketTypes.DISCONNECT)
-					break;
-				
-				if(packet != null)
-					adapter.parsePacket(NetworkTypes.SERVER, packet);
+		} catch (IOException e) {
+			System.err.println("server unable to initialize");
+		}
+		
+		new Thread() {
+			public void run() {
+				while(true) {
+					try {
+						clientSocket = serverSocket.accept();
+					} catch (IOException e) {
+						System.err.println("server unable to connect with client");
+						break;
+					}
+					
+					openConnection();
+				}
 			}
-			
-			serverSocket.close();
-		} catch (IOException e) {
-			System.err.println("server encountered problems");
-		} finally {
-			close();
+		}.start();
+		
+		// wait until call from close
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {}
 		}
+		
+		System.err.println("server closed");
+		logger.appendText("server closed");
+		adapter.destroyServer();
 	}
 	
-	/*
-	 * sends a packet over the output stream
-	 */
+	private void openConnection() {
+		ServerConnection serverConnection = new ServerConnection(this, clientSocket);
+		new Thread(serverConnection).start();
+		
+		serverConnections.add(serverConnection);
+	}
+	
+	public void removeConnection(ServerConnection serverConnection) {
+		int index = serverConnections.indexOf(serverConnection);
+		
+		if(index != -1) 
+			serverConnections.remove(index);
+	}
+	
 	public void sendPacket(Packet packet) {
-		if(packet == null)
-			return;
-		
-		if(clientSocket == null) {
-			System.err.println("no client connected");
-			return;
-		}
-		
-		if(!clientSocket.isConnected()) {
-			close();
-			return;
-		}
-		
-		try {
-			sOutput.writeObject(packet);
-			sOutput.reset();
-			sOutput.flush();
-		} catch (IOException e) {
-			System.err.println("error sending packet: ["+packet+", "+packet.getData()+"]");
-			packet = null;
-		}
+		for(ServerConnection sConnection : serverConnections)
+			sConnection.sendPacket(packet);
 	}
 	
-	/*
-	 * returns the packet from the input stream
-	 */
-	protected Packet getPacket() {
-		Packet packet = null;
-		try {
-			packet = (Packet) sInput.readObject();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			close();
-		}
-		
-		return packet;
-	}
-	
-	/*
-	 * closes the server
-	 */
 	public void close() {
-		try {
-			if(sOutput != null)
-				sOutput.close();
-			
-			if(sInput != null)
-				sInput.close();
-			
-			if(clientSocket != null)
-				clientSocket.close();
-		} catch (IOException e) {
-			System.err.println("fatal error closing server");
-			System.exit(1);
+		synchronized(this) {
+			this.notifyAll();
 		}
-		
-		if(open)
-			System.out.println("server closed");
-
-		open = false;
 	}
 	
 }

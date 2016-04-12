@@ -6,16 +6,16 @@ import network.packet.PacketTypes;
 /*
  * Class models a text packet
  */
-public class Packet03Text extends Packet {
+public class Packet04Action extends Packet {
 	private static final long serialVersionUID = 1L;
 
 	private String data;
 	
-	private Packet03Text() {
-		super(PacketTypes.TEXT);
+	private Packet04Action() {
+		super(PacketTypes.ACTION);
 	}
 	
-	public Packet03Text(String data) {
+	public Packet04Action(String data) {
 		this();
 		this.data = data;
 	}
