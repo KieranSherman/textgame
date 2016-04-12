@@ -34,6 +34,7 @@ src
 				***Packet01Login.java							*** packet used for login
 				***Packet02Disconnect.java						*** packet used for disconnecting
 				***Packet03Text.java							*** packet used for general display of text
+				***Packet04Action.java							*** packet used for transmitting actinos
 				***PacketTypes.java		...						*** enum specifying packet types
 				
 			**Packet.java				...					** abstract class modelling a packet
