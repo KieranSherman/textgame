@@ -1,0 +1,21 @@
+=================================================================================================================================
+														References
+=================================================================================================================================
+
+VERSION: v1.20
+BOOT: true
+
+=================================================================================================================================
+													   Recent Updates
+=================================================================================================================================
+
+v1.20 - boot
+	added a boot option with loading screen
+
+v1.19 - minor bug fixes
+	fixed a client issue preventing it from rejoining a server
+	if it had been previously disconnected
+
+v1.18 - minor bug fixes
+	fixed a server issue preventing it from restarting if it
+	had been previously closed
