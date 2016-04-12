@@ -7,6 +7,8 @@ import network.packet.types.PacketTypes;
  */
 public class Formatter {
 	
+	private Formatter() {}
+	
 	public static String format(String str, PacketTypes packetType) {
 		return getFormat(packetType)+str;
 	}
