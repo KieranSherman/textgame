@@ -1,7 +1,6 @@
 package network.packet.types;
 
 import network.packet.Packet;
-import network.packet.PacketTypes;
 
 /*
  * Class models a text packet

@@ -25,25 +25,36 @@ src
 		--client						...				>> package contains all client classes
 			**Client.java				...					** models a client
 			
+				---util					...					>>> package contains all client utilities
+					***ClientReceiver.java						*** handles all incoming data
+					***ClientSender.java						*** handles all outgoing data
+			
 		--packet						...				>> package contains all packet classes
 			---types					...					>>> package contains different types of packets
 				***Packet01Login.java							*** packet used for login
 				***Packet02Disconnect.java						*** packet used for disconnecting
 				***Packet03Text.java							*** packet used for general display of text
-			
+				***Packet04Action.java							*** packet used for transmitting actinos
+				***PacketTypes.java		...						*** enum specifying packet types
+				
 			**Packet.java				...					** abstract class modelling a packet
-			**PacketReceiver.java		...					** handles packets after they are received
-			**PacketTypes.java			...					** enum specifying packet types
+			**PacketParser.java			...					** handles packets after they are received
 			
 		--server						...				>> package contains all server classes
 			**Server.java				...					** models a server
+			
+				---util					...					>>> package contains all server utilities
+					***ServerConnection.java					*** handles all connections with all clients
+					***ServerReceiver.java						*** handles all incoming data
+					***ServerSender.java						*** handles all outgoing data
 		
 		*Adapter.java					...				* bridges the UI and networking features
 		*NetworkTypes.java				...				* enum specifying network types
 	
-	-util <<<<							...			> package contains all utility classes
+	-util <<<<							...			> package contains all misc. utility classes
 		--exceptions					...				>> package contains all exception classes
 			**ResourcesNotInitializedException.java			** thrown when Resources.class is not initialized
+			**AlreadyRunningNetworkException.java			** thrown when a Client or Server is already running
 		
 		--out							...				>> package contains all classes used for output
 			**Colorer.java				...					** colors words

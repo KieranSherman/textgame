@@ -29,9 +29,9 @@ import javax.swing.text.StyleContext;
 
 import network.Adapter;
 import network.packet.Packet;
-import network.packet.PacketTypes;
 import network.packet.types.Packet03Message;
 import network.packet.types.Packet04Action;
+import network.packet.types.PacketTypes;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -76,7 +76,7 @@ public class Window extends JPanel {
 					System.exit(1);
 				}
 
-				window = new JFrame("");
+				window = new JFrame(Resources.VERSION);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.setResizable(false);
 				window.addWindowListener(new WindowHandler(panel));
@@ -191,7 +191,7 @@ public class Window extends JPanel {
 				String str = textField.getText();
 
 				appendText("> "+str);
-				setText("");
+				setTextFieldText("");
 				
 				if(!isCommand(str) && str != null)
 					sendPacket(new Packet03Message(str));
@@ -205,7 +205,7 @@ public class Window extends JPanel {
 	 * Appends str to the end of textPane; acts as
 	 * filter to method: insertTextToDoc()
 	 */
-	public void appendText(String toAppend) {
+	public synchronized void appendText(String toAppend) {
 		if(parseCommand(toAppend))
 			return;
 	
@@ -222,7 +222,7 @@ public class Window extends JPanel {
 	 * filter to method: insertTextToDoc();
 	 * exclusively for the PacketParser
 	 */
-	public void appendPacketText(PacketTypes packetType, String toAppend) {
+	public synchronized void appendPacketText(PacketTypes packetType, String toAppend) {
 		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
 		insertTextToDoc(toAppend+"\n");
 	}
@@ -230,7 +230,7 @@ public class Window extends JPanel {
 	/*
 	 * Sets the text of textField to str
 	 */
-	private void setText(String str) {
+	private void setTextFieldText(String str) {
 		if(textField != null)
 			textField.setText(str);
 	}
@@ -278,7 +278,7 @@ public class Window extends JPanel {
 				adapter.createServer(Integer.parseInt(args[1]));
 			
 			adapter.startServer();
-			window.setTitle("running server");
+			window.setTitle(Resources.VERSION+" | running server");
 		}
 		else
 		if(args[0].equals("client")) {
@@ -290,11 +290,12 @@ public class Window extends JPanel {
 				adapter.createClient(args[1], Integer.parseInt(args[2]));
 			
 			adapter.startClient();
-			window.setTitle("running client");
+			window.setTitle(Resources.VERSION+" | running client");
 		}
 		else
 		if(args[0].equals("logout")) {
 			adapter.close();
+			window.setTitle(Resources.VERSION);
 		}
 		else {
 			sendPacket(new Packet04Action(str));

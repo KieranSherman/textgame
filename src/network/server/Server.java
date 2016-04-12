@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import network.Adapter;
 import network.packet.Packet;
+import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
@@ -84,8 +85,15 @@ public class Server extends Thread {
 			} catch (InterruptedException e) {}
 		}
 		
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			System.err.println("error closing server socket");
+		}
+		
 		System.err.println("server closed");
 		logger.appendText("server closed");
+		
 		adapter.destroyServer();
 	}
 	

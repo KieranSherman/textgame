@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 import network.Adapter;
+import network.client.util.ClientReceiver;
+import network.client.util.ClientSender;
 import network.packet.Packet;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -92,7 +94,7 @@ public class Client extends Thread {
 		clientReceiver.close();
 		
 		System.err.println("client disconnected");
-		logger.appendText("you disconnected");
+		logger.appendText("you have been disconnected");
 		
 		adapter.destroyClient();
 	}

@@ -2,6 +2,8 @@ package network.packet;
 
 import java.io.Serializable;
 
+import network.packet.types.PacketTypes;
+
 /*
  * Class models a packet to be sent and received through 
  * input/output streams

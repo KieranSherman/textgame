@@ -3,7 +3,7 @@ package util.out;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import network.packet.PacketTypes;
+import network.packet.types.PacketTypes;
 import util.Word;
 
 /*

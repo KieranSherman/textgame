@@ -1,4 +1,4 @@
-package network.server;
+package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,14 +8,12 @@ import network.Adapter;
 import network.NetworkTypes;
 import network.packet.Packet;
 
-public class ServerReceiver extends Thread {
-
-	private ServerConnection serverConnection;
+public class ClientReceiver extends Thread {
+	
 	private Adapter adapter;
 	private ObjectInputStream sInput;
 	
-	public ServerReceiver(ServerConnection serverConnection, Socket socket, Adapter adapter) throws IOException {
-		this.serverConnection = serverConnection;
+	public ClientReceiver(Socket socket, Adapter adapter) throws IOException {
 		this.sInput = new ObjectInputStream(socket.getInputStream());
 		this.adapter = adapter;
 	}
@@ -36,13 +34,8 @@ public class ServerReceiver extends Thread {
 				continue;
 			
 			if(adapter != null)
-				adapter.parsePacket(NetworkTypes.SERVER, packet);
-			
+				adapter.parsePacket(NetworkTypes.CLIENT, packet);
 		} while (true);
-		
-		System.err.println("server receiver closing connection with client");
-		
-		serverConnection.close();
 	}
 	
 	/*
@@ -62,7 +55,7 @@ public class ServerReceiver extends Thread {
 	/*
 	 * closes the input stream
 	 */
-	protected void close() {
+	public void close() {
 		if(sInput != null)
 			try {
 				sInput.close();
@@ -73,5 +66,5 @@ public class ServerReceiver extends Thread {
 		if(adapter != null)
 			adapter = null;
 	}
-	
+
 }
