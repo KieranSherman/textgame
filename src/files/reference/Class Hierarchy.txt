@@ -53,6 +53,7 @@ src
 	-util <<<<							...			> package contains all misc. utility classes
 		--exceptions					...				>> package contains all exception classes
 			**ResourcesNotInitializedException.java			** thrown when Resources.class is not initialized
+			**AlreadyRunningNetworkException.java			** thrown when a Client or Server is already running
 		
 		--out							...				>> package contains all classes used for output
 			**Colorer.java				...					** colors words
