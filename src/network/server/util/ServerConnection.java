@@ -1,10 +1,11 @@
-package network.server;
+package network.server.util;
 
 import java.io.IOException;
 import java.net.Socket;
 
 import network.Adapter;
 import network.packet.Packet;
+import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 
