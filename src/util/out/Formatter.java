@@ -12,21 +12,7 @@ public class Formatter {
 	}
 	
 	public static String getFormat(PacketTypes packetType) {
-		switch(packetType) {
-			case LOGIN: {
-				return "**LOGIN**";
-			}
-				
-			case DISCONNECT: {
-				return "**DISCONNECT**";
-			}
-				
-			case TEXT: {
-				return "**TEXT**";
-			}
-		}
-		
-		return null;
+		return "[#PACKET"+packetType.getType()+"]";
 	}
 	
 }

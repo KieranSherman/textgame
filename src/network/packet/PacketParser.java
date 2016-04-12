@@ -1,6 +1,8 @@
 package network.packet;
 
 import network.NetworkTypes;
+import network.client.Client;
+import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Formatter;
@@ -9,17 +11,28 @@ import util.out.Logger;
 /*
  * Class handles packets after they've been received
  */
-public class PacketReceiver {
+public class PacketParser {
 	
 	private Logger logger;
+	@SuppressWarnings("unused")
+	private Server server;
+	private Client client;
 	
-	public PacketReceiver() {
+	public PacketParser() {
 		try {
 			logger = Resources.getLogger();
 		} catch (ResourcesNotInitializedException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+	
+	public void setServer(Server server) {
+		this.server = server;
+	}
+	
+	public void setClient(Client client) {
+		this.client = client;
 	}
 	
 	/*
@@ -34,65 +47,77 @@ public class PacketReceiver {
 	}
 	
 	/*
-	 * Parse a packet received from the server
+	 * Parse a packet received from the server (i.e client handles this packet)
 	 */
 	private synchronized void parseServerPacket(Packet packet) {
+		String str = null;
+		
 		switch(packet.getType()) {
 			case LOGIN: {
-				String str = (String) packet.getData();
+				str = (String) packet.getData();
 				str = Formatter.format(str, PacketTypes.LOGIN);
-				
-				logger.appendText(str);
 				break;
 			}
 			
 			case DISCONNECT: {
-				String str = (String) packet.getData();
+				str = (String) packet.getData();
 				str = Formatter.format(str, PacketTypes.DISCONNECT);
 				
-				logger.appendText(str);
+				client.disconnect();
 				break;
 			}
 			
-			case TEXT: {
-				String str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.TEXT);
-				
-				logger.appendText(str);
+			case MESSAGE: {
+				str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.MESSAGE);
+				break;
+			}
+			
+			case ACTION: {
+				str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.ACTION);
 				break;
 			}
 		}
+		
+		logger.appendPacketText(packet.getType(), str);
+
 	}
 	
 	/*
-	 * Parse a packet received from the client
+	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
+		String str = null;
+		
 		switch(packet.getType()) {
 			case LOGIN: {
-				String str = (String) packet.getData();
+				str = (String) packet.getData();
 				str = Formatter.format(str, PacketTypes.LOGIN);
-				
-				logger.appendText(str);
 				break;
 			}
 			
 			case DISCONNECT: {
-				String str = (String) packet.getData();
+				str = (String) packet.getData();
 				str = Formatter.format(str, PacketTypes.DISCONNECT);
-				
-				logger.appendText(str);
 				break;
 			}
 			
-			case TEXT: {
-				String str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.TEXT);
-				
-				logger.appendText(str); 
+			case MESSAGE: {
+				str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.MESSAGE);
+				break;
+			}
+			
+			case ACTION: {
+				str = (String) packet.getData();
+				str = Formatter.format(str, PacketTypes.ACTION);
 				break;
 			}
 		}
+		
+		logger.appendPacketText(packet.getType(), str);
+
 	}
 
 }

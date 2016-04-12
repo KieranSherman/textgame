@@ -1,15 +1,19 @@
-action walk[direction]
-action run[direction]
-action sprint[direction]
-action jog[direction]
-action crawl[direction]
-action jump[direction]
-action sneak[direction]
-action cry
-action search[place]
-action hide[place]
+//all lines begining with "//" are ignored by the parser
+//all words begining with ":" are ignored by the colorer
+
+//actions
+walk //[direction] 
+run //[direction] 
+sprint //[direction] 
+jog //[direction] 
+crawl //[direction] 
+jump //[direction] 
+sneak //[direction] 
+:cry move
+search //[place] 
+hide //[place] 
 
 
-direction north south east west up down
-place under[location] in[location] behind[location]
-location box tree table chair rock plant
+//direction north south east west up down
+//places under[location] in[location] behind[location]
+//location box tree table chair rock plant

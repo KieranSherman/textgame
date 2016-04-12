@@ -1,18 +1,13 @@
 package network.client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 
 import network.Adapter;
-import network.NetworkTypes;
 import network.packet.Packet;
-import network.packet.PacketTypes;
-import network.packet.types.Packet01Login;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
+import util.out.Logger;
 
 /*
  * Class models a threadable client in a network
@@ -24,10 +19,8 @@ public class Client extends Thread {
 	
 	private Socket socket;				//TCP socket	
 	
-	private ObjectInputStream sInput;	//socket's input stream
-	private ObjectOutputStream sOutput;	//socket's output stream
-	
-	private boolean connected;			//whether or not the client is connected to a server
+	private ClientReceiver clientReceiver;
+	private ClientSender clientSender;
 	
 	public Client() {
 		this.hostName = "localhost";
@@ -58,89 +51,61 @@ public class Client extends Thread {
 			System.exit(1);
 		}
 		
+		Logger logger = null;
+		try {
+			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
 		try {
 			socket = new Socket(hostName, portNumber);
-			connected = true;
-			
-			sOutput = new ObjectOutputStream(socket.getOutputStream());
-			sOutput.flush();
-			
-			sInput = new ObjectInputStream(socket.getInputStream());
-			
-			sendPacket(new Packet01Login("client has connected from "+InetAddress.getLocalHost().getHostAddress()+":"+socket.getPort()));
-
-			while(true) {
-				Packet packet = getPacket();
-				
-				if(packet != null && packet.getType() == PacketTypes.DISCONNECT)
-					break;
-				
-				if(packet != null)
-					adapter.parsePacket(NetworkTypes.CLIENT, packet);
-			}
 		} catch (IOException e) {
 			System.err.println("client unable to connect");
-		} finally {
-			disconnect();
 		}
+				
+		try {
+			clientSender = new ClientSender(socket);
+		} catch (IOException e) {
+			System.err.println("client sender unable to initialize");
+		}
+		
+		try {
+			clientReceiver = new ClientReceiver(socket, adapter);
+		} catch (IOException e) {
+			System.err.println("client receiver unable to initialize");
+		}
+		
+		// start a new thread to receive and handle incoming packets
+		Thread cReceiver_T = new Thread(clientReceiver);
+		cReceiver_T.start();
+		
+		// wait until close call
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {}
+		}
+			
+		clientSender.close();
+		clientReceiver.close();
+		
+		System.err.println("client disconnected");
+		logger.appendText("you disconnected");
+		
+		adapter.destroyClient();
 	}
-	
-	/*
-	 * sends a packet over the output stream
-	 */
-	public void sendPacket(Packet packet) {
-		if(packet == null)
-			return;
 
-		try {
-			sOutput.writeObject(packet);
-			sOutput.reset();
-			sOutput.flush();
-		} catch (IOException e) {
-			System.err.println("error sending packet: ["+packet+", "+packet.getData()+"]");
-			packet = null;
-		}
+	public void sendPacket(Packet packet) {
+		if(clientSender != null)
+			clientSender.sendPacket(packet);
 	}
 	
-	/*
-	 * returns the packet from the input stream
-	 */
-	protected Packet getPacket() {
-		Packet packet = null;
-		try {
-			packet = (Packet) sInput.readObject();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			disconnect();
-		} 
-		
-		return packet;
-	}
-	
-	/*
-	 * disconnects from the server
-	 */
 	public void disconnect() {
-		try {
-			if(sInput != null)
-				sInput.close();
-			
-			if(sOutput != null)
-				sOutput.close();
-			
-			if(socket != null)
-				socket.close();
-		} catch (IOException e) {
-			System.err.println("fatal error disconnecting");
-			System.exit(1);
-		} 
-		
-		if(connected)
-			System.out.println("client disconnected");
-		
-		connected = false;
-		
+		synchronized(this) {
+			this.notifyAll();
+		}
 	}
 	
 }
