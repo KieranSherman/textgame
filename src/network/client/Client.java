@@ -93,6 +93,12 @@ public class Client extends Thread {
 		clientSender.close();
 		clientReceiver.close();
 		
+		try {
+			socket.close();
+		} catch (IOException e) {
+			System.err.println("error closing client socket");
+		}
+		
 		System.err.println("client disconnected");
 		logger.appendText("you have been disconnected");
 		
