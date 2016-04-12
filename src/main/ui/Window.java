@@ -28,12 +28,13 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import network.Adapter;
+import network.packet.Packet;
 import network.packet.PacketTypes;
-import network.packet.types.Packet03Text;
+import network.packet.types.Packet03Message;
+import network.packet.types.Packet04Action;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
-import util.out.Formatter;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
@@ -126,11 +127,11 @@ public class Window extends JPanel {
 		textPane.setMargin(new Insets(0, 10, 0, 10));
 		textPane.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {
 				textField.requestFocus();
 			}
-			@Override
-			public void mousePressed(MouseEvent e) {}
 			@Override
 			public void mouseReleased(MouseEvent e) {}
 			@Override
@@ -193,7 +194,7 @@ public class Window extends JPanel {
 				setText("");
 				
 				if(!isCommand(str) && str != null)
-					adapter.sendPacket(new Packet03Text(str));
+					sendPacket(new Packet03Message(str));
 			}
 		});
 		
@@ -201,18 +202,11 @@ public class Window extends JPanel {
 	}
 	
 	/*
-	 * Sets the text of textField to str
-	 */
-	private void setText(String str) {
-		textField.setText(str);
-	}
-	
-	/*
 	 * Appends str to the end of textPane; acts as
 	 * filter to method: insertTextToDoc()
 	 */
 	public void appendText(String toAppend) {
-		if(toAppend == null || parseCommand(toAppend) || parsePacket(toAppend))
+		if(parseCommand(toAppend))
 			return;
 	
 		for(String str : toAppend.split("\\s+")) {
@@ -224,18 +218,41 @@ public class Window extends JPanel {
 	}
 	
 	/*
+	 * Appends str to the end of textPane; acts as
+	 * filter to method: insertTextToDoc();
+	 * exclusively for the PacketParser
+	 */
+	public void appendPacketText(PacketTypes packetType, String toAppend) {
+		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
+		insertTextToDoc(toAppend+"\n");
+	}
+	
+	/*
+	 * Sets the text of textField to str
+	 */
+	private void setText(String str) {
+		if(textField != null)
+			textField.setText(str);
+	}
+	
+	/*
+	 * Sends a packet over the adapter
+	 */
+	private void sendPacket(Packet packet) {
+		if(adapter != null)
+			adapter.sendPacket(packet);
+	}
+	
+	/*
 	 * Inserts text into the styled doc
 	 */
 	private void insertTextToDoc(String str) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					doc.insertString(doc.getLength(), str, style);
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		try {
+			if(doc != null)
+				doc.insertString(doc.getLength(), str, style);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -263,7 +280,7 @@ public class Window extends JPanel {
 			adapter.startServer();
 			window.setTitle("running server");
 		}
-		
+		else
 		if(args[0].equals("client")) {
 			if(args.length == 1)
 				adapter.createClient();
@@ -275,36 +292,14 @@ public class Window extends JPanel {
 			adapter.startClient();
 			window.setTitle("running client");
 		}
-		
+		else
 		if(args[0].equals("logout")) {
 			adapter.close();
 		}
-		
-		return true;
-	}
-	
-	/*
-	 * Checks to see if str is from a packet
-	 */
-	private boolean parsePacket(String str) {
-		int offset = 0;
-		
-		if(str.startsWith(Formatter.getFormat(PacketTypes.LOGIN))) {
-			StyleConstants.setForeground(style, Color.CYAN);
-			offset = Formatter.getFormat(PacketTypes.LOGIN).length();
-		} else 
-		if(str.startsWith(Formatter.getFormat(PacketTypes.DISCONNECT))) {
-			StyleConstants.setForeground(style, Color.GRAY);
-			offset = Formatter.getFormat(PacketTypes.DISCONNECT).length();
-		} else 
-		if(str.startsWith(Formatter.getFormat(PacketTypes.TEXT))) {
-			StyleConstants.setForeground(style, Color.MAGENTA);
-			offset = Formatter.getFormat(PacketTypes.TEXT).length();
-		} else {
-			return false;
+		else {
+			sendPacket(new Packet04Action(str));
+			appendText(str);
 		}
-		
-		insertTextToDoc(str.substring(offset)+"\n");
 		
 		return true;
 	}

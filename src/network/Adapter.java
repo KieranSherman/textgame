@@ -2,8 +2,10 @@ package network;
 
 import network.client.Client;
 import network.packet.Packet;
-import network.packet.PacketReceiver;
+import network.packet.PacketParser;
+import network.packet.types.Packet02Disconnect;
 import network.server.Server;
+import util.exceptions.AlreadyRunningNetworkException;
 
 /*
  * Class models a network-UI adapter, bridging the two
@@ -13,61 +15,115 @@ public class Adapter  {
 	private Server server;		//server object
 	private Client client;		//client object
 	
-	private static PacketReceiver packetReceiver;	//packet receiver
+	private static PacketParser packetParser;	//packet receiver
 	
 	public Adapter() {
-		packetReceiver = new PacketReceiver();
+		packetParser = new PacketParser();
 	}
 	
 	/*
 	 * Create a client
 	 */
 	public void createClient() {
-		client = new Client();
+		try {
+			checkNetwork();
+			client = new Client();
+			packetParser.setClient(client);
+		} catch (AlreadyRunningNetworkException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Create a client connecting to hostName
 	 */
 	public void createClient(String hostName) {
-		client = new Client(hostName);
+		try {
+			checkNetwork();
+			client = new Client(hostName);
+			packetParser.setClient(client);
+		} catch (AlreadyRunningNetworkException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Create a client connection hostName:portNumber
 	 */
 	public void createClient(String hostName, int portNumber) {
-		client = new Client(hostName, portNumber);
+		try {
+			checkNetwork();
+			client = new Client(hostName, portNumber);
+			packetParser.setClient(client);
+		} catch (AlreadyRunningNetworkException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Start the client on a thread
 	 */
 	public void startClient() {
+		if(client == null) {
+			System.err.println("client not initialized");
+			return;
+		}
+		
 		System.out.println("running client");
 		new Thread(client).start();
+	}
+	
+	/*
+	 * Destroy the client
+	 */
+	public void destroyClient() {
+		client = null;
 	}
 	
 	/*
 	 * Create a server
 	 */
 	public void createServer() {
-		server = new Server();
+		try {
+			checkNetwork();
+			server = new Server();
+			packetParser.setServer(server);
+		} catch (AlreadyRunningNetworkException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Create a server on 127.0.0.1:portNumber
 	 */
 	public void createServer(int portNumber) {
-		server = new Server(portNumber);
+		try {
+			checkNetwork();
+			server = new Server(portNumber);
+			packetParser.setServer(server);
+		} catch (AlreadyRunningNetworkException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Start the server on a thread
 	 */
 	public void startServer() {
+		if(server == null) {
+			System.err.println("server not initialized");
+			return;
+		}
+		
 		System.out.println("running server");
 		new Thread(server).start();
+	}
+	
+	/*
+	 * Destory the server
+	 */
+	public void destroyServer() {
+		server = null;
 	}
 	
 	/*
@@ -79,19 +135,10 @@ public class Adapter  {
 			return;
 		}
 		
-		if(server == null && client == null)
-			return;
-		
-		//If the user is running a client
-		if(server == null && client != null)
-			client.sendPacket(packet);
-		
-		//If the user is running a server
-		if(server != null && client == null)
+		if(server != null)
 			server.sendPacket(packet);
 		
-		//If the user is running a server and a client
-		if(server != null && client != null)
+		if(client != null)
 			client.sendPacket(packet);
 	}
 	
@@ -100,10 +147,10 @@ public class Adapter  {
 	 */
 	public synchronized void parsePacket(NetworkTypes networkTypes, Packet packet) {
 		if(networkTypes == NetworkTypes.CLIENT && client != null)
-			packetReceiver.parsePacket(NetworkTypes.CLIENT, packet);
+			packetParser.parsePacket(NetworkTypes.CLIENT, packet);
 		
 		if(networkTypes == NetworkTypes.SERVER && server != null)
-			packetReceiver.parsePacket(NetworkTypes.SERVER, packet);
+			packetParser.parsePacket(NetworkTypes.SERVER, packet);
 	}
 
 	/*
@@ -111,14 +158,19 @@ public class Adapter  {
 	 */
 	public void close() {
 		if(client != null) {
+			client.sendPacket(new Packet02Disconnect("client is disconnecting..."));
 			client.disconnect();
-			client = null;
 		}
 		
 		if(server != null) {
+			server.sendPacket(new Packet02Disconnect("server is closing..."));
 			server.close();
-			server = null;
 		}
+	}
+	
+	private void checkNetwork() throws AlreadyRunningNetworkException {
+		if(server != null || client != null)
+			throw new AlreadyRunningNetworkException("You are already running a network!");
 	}
 	
 }

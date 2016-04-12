@@ -3,6 +3,7 @@ package util.out;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import network.packet.PacketTypes;
 import util.Word;
 
 /*
@@ -20,6 +21,10 @@ public class Colorer {
 	 * Add a word to the list
 	 */
 	public void addWord(Word word) {
+		if(word.getWord().startsWith(":") || word.getWord().equals(""))
+			return;
+		
+		System.out.println("loading word ["+word+"]");
 		words.add(word);
 	}
 	
@@ -27,6 +32,10 @@ public class Colorer {
 	 * Add a word to the list with a specific ColorRule
 	 */
 	public void addWord(String word, ColorRules cr) {
+		if(word.startsWith(":") || word.equals(""))
+			return;
+		
+		System.out.println("loading word ["+word+"]");
 		words.add(new Word(word, cr));
 	}
 	
@@ -39,6 +48,25 @@ public class Colorer {
 				return word.getColor();
 		
 		return Color.WHITE;
+	}
+	
+	public Color getPacketColor(PacketTypes packetType) {
+		switch(packetType) {
+			case ACTION: {
+				return Color.WHITE;
+			}
+			case DISCONNECT: {
+				return Color.GRAY;
+			}
+			case LOGIN: {
+				return Color.GREEN;
+			}
+			case MESSAGE: {
+				return Color.MAGENTA;
+			}
+		}
+		
+		return null;
 	}
 	
 	/*
