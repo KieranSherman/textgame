@@ -36,8 +36,6 @@ public class ClientReceiver extends Thread {
 			if(adapter != null)
 				adapter.parsePacket(NetworkTypes.CLIENT, packet);
 		} while (true);
-		
-		System.err.println("client receiver closing connection to server");
 	}
 	
 	/*

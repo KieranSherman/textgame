@@ -40,8 +40,6 @@ public class ServerReceiver extends Thread {
 			
 		} while (true);
 		
-		System.err.println("server receiver closing connection with client");
-		
 		serverConnection.close();
 	}
 	

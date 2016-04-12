@@ -87,6 +87,12 @@ public class Server extends Thread {
 		System.err.println("server closed");
 		logger.appendText("server closed");
 		adapter.destroyServer();
+		
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			System.err.println("error closing server socket");
+		}
 	}
 	
 	private void openConnection() {

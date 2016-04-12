@@ -191,7 +191,7 @@ public class Window extends JPanel {
 				String str = textField.getText();
 
 				appendText("> "+str);
-				setText("");
+				setTextFieldText("");
 				
 				if(!isCommand(str) && str != null)
 					sendPacket(new Packet03Message(str));
@@ -205,7 +205,7 @@ public class Window extends JPanel {
 	 * Appends str to the end of textPane; acts as
 	 * filter to method: insertTextToDoc()
 	 */
-	public void appendText(String toAppend) {
+	public synchronized void appendText(String toAppend) {
 		if(parseCommand(toAppend))
 			return;
 	
@@ -222,7 +222,7 @@ public class Window extends JPanel {
 	 * filter to method: insertTextToDoc();
 	 * exclusively for the PacketParser
 	 */
-	public void appendPacketText(PacketTypes packetType, String toAppend) {
+	public synchronized void appendPacketText(PacketTypes packetType, String toAppend) {
 		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
 		insertTextToDoc(toAppend+"\n");
 	}
@@ -230,7 +230,7 @@ public class Window extends JPanel {
 	/*
 	 * Sets the text of textField to str
 	 */
-	private void setText(String str) {
+	private void setTextFieldText(String str) {
 		if(textField != null)
 			textField.setText(str);
 	}

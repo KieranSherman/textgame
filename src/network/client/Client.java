@@ -92,7 +92,7 @@ public class Client extends Thread {
 		clientReceiver.close();
 		
 		System.err.println("client disconnected");
-		logger.appendText("you disconnected");
+		logger.appendText("you have been disconnected");
 		
 		adapter.destroyClient();
 	}
