@@ -35,6 +35,7 @@ public class Resources {
 	private static boolean initialized = false;		//whether or not the call to init() has been made
 	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
+	public static final String VERSION = "v1.17";
 	
 	private Resources() {}							//prevent instantiation of Resources object
 	

@@ -76,7 +76,7 @@ public class Window extends JPanel {
 					System.exit(1);
 				}
 
-				window = new JFrame("");
+				window = new JFrame(Resources.VERSION);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.setResizable(false);
 				window.addWindowListener(new WindowHandler(panel));
@@ -278,7 +278,7 @@ public class Window extends JPanel {
 				adapter.createServer(Integer.parseInt(args[1]));
 			
 			adapter.startServer();
-			window.setTitle("running server");
+			window.setTitle(Resources.VERSION+" | running server");
 		}
 		else
 		if(args[0].equals("client")) {
@@ -290,11 +290,12 @@ public class Window extends JPanel {
 				adapter.createClient(args[1], Integer.parseInt(args[2]));
 			
 			adapter.startClient();
-			window.setTitle("running client");
+			window.setTitle(Resources.VERSION+" | running client");
 		}
 		else
 		if(args[0].equals("logout")) {
 			adapter.close();
+			window.setTitle(Resources.VERSION);
 		}
 		else {
 			sendPacket(new Packet04Action(str));
