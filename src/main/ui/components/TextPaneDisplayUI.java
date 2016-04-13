@@ -87,7 +87,7 @@ public class TextPaneDisplayUI extends Window {
 			public void mouseReleased(MouseEvent e) {}
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				notes.setBackground(new Color(45, 45, 45));
+				notes.setBackground(new Color(30, 30, 30));
 				sidebar.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 			}
 
@@ -99,7 +99,7 @@ public class TextPaneDisplayUI extends Window {
 		});
 		
 		sidebar.add(notes, BorderLayout.CENTER);
-		Border matteBorder = BorderFactory.createMatteBorder(0, 1, 0, 0, Color.WHITE);
+		Border matteBorder = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.WHITE);
 		sidebar.setBorder(matteBorder);
 		
 		p.add(sidebar, BorderLayout.EAST);
