@@ -55,7 +55,8 @@ public class Window extends JPanel {
 		
 		Resources.init(this);
 		this.init();
-		
+		BootThread.startWindow(this);
+
 		synchronized(this) {
 			try {
 				this.wait();
@@ -131,7 +132,6 @@ public class Window extends JPanel {
 				textField.requestFocus();
 				
 				BootThread.queueInfo("window initialized");
-				BootThread.startWindow(mainPanel);
 			}
 		});
 	}

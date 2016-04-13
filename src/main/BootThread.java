@@ -67,7 +67,7 @@ public class BootThread extends Thread {
 		new Thread() {
 			public void run() {
 				while(queue != null && !queue.isEmpty())
-					try { Thread.sleep(500); } catch (Exception e) {}
+					try { Thread.sleep((queue.size()+1)*100); } catch (Exception e) {}
 				
 				synchronized(window) {
 					window.notifyAll();

@@ -2,6 +2,7 @@ package main.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
@@ -56,10 +57,10 @@ public class TextPaneDisplayUI extends Window {
 			public void mouseExited(MouseEvent e) {}
 		});
 		
-		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-		Border b = BorderFactory.createTitledBorder(lineB, "COMMLINK", 
+		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
+		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "COMMLINK", 
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.UI, Resources.DARK_RED);
-		Border compound = BorderFactory.createCompoundBorder(b, textPane.getBorder());
+		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, textPane.getBorder());
 		
 		p.add(textPane, BorderLayout.CENTER);
 
@@ -75,6 +76,7 @@ public class TextPaneDisplayUI extends Window {
 		notes.setForeground(Color.WHITE);
 		notes.setFont(Resources.USER_OUTPUT);
 		notes.setCaretColor(Color.WHITE);
+		notes.setSelectionColor(Color.GRAY);
 		notes.setMargin(new Insets(10, 10, 0, 10));
 		notes.addMouseListener(new MouseListener() {
 			@Override
@@ -85,17 +87,20 @@ public class TextPaneDisplayUI extends Window {
 			public void mouseReleased(MouseEvent e) {}
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				notes.setBackground(new Color(35, 35, 35));
+				notes.setBackground(new Color(45, 45, 45));
+				sidebar.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
 				notes.setBackground(new Color(20, 20, 20));
+				sidebar.setCursor(Cursor.getDefaultCursor());
 			}
-			
 		});
 		
 		sidebar.add(notes, BorderLayout.CENTER);
+		Border matteBorder = BorderFactory.createMatteBorder(0, 1, 0, 0, Color.WHITE);
+		sidebar.setBorder(matteBorder);
 		
 		p.add(sidebar, BorderLayout.EAST);
 		
@@ -105,7 +110,7 @@ public class TextPaneDisplayUI extends Window {
 		scroll.getVerticalScrollBar().setUI(new ScrollBarUI());
 		scroll.getHorizontalScrollBar().setUI(new ScrollBarUI());
 		scroll.setBackground(new Color(15, 15, 15));
-		scroll.setBorder(compound);
+		scroll.setBorder(compoundBorder);
 		
 		BootThread.queueInfo("textPane loaded");
 		
