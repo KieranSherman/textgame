@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.ui.BootThread;
+import main.BootThread;
 import main.ui.Window;
 import network.Adapter;
 import util.exceptions.ResourcesNotInitializedException;

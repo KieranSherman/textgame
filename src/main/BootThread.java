@@ -1,4 +1,4 @@
-package main.ui;
+package main;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import com.sun.jmx.remote.internal.ArrayQueue;
 
+import main.ui.Window;
 import util.Resources;
 
 public class BootThread extends Thread {
