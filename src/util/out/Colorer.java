@@ -3,7 +3,7 @@ package util.out;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import network.packet.PacketTypes;
+import network.packet.types.PacketTypes;
 import util.Word;
 
 /*
@@ -24,7 +24,6 @@ public class Colorer {
 		if(word.getWord().startsWith(":") || word.getWord().equals(""))
 			return;
 		
-		System.out.println("loading word ["+word+"]");
 		words.add(word);
 	}
 	
@@ -35,7 +34,6 @@ public class Colorer {
 		if(word.startsWith(":") || word.equals(""))
 			return;
 		
-		System.out.println("loading word ["+word+"]");
 		words.add(new Word(word, cr));
 	}
 	

@@ -1,5 +1,6 @@
 package network.server;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 
 import network.Adapter;
 import network.packet.Packet;
+import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
@@ -55,11 +57,16 @@ public class Server extends Thread {
 			System.exit(1);
 		}
 		
+		String error = null;
 		try {
 			serverSocket = new ServerSocket(portNumber);
-			logger.appendText("server started at "+InetAddress.getLocalHost().getHostAddress()+":"+serverSocket.getLocalPort());
+			logger.appendText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
+					":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		} catch (IOException e) {
-			System.err.println("server unable to initialize");
+			error = "server unable to initialize";
+			System.err.println(error);
+			logger.appendText(error, Color.RED);
+			adapter.destroyServer();
 		}
 		
 		new Thread() {
@@ -84,8 +91,15 @@ public class Server extends Thread {
 			} catch (InterruptedException e) {}
 		}
 		
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			System.err.println("error closing server socket");
+		}
+		
 		System.err.println("server closed");
-		logger.appendText("server closed");
+		logger.appendText("[server closed]", Color.GRAY);
+		
 		adapter.destroyServer();
 	}
 	
@@ -97,10 +111,20 @@ public class Server extends Thread {
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
+		Logger logger = null;
+		try {
+			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
 		int index = serverConnections.indexOf(serverConnection);
 		
-		if(index != -1) 
+		if(index != -1) {
 			serverConnections.remove(index);
+			logger.appendText("[client disconnected]", Color.GRAY);
+		}
 	}
 	
 	public void sendPacket(Packet packet) {

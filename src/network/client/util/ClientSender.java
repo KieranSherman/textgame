@@ -1,4 +1,4 @@
-package network.server;
+package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -9,11 +9,11 @@ import java.net.UnknownHostException;
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
 
-public class ServerSender {
+public class ClientSender {
 	
 	private ObjectOutputStream sOutput;
 	
-	public ServerSender(Socket socket) throws IOException {
+	public ClientSender(Socket socket) throws IOException {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
 		
@@ -22,7 +22,7 @@ public class ServerSender {
 	
 	private void init() {
 		try {
-			sendPacket(new Packet01Login("you have connected to "+InetAddress.getLocalHost().getHostAddress()));
+			sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]"));
 		} catch (UnknownHostException e) {
 			System.err.println("error sending login packet");
 		}
@@ -48,26 +48,26 @@ public class ServerSender {
 			if(sOutput != null)
 				sOutput.reset();
 		} catch (IOException e) {
-			System.err.println("error resetting output stream");
+			System.err.println("error resetting stream");
 		}
 		
 		try {
 			if(sOutput != null)
 				sOutput.flush();
 		} catch (IOException e) {
-			System.err.println("error flushing output stream");
+			System.err.println("error flushing stream");
 		}
 	}
 	
 	/*
 	 * closes the output stream
 	 */
-	protected void close() {
+	public void close() {
 		if(sOutput != null) {
 			try {
 				sOutput.close();
 			} catch (IOException e) {
-				System.err.println("error closing output stream");
+				System.err.println("error closing stream");
 			}
 			
 			sOutput = null;

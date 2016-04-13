@@ -8,11 +8,7 @@ import java.awt.event.WindowListener;
  */
 public class WindowHandler implements WindowListener {
 	
-	private Window window;
-	
-	public WindowHandler(Window window) {
-		this.window = window;
-	}
+	public WindowHandler() {}
 
 	@Override
 	public void windowOpened(WindowEvent e) {}
@@ -22,7 +18,7 @@ public class WindowHandler implements WindowListener {
 	 * closes connections when window is closing
 	 */
 	public void windowClosing(WindowEvent e) {
-		window.closeConnections();
+		Window.adapter.close();
 	}
 
 	@Override
@@ -39,7 +35,7 @@ public class WindowHandler implements WindowListener {
 	 * request textField focus upon window activation
 	 */
 	public void windowActivated(WindowEvent e) {
-		window.textField.requestFocus();
+		Window.textField.requestFocus();
 	}
 
 	@Override

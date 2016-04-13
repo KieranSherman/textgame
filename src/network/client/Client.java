@@ -1,9 +1,12 @@
 package network.client;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
 
 import network.Adapter;
+import network.client.util.ClientReceiver;
+import network.client.util.ClientSender;
 import network.packet.Packet;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -59,22 +62,32 @@ public class Client extends Thread {
 			System.exit(1);
 		}
 		
+		String error = null;
 		try {
 			socket = new Socket(hostName, portNumber);
 		} catch (IOException e) {
-			System.err.println("client unable to connect");
+			error = "client unable to connect";
+			System.err.println(error);
+			logger.appendText(error, Color.RED);
+			adapter.destroyClient();
 		}
 				
 		try {
 			clientSender = new ClientSender(socket);
 		} catch (IOException e) {
-			System.err.println("client sender unable to initialize");
+			error = "client sender unable to initialize";
+			System.err.println(error);
+			logger.appendText(error, Color.RED);
+			adapter.destroyClient();
 		}
 		
 		try {
 			clientReceiver = new ClientReceiver(socket, adapter);
 		} catch (IOException e) {
-			System.err.println("client receiver unable to initialize");
+			error = "client receiver unable to initialize";
+			System.err.println(error);
+			logger.appendText(error, Color.RED);
+			adapter.destroyClient();
 		}
 		
 		// start a new thread to receive and handle incoming packets
@@ -91,8 +104,14 @@ public class Client extends Thread {
 		clientSender.close();
 		clientReceiver.close();
 		
+		try {
+			socket.close();
+		} catch (IOException e) {
+			System.err.println("error closing client socket");
+		}
+		
 		System.err.println("client disconnected");
-		logger.appendText("you disconnected");
+		logger.appendText("[you have been disconnected]", Color.GRAY);
 		
 		adapter.destroyClient();
 	}

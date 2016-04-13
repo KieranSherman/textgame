@@ -1,10 +1,12 @@
 package network;
 
+import main.ui.Window;
 import network.client.Client;
 import network.packet.Packet;
 import network.packet.PacketParser;
 import network.packet.types.Packet02Disconnect;
 import network.server.Server;
+import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
 
 /*
@@ -78,6 +80,7 @@ public class Adapter  {
 	 */
 	public void destroyClient() {
 		client = null;
+		Window.setTitle(Resources.VERSION);
 	}
 	
 	/*
@@ -124,6 +127,7 @@ public class Adapter  {
 	 */
 	public void destroyServer() {
 		server = null;
+		Window.setTitle(Resources.VERSION);
 	}
 	
 	/*
@@ -158,12 +162,12 @@ public class Adapter  {
 	 */
 	public void close() {
 		if(client != null) {
-			client.sendPacket(new Packet02Disconnect("client is disconnecting..."));
+			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
 			client.disconnect();
 		}
 		
 		if(server != null) {
-			server.sendPacket(new Packet02Disconnect("server is closing..."));
+			server.sendPacket(new Packet02Disconnect("[server is closing...]"));
 			server.close();
 		}
 	}

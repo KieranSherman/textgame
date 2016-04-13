@@ -1,14 +1,20 @@
 package util.out;
 
-import network.packet.PacketTypes;
+import network.packet.Packet;
+import network.packet.types.PacketTypes;
 
 /*
  * Class will adjust String before outputting it to text area
  */
 public class Formatter {
 	
-	public static String format(String str, PacketTypes packetType) {
-		return getFormat(packetType)+str;
+	private Formatter() {}
+	
+	public static Packet format(Packet packet) {
+		String str = getFormat(packet.getType());
+		packet.setData(str+packet.getData());
+		
+		return packet;
 	}
 	
 	public static String getFormat(PacketTypes packetType) {
