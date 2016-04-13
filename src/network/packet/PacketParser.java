@@ -51,37 +51,12 @@ public class PacketParser {
 	 * Parse a packet received from the server (i.e client handles this packet)
 	 */
 	private synchronized void parseServerPacket(Packet packet) {
-		String str = null;
+		packet = Formatter.format(packet);
+
+		if(packet.getType() == PacketTypes.DISCONNECT)
+			client.disconnect();
 		
-		switch(packet.getType()) {
-			case LOGIN: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.LOGIN);
-				break;
-			}
-			
-			case DISCONNECT: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.DISCONNECT);
-				
-				client.disconnect();
-				break;
-			}
-			
-			case MESSAGE: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.MESSAGE);
-				break;
-			}
-			
-			case ACTION: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.ACTION);
-				break;
-			}
-		}
-		
-		logger.appendPacketText(packet.getType(), str);
+		logger.appendPacket(packet);
 
 	}
 	
@@ -89,36 +64,8 @@ public class PacketParser {
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
-		String str = null;
-		
-		switch(packet.getType()) {
-			case LOGIN: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.LOGIN);
-				break;
-			}
-			
-			case DISCONNECT: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.DISCONNECT);
-				break;
-			}
-			
-			case MESSAGE: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.MESSAGE);
-				break;
-			}
-			
-			case ACTION: {
-				str = (String) packet.getData();
-				str = Formatter.format(str, PacketTypes.ACTION);
-				break;
-			}
-		}
-		
-		logger.appendPacketText(packet.getType(), str);
-
+		packet = Formatter.format(packet);
+		logger.appendPacket(packet);
 	}
 
 }

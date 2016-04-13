@@ -1,4 +1,4 @@
-package main.ui;
+package main;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import com.sun.jmx.remote.internal.ArrayQueue;
 
+import main.ui.Window;
 import util.Resources;
 
 public class BootThread extends Thread {
@@ -66,7 +67,7 @@ public class BootThread extends Thread {
 		new Thread() {
 			public void run() {
 				while(queue != null && !queue.isEmpty())
-					try { Thread.sleep(500); } catch (Exception e) {}
+					try { Thread.sleep((queue.size()+1)*100); } catch (Exception e) {}
 				
 				synchronized(window) {
 					window.notifyAll();

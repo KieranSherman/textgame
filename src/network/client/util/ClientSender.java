@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
-import network.packet.types.Packet03Message;
 
 public class ClientSender {
 	
@@ -23,7 +22,7 @@ public class ClientSender {
 	
 	private void init() {
 		try {
-			sendPacket(new Packet01Login("client has connected from "+InetAddress.getLocalHost().getHostAddress()));
+			sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]"));
 		} catch (UnknownHostException e) {
 			System.err.println("error sending login packet");
 		}
@@ -65,8 +64,6 @@ public class ClientSender {
 	 */
 	public void close() {
 		if(sOutput != null) {
-			sendPacket(new Packet03Message("client disconnected"));
-
 			try {
 				sOutput.close();
 			} catch (IOException e) {

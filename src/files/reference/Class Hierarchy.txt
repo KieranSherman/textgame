@@ -7,6 +7,13 @@ src
 		--fonts							...				>> package contains all fonts
 			**vador.ttf					...					** font used for UI
 			
+		--imgs											>> package contains all image files
+			---afdesign					...					>>> pacakge contains all affinity designer files
+				***booting1.afdesign	...						*** design for booting screen
+								
+			---pngs						...					>>> package contains all png fiels
+				***booting1.png									*** png for booting screen
+			
 		--reference						...				>> packages contains all files used for general referencing
 			**Class Hierarchy.txt		...					** detailed explanation of package and file hierarchy
 			**Reference.txt				...					** file containing all references loaded by Resources.java
@@ -16,21 +23,26 @@ src
 
 	-main <<<<							...			> package contains all classes used in initialization
 		--ui							...				>> package contains classes relevant to the UI
-			**ScrollBarUI.java			...					** sets the scroll bar look
+			---components				...					>>> package contains all classes used for Window.class components
+				***ScrollBarUI.java		...						*** sets the scroll bar look
+				***TextFieldInputUI.java						*** acts as the user's input
+				***TextPaneDisplayUI.java						*** user's visual panel for communication
+				
 			**Window.java				...					** displays the UI window
 			**WindowHandler.java		...					** listens to the UI window
 		
+		*BootThread.java				...				* thread for booting
 		*Game.java						...				* controls the game logic
 		*Main.java						...				* starts the program
 		
 	-network <<<<						...			> package contains all networking classes
-		--client						...				>> package contains all client classes
+		--client						...				>> package contains all client classes			
+			---util						...					>>> package contains all client utilities
+				***ClientReceiver.java	...						*** handles all incoming data
+				***ClientSender.java	...						*** handles all outgoing data
+			
 			**Client.java				...					** models a client
-			
-				---util					...					>>> package contains all client utilities
-					***ClientReceiver.java						*** handles all incoming data
-					***ClientSender.java						*** handles all outgoing data
-			
+				
 		--packet						...				>> package contains all packet classes
 			---types					...					>>> package contains different types of packets
 				***Packet01Login.java							*** packet used for login
@@ -42,13 +54,13 @@ src
 			**Packet.java				...					** abstract class modelling a packet
 			**PacketParser.java			...					** handles packets after they are received
 			
-		--server						...				>> package contains all server classes
-			**Server.java				...					** models a server
-			
-				---util					...					>>> package contains all server utilities
-					***ServerConnection.java					*** handles all connections with all clients
-					***ServerReceiver.java						*** handles all incoming data
-					***ServerSender.java						*** handles all outgoing data
+		--server						...				>> package contains all server classes			
+			---util						...					>>> package contains all server utilities
+				***ServerConnection.java						*** handles all connections with all clients
+				***ServerReceiver.java	...						*** handles all incoming data
+				***ServerSender.java	...						*** handles all outgoing data
+				
+			**Server.java				...					** models a server	
 		
 		*Adapter.java					...				* bridges the UI and networking features
 		*NetworkTypes.java				...				* enum specifying network types
@@ -65,8 +77,7 @@ src
 			
 		*Resources.java					...				* statically loaded members for easy access
 		*StreamCapturer.java			...				* stream modifier to redirect stdout to UI
-		*Word.java						...				* models a word
-		
+		*Word.java						...				* models a word		
 		
 =================================================================================================================================
 
