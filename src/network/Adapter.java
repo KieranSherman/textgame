@@ -1,5 +1,10 @@
 package network;
 
+import java.awt.Color;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
 import main.ui.Window;
 import network.client.Client;
 import network.packet.Packet;
@@ -14,13 +19,18 @@ import util.exceptions.AlreadyRunningNetworkException;
  */
 public class Adapter  {
 	
+	private boolean block;
+	
 	private Server server;		//server object
 	private Client client;		//client object
 	
 	private static PacketParser packetParser;	//packet receiver
 	
+	private ArrayList<Object[]> blockedPackets;
+	
 	public Adapter() {
 		packetParser = new PacketParser();
+		blockedPackets = new ArrayList<Object[]>();
 	}
 	
 	/*
@@ -141,7 +151,7 @@ public class Adapter  {
 		
 		if(server != null)
 			server.sendPacket(packet);
-		
+		else
 		if(client != null)
 			client.sendPacket(packet);
 	}
@@ -149,11 +159,18 @@ public class Adapter  {
 	/*
 	 * Parse a packet
 	 */
-	public synchronized void parsePacket(NetworkTypes networkTypes, Packet packet) {
-		if(networkTypes == NetworkTypes.CLIENT && client != null)
+	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
+		if(block) {
+			synchronized(blockedPackets) {
+				blockedPackets.add(new Object[] {networkType, packet});
+			}
+			return;
+		}
+		
+		if(networkType == NetworkTypes.CLIENT && client != null)
 			packetParser.parsePacket(NetworkTypes.CLIENT, packet);
 		
-		if(networkTypes == NetworkTypes.SERVER && server != null)
+		if(networkType == NetworkTypes.SERVER && server != null)
 			packetParser.parsePacket(NetworkTypes.SERVER, packet);
 	}
 
@@ -165,10 +182,62 @@ public class Adapter  {
 			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
 			client.disconnect();
 		}
-		
+		else
 		if(server != null) {
 			server.sendPacket(new Packet02Disconnect("[server is closing...]"));
 			server.close();
+		}
+	}
+	
+	/*
+	 * Blocks incoming connections
+	 */
+	public void block(boolean showBlockedPackets) {
+		block = !block;
+
+		if(block == false) {
+			Window.appendColoredText("[removed block from incoming connections]", Color.GRAY);
+			
+			synchronized(blockedPackets) {
+				if(showBlockedPackets) {
+					Window.appendColoredText("[showing blocked packets...]", Color.GRAY);
+	
+					for(int i = 0; i < blockedPackets.size(); i++) {
+						Object [] obj = blockedPackets.remove(i);
+						NetworkTypes networkType = (NetworkTypes) obj[0];
+						Packet packet = (Packet) obj[1];
+						parsePacket(networkType, packet);
+					}
+					
+					Window.appendColoredText("[...end of blocked packets]", Color.GRAY);
+				}
+				
+				blockedPackets.clear();
+			}
+		} else
+		if(block == true) {
+			Window.appendColoredText("[blocking incoming connections]", Color.GRAY);
+		}
+	}
+	
+	/*
+	 * Displays the status of the network
+	 */
+	public void status() {
+		if(client != null) {
+			Window.appendColoredText("[client connected to server]", Color.CYAN);
+		}
+		else
+		if(server != null) {
+			try {
+				Window.appendColoredText("[server open at "+
+						InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
+			} catch (UnknownHostException e) {
+				Window.appendColoredText("[server status unkown]", Color.RED);
+			}
+		}
+		else {
+			Window.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	

@@ -2,12 +2,15 @@
 														References
 =================================================================================================================================
 
-VERSION: 	v1.21
+VERSION: 	v1.22
 BOOT: 		true
 
 =================================================================================================================================
 													   Recent Updates
 =================================================================================================================================
+
+v1.22 - added JSplitPanel for Notes and Commlink panels
+	*see JSplitPaneUI.java for reference
 
 v1.21 - minor bug fixes, notes panel, general optimization
 	*added a separate panel for notes

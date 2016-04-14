@@ -24,6 +24,7 @@ src
 	-main <<<<							...			> package contains all classes used in initialization
 		--ui							...				>> package contains classes relevant to the UI
 			---components				...					>>> package contains all classes used for Window.class components
+				***JSplitPanelUI.java	...						*** set the split panel between notes and display
 				***ScrollBarUI.java		...						*** sets the scroll bar look
 				***TextFieldInputUI.java						*** acts as the user's input
 				***TextPaneDisplayUI.java						*** user's visual panel for communication
