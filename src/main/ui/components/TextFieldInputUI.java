@@ -2,6 +2,7 @@ package main.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,7 +14,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import main.BootThread;
 import main.ui.Window;
 import network.packet.types.Packet03Message;
 import util.Resources;
@@ -24,7 +24,7 @@ public class TextFieldInputUI extends Window {
 	
 	private TextFieldInputUI() {}
 	
-	public static JPanel createTextField() {
+	public static Component createTextField() {
 		JPanel inputField = new JPanel();
 		inputField.setLayout(new BorderLayout());
 		inputField.setBackground(new Color(15, 15, 15));
@@ -63,7 +63,6 @@ public class TextFieldInputUI extends Window {
 			}
 		});
 		
-		BootThread.queueInfo("textField loaded");
 		return inputField;
 	}
 	
