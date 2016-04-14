@@ -24,7 +24,7 @@ import util.out.Logger;
  * Class holds resources used throughout classes
  */
 public class Resources {
-	public final static int HEIGHT = 400, WIDTH = (int)(HEIGHT*1.618);	//height and width of window
+	public final static int HEIGHT = 500, WIDTH = (int)(HEIGHT*1.618);	//height and width of window
 	
 	public final static Font USER_OUTPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
 	public final static Font UI = loadFont("src/files/fonts/vador.ttf").deriveFont(15f); //font for UI

@@ -55,12 +55,14 @@ public class Window extends JPanel {
 		
 		Resources.init(this);
 		this.init();
-		BootThread.startWindow(this);
 
 		synchronized(this) {
-			try {
-				this.wait();
-			} catch (InterruptedException e) {}
+			try { this.wait(); } catch (InterruptedException e) {}
+		}
+		
+		synchronized(this) {
+			BootThread.startWindow(this);
+			try { this.wait(); } catch (InterruptedException e) {}
 		}
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -81,7 +83,7 @@ public class Window extends JPanel {
 			return;
 		
 		bootThread = new BootThread();
-		Resources.sleep(500);
+		Resources.sleep(400);
 	}
 	
 	/*
@@ -109,7 +111,6 @@ public class Window extends JPanel {
 				
 				window = new JFrame(Resources.VERSION);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				window.setResizable(false);
 				window.addWindowListener(new WindowHandler());
 				
 				mainPanel.setBackground(new Color(15, 15, 15));
@@ -132,6 +133,10 @@ public class Window extends JPanel {
 				textField.requestFocus();
 				
 				BootThread.queueInfo("window initialized");
+				
+				synchronized(mainPanel) {
+					mainPanel.notifyAll();
+				}
 			}
 		});
 	}
@@ -206,13 +211,29 @@ public class Window extends JPanel {
 			window.setTitle(Resources.VERSION+" | running client");
 		}
 		else
+		if(args[0].equals("block")) {
+			if(args.length == 1)
+				adapter.block(false);
+			else if(args.length == 2)
+				adapter.block(Boolean.parseBoolean(args[1]));
+		}
+		else
+		if(args[0].equals("clear")) {
+			textPane.setText("");
+		}
+		else
+		if(args[0].equals("status")) {
+			adapter.status();
+		}
+		else
 		if(args[0].equals("logout")) {
 			adapter.close();
 			window.setTitle(Resources.VERSION);
 		}
 		else
-		if(args[0].equals("send")) {
-			adapter.sendPacket(new Packet03Message(notes.getText()));
+		if(args[0].equals("notes")) {
+			adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+notes.getText()+"\n<<<<<<< END"));
+			appendColoredText("[sent notes]", Color.GRAY);
 		}
 		else {
 			adapter.sendPacket(new Packet04Action(str));
