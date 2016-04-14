@@ -1,6 +1,7 @@
 package main;
 
 import main.ui.Window;
+import sound.Sound;
 
 /*
  * Class models a game
@@ -12,6 +13,7 @@ public class Game {
 	
 	public Game() {
 		window = new Window();
+		Sound.background1.loop();
 	}
 	
 	public void play() {
