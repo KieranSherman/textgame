@@ -4,32 +4,14 @@ import java.awt.Color;
 
 import main.ui.Window;
 import network.packet.Packet;
-import network.packet.types.PacketTypes;
 
 /*
  * Logger class has direct access to the Game's Window
  */
 public class Logger {
 	
-	private static Window window;
-	
-	public Logger(Window window) {
-		Logger.window = window;
-	}
-	
-	/*
-	 * appends text to the text pane
-	 */
 	public void appendPacket(Packet packet) {
-		PacketTypes packetType = packet.getType();
-		String str = ((String) packet.getData()).substring(Formatter.getFormat(packetType).length());
-
-		if(packetType == PacketTypes.ACTION) {
-			appendText("[THEM] "+str);
-			return;
-		}
-		
-		window.appendPacket(packet);
+		Window.appendPacket(packet);
 	}
 	
 	public void appendText(String str) {

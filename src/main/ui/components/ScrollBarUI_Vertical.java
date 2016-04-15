@@ -9,10 +9,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import util.Resources;
+
 /*
  * Class sets the UI for a scroll bar
  */
-public class ScrollBarUI extends BasicScrollBarUI {
+public class ScrollBarUI_Vertical extends BasicScrollBarUI {
 	
 	protected JButton createZeroButton() {
 	    JButton button = new JButton("zero button");
@@ -41,7 +43,8 @@ public class ScrollBarUI extends BasicScrollBarUI {
 
     @Override
     protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-    	g.setColor(Color.WHITE);
-        g.fillRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height);
+    	g.setColor(Resources.DARK_RED);
+        g.fillRect(thumbBounds.x, thumbBounds.y, 3, thumbBounds.height);
     }
+    
 }

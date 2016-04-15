@@ -17,6 +17,7 @@ import util.out.Logger;
  */
 public class Client extends Thread {
 	
+	private String username;
 	private String hostName;			//ip address
 	private int portNumber;				//port number
 	
@@ -38,6 +39,14 @@ public class Client extends Thread {
 	public Client(String hostName, int portNumber) {
 		this(hostName);
 		this.portNumber = portNumber;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 	
 	@Override
@@ -73,7 +82,7 @@ public class Client extends Thread {
 		}
 				
 		try {
-			clientSender = new ClientSender(socket);
+			clientSender = new ClientSender(socket, username);
 		} catch (IOException e) {
 			error = "client sender unable to initialize";
 			System.err.println(error);

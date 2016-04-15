@@ -1,6 +1,7 @@
 package network.packet.types;
 
 import network.packet.Packet;
+import util.Resources;
 
 /*
  * Class models a text packet
@@ -8,12 +9,8 @@ import network.packet.Packet;
 public class Packet04Action extends Packet {
 	private static final long serialVersionUID = 1L;
 
-	private Packet04Action() {
-		super(PacketTypes.ACTION);
-	}
-	
 	public Packet04Action(String data) {
-		this();
+		super(PacketTypes.ACTION, Resources.HOST_ADDRESS);
 		super.data = data;
 	}
 

@@ -11,11 +11,13 @@ import network.packet.types.PacketTypes;
 public abstract class Packet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private String hostAddress;
 	private PacketTypes packetType;		//what kind of packet it is
 	protected Object data;
 	
-	public Packet(PacketTypes packetType) {
+	public Packet(PacketTypes packetType, String hostAddress) {
 		this.packetType = packetType;
+		this.hostAddress = hostAddress;
 	}
 	
 	public void setData(Object data) {
@@ -28,5 +30,9 @@ public abstract class Packet implements Serializable {
 	
 	public PacketTypes getType() {		//return the packet's type
 		return packetType;
+	}
+	
+	public String getHostAddress() {
+		return hostAddress;
 	}
 }

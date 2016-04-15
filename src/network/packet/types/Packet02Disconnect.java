@@ -1,6 +1,7 @@
 package network.packet.types;
 
 import network.packet.Packet;
+import util.Resources;
 
 /*
  * Class models a disconnect packet
@@ -8,12 +9,8 @@ import network.packet.Packet;
 public class Packet02Disconnect extends Packet {
 	private static final long serialVersionUID = 1L;
 	
-	private Packet02Disconnect() {
-		super(PacketTypes.DISCONNECT);
-	}
-	
 	public Packet02Disconnect(String data) {
-		this();
+		super(PacketTypes.DISCONNECT, Resources.HOST_ADDRESS);
 		super.data = data;
 	}
 
