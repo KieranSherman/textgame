@@ -2,7 +2,7 @@
 														References
 =================================================================================================================================
 
-VERSION: 	v1.23
+VERSION: 	v1.24
 BOOT: 		true
 
 =================================================================================================================================
@@ -15,7 +15,7 @@ v1.24 - minor bug fixes/design improvements/network improvements
 	*both the notes and the display have scroll bars now
 	*display autoscrolls
 	*fixed only displaying every other blocked packet
-	*basic client-client implementation
+	*client-client implementation
 
 v1.23 - added sound support
 	*background music automatically starts at launch
