@@ -147,15 +147,19 @@ public class Server extends Thread {
 	
 	public void sendPacketToAllClients(Packet packet) {
 		packet = Formatter.unformat(packet);
-		String hostAddress = packet.getHostAddress();
+		ServerConnection packetHost = getUser(packet);
 		
-		System.out.println("packet's host address: "+hostAddress);
+		for(ServerConnection sConnection : serverConnections)
+			if(!packetHost.equals(sConnection))
+				sConnection.sendPacket(Formatter.formatUsername(packet, packetHost.getUser().getUsername()));
+	}
+	
+	 private ServerConnection getUser(Packet packet) {
+		for(ServerConnection sConnection : serverConnections)
+			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
+				return sConnection;
 		
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("server connection @ "+sConnection.getUser().getHostAddress());
-			if(!sConnection.getUser().getHostAddress().equals(hostAddress))
-				sConnection.sendPacket(Formatter.formatUsername(packet, sConnection.getUser().getUsername()));
-		}
+		return null;
 	}
 	
 	public void close() {

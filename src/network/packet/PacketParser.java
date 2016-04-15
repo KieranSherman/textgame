@@ -3,7 +3,6 @@ package network.packet;
 import network.NetworkTypes;
 import network.client.Client;
 import network.packet.types.Packet01Login;
-import network.packet.types.PacketTypes;
 import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -52,10 +51,26 @@ public class PacketParser {
 	 */
 	private synchronized void parseServerPacket(Packet packet) {
 		packet = Formatter.format(packet);
-
-		if(packet.getType() == PacketTypes. DISCONNECT)
-			client.disconnect();
 		
+		switch(packet.getType()) {
+			case ACTION: {
+				
+				break;
+			}
+			case DISCONNECT: {
+				client.disconnect();
+				break;
+			}
+			case LOGIN: {
+				
+				break;
+			}
+			case MESSAGE: {
+				
+				break;
+			}
+		}
+
 		logger.appendPacket(packet);
 	}
 	
