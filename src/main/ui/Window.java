@@ -101,7 +101,9 @@ public class Window extends JPanel {
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				UIManager.put("ScrollBarUI", "main.ui.components.ScrollBarUI");
+				UIManager.put("ScrollBarUI", "main.ui.components.ScrollBarUI_Vertical");
+				UIManager.put("ScrollBarUI", "main.ui.components.ScrollBarUI_Horizontal");
+
 				try {
 					adapter = Resources.getAdapter();
 				} catch (ResourcesNotInitializedException e) {

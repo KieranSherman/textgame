@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import network.Adapter;
+import network.User;
 import network.packet.Packet;
 import network.server.util.ServerConnection;
 import util.Resources;
@@ -130,6 +131,28 @@ public class Server extends Thread {
 	public void sendPacket(Packet packet) {
 		for(ServerConnection sConnection : serverConnections)
 			sConnection.sendPacket(packet);
+	}
+	
+	public void registerUser(Packet packet) {
+		String hostAddress = packet.getHostAddress();
+		
+		System.out.println("attempting to register user at "+hostAddress);
+		
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("connection at "+sConnection.getConnectedAddress());
+			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+				System.out.println("adding user at "+hostAddress);
+				sConnection.setUser(new User(hostAddress));
+			}
+		}
+	}
+	
+	public void sendPacketToAllClients(Packet packet) {
+		String hostAddress = packet.getHostAddress();
+		
+		for(ServerConnection sConnection : serverConnections)
+			if(!sConnection.getUser().getHostAddress().equals(hostAddress))
+				sConnection.sendPacket(packet);
 	}
 	
 	public void close() {

@@ -65,6 +65,9 @@ src
 		
 		*Adapter.java					...				* bridges the UI and networking features
 		*NetworkTypes.java				...				* enum specifying network types
+		
+	-sound <<<<							...			> package contains all sound classes
+		*Sound.java						...				* plays audio
 	
 	-util <<<<							...			> package contains all misc. utility classes
 		--exceptions					...				>> package contains all exception classes

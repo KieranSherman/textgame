@@ -15,7 +15,6 @@ import util.out.Logger;
 public class PacketParser {
 	
 	private Logger logger;
-	@SuppressWarnings("unused")
 	private Server server;
 	private Client client;
 	
@@ -42,7 +41,7 @@ public class PacketParser {
 	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(networkType == NetworkTypes.CLIENT)
 			parseServerPacket(packet);
-		
+		else
 		if(networkType == NetworkTypes.SERVER)
 			parseClientPacket(packet);
 	}
@@ -53,18 +52,24 @@ public class PacketParser {
 	private synchronized void parseServerPacket(Packet packet) {
 		packet = Formatter.format(packet);
 
-		if(packet.getType() == PacketTypes.DISCONNECT)
+		if(packet.getType() == PacketTypes. DISCONNECT)
 			client.disconnect();
 		
 		logger.appendPacket(packet);
-
 	}
 	
 	/*
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
+		if(packet.getType() != PacketTypes.LOGIN)
+			server.sendPacketToAllClients(packet);
+		
 		packet = Formatter.format(packet);
+		
+		if(packet.getType() == PacketTypes.LOGIN)
+			server.registerUser(packet);
+		
 		logger.appendPacket(packet);
 	}
 

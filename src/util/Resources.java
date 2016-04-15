@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 
@@ -40,6 +42,7 @@ public class Resources {
 	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
 	public static final String VERSION = loadVersion("src/files/reference/Reference.txt");
+	public static String HOST_ADDRESS;
 	
 	public static final BufferedImage bootImage = loadImage("src/files/imgs/pngs/booting1.png");
 	public static final boolean boot = loadBoot("src/files/reference/Reference.txt");
@@ -47,6 +50,12 @@ public class Resources {
 	private Resources() {}							//prevent instantiation of Resources object
 	
 	public static void init(Window window) {
+		try {
+			HOST_ADDRESS = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
 		initialized = true;
 
 		colorer = new Colorer();

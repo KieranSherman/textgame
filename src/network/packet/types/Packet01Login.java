@@ -1,6 +1,7 @@
 package network.packet.types;
 
 import network.packet.Packet;
+import util.Resources;
 
 /*
  * Class models a login packet
@@ -8,12 +9,8 @@ import network.packet.Packet;
 public class Packet01Login extends Packet {
 	private static final long serialVersionUID = 1L;
 	
-	private Packet01Login() {
-		super(PacketTypes.LOGIN);
-	}
-	
 	public Packet01Login(String data) {
-		this();
+		super(PacketTypes.LOGIN, Resources.HOST_ADDRESS);
 		super.data = data;
 	}
 

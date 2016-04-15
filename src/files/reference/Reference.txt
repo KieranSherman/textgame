@@ -8,6 +8,13 @@ BOOT: 		true
 =================================================================================================================================
 													   Recent Updates
 =================================================================================================================================
+
+v1.24 - minor bug fixes/design improvements
+	*all panels have been assigned a background color
+	*both the notes and the display have scroll bars now
+	*display autoscrolls
+	*fixed only displaying every other blocked packet
+
 v1.23 - added sound support
 	*background music automatically starts at launch
 	
