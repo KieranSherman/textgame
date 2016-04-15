@@ -31,7 +31,7 @@ public class Formatter {
 	}
 	
 	public static Packet formatUsername(Packet packet, String username) {
-		packet.setData("("+username+")"+packet.getData());
+		packet.setData("("+username+") "+packet.getData());
 		
 		return packet;
 	}

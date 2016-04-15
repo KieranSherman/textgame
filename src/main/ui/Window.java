@@ -199,7 +199,7 @@ public class Window extends JPanel {
 			String port = "9999";
 			
 			for(String s : args)
-				if(s.contains("port:"))
+				if(s.contains("p:"))
 					port = s.substring(s.indexOf(":")+1);
 			
 			adapter.createServer(Integer.parseInt(port));
@@ -214,15 +214,15 @@ public class Window extends JPanel {
 			String port = "9999";
 			
 			for(String s : args)
-				if(s.contains("username:"))
+				if(s.contains("u:"))
 					username = s.substring(s.indexOf(":")+1);
 			
 			for(String s : args)
-				if(s.contains("address:"))
+				if(s.contains("a:"))
 					address = s.substring(s.indexOf(":")+1);
 			
 			for(String s : args)
-				if(s.contains("port:"))
+				if(s.contains("p:"))
 					port = s.substring(s.indexOf(":")+1);
 						
 			adapter.createClient(address, Integer.parseInt(port), username);

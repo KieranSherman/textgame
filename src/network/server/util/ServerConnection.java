@@ -79,8 +79,6 @@ public class ServerConnection extends Thread {
 	}
 	
 	public void close() {
-		System.out.println("closing server connection");
-		
 		synchronized(this) {
 			this.notifyAll();
 		}
