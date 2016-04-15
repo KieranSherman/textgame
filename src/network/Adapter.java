@@ -33,40 +33,16 @@ public class Adapter {
 		packetParser = new PacketParser();
 		blockedPackets = new ArrayList<Object[]>();
 	}
-	
-	/*
-	 * Create a client
-	 */
-	public void createClient() {
-		try {
-			checkNetwork();
-			client = new Client();
-			packetParser.setClient(client);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/*
-	 * Create a client connecting to hostName
-	 */
-	public void createClient(String hostName) {
-		try {
-			checkNetwork();
-			client = new Client(hostName);
-			packetParser.setClient(client);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	/*
 	 * Create a client connection hostName:portNumber
 	 */
-	public void createClient(String hostName, int portNumber) {
+	public void createClient(String hostName, int portNumber, String username) {
 		try {
 			checkNetwork();
 			client = new Client(hostName, portNumber);
+			client.setUsername(username);
+
 			packetParser.setClient(client);
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
@@ -92,19 +68,6 @@ public class Adapter {
 	public void destroyClient() {
 		client = null;
 		Window.setTitle(Resources.VERSION);
-	}
-	
-	/*
-	 * Create a server
-	 */
-	public void createServer() {
-		try {
-			checkNetwork();
-			server = new Server();
-			packetParser.setServer(server);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/*

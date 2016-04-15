@@ -5,14 +5,17 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import network.Adapter;
 import network.User;
 import network.packet.Packet;
+import network.packet.types.Packet01Login;
 import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
+import util.out.Formatter;
 import util.out.Logger;
 
 /*
@@ -24,14 +27,19 @@ public class Server extends Thread {
 	private Socket clientSocket;		//socket the client connects from
 	private ServerSocket serverSocket;	//socket the client connects to
 	
-	private ArrayList<ServerConnection> serverConnections;
+	private Logger logger;
 	
-	public Server() {
-		this.portNumber = 9999;
-	}
+	private ArrayList<ServerConnection> serverConnections;
 	
 	public Server(int portNumber) {
 		this.portNumber = portNumber;
+		
+		try {
+			logger = Resources.getLogger();
+		} catch (ResourcesNotInitializedException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	@Override
@@ -41,14 +49,6 @@ public class Server extends Thread {
 	 */
 	public void run() {
 		serverConnections = new ArrayList<ServerConnection>();
-
-		Logger logger = null;
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
 		
 		Adapter adapter = null;
 		try {
@@ -112,14 +112,6 @@ public class Server extends Thread {
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
-		Logger logger = null;
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
 		int index = serverConnections.indexOf(serverConnection);
 		
 		if(index != -1) {
@@ -133,26 +125,37 @@ public class Server extends Thread {
 			sConnection.sendPacket(packet);
 	}
 	
-	public void registerUser(Packet packet) {
+	public void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
+		String username = packet.getUsername();
 		
-		System.out.println("attempting to register user at "+hostAddress);
+		logger.appendText("attempting to register user at "+hostAddress, Color.GRAY);
 		
 		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("connection at "+sConnection.getConnectedAddress());
-			if(sConnection.getConnectedAddress().equals(hostAddress)) {
-				System.out.println("adding user at "+hostAddress);
-				sConnection.setUser(new User(hostAddress));
+			try {
+				if(sConnection.getConnectedAddress().equals(hostAddress) || 
+						(sConnection.getConnectedAddress().equals("127.0.0.1") 
+								&& hostAddress.equals(InetAddress.getLocalHost().getHostAddress())) ) {
+					logger.appendText("adding user: "+username, Color.GREEN);
+					sConnection.setUser(new User(hostAddress, username));
+				}
+			} catch (UnknownHostException e) {
+				System.err.println("error registering user");
 			}
 		}
 	}
 	
 	public void sendPacketToAllClients(Packet packet) {
+		packet = Formatter.unformat(packet);
 		String hostAddress = packet.getHostAddress();
 		
-		for(ServerConnection sConnection : serverConnections)
+		System.out.println("packet's host address: "+hostAddress);
+		
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("server connection @ "+sConnection.getUser().getHostAddress());
 			if(!sConnection.getUser().getHostAddress().equals(hostAddress))
-				sConnection.sendPacket(packet);
+				sConnection.sendPacket(Formatter.formatUsername(packet, sConnection.getUser().getUsername()));
+		}
 	}
 	
 	public void close() {

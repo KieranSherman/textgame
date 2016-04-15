@@ -22,7 +22,7 @@ public class ServerSender {
 	
 	private void init() {
 		try {
-			sendPacket(new Packet01Login("[you have connected to "+InetAddress.getLocalHost().getHostAddress()+"]"));
+			sendPacket(new Packet01Login("[you have connected to "+InetAddress.getLocalHost().getHostAddress()+"]", null));
 		} catch (UnknownHostException e) {
 			System.err.println("error sending login packet");
 		}

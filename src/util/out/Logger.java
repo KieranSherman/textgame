@@ -22,7 +22,7 @@ public class Logger {
 	 */
 	public void appendPacket(Packet packet) {
 		PacketTypes packetType = packet.getType();
-		String str = ((String) packet.getData()).substring(Formatter.getFormat(packetType).length());
+		String str = (String)packet.getData();
 
 		if(packetType == PacketTypes.ACTION) {
 			appendText("[THEM] "+str);

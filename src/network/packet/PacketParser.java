@@ -2,6 +2,7 @@ package network.packet;
 
 import network.NetworkTypes;
 import network.client.Client;
+import network.packet.types.Packet01Login;
 import network.packet.types.PacketTypes;
 import network.server.Server;
 import util.Resources;
@@ -62,14 +63,27 @@ public class PacketParser {
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
-		if(packet.getType() != PacketTypes.LOGIN)
-			server.sendPacketToAllClients(packet);
-		
 		packet = Formatter.format(packet);
 		
-		if(packet.getType() == PacketTypes.LOGIN)
-			server.registerUser(packet);
-		
+		switch(packet.getType()) {
+			case ACTION: {
+				server.sendPacketToAllClients(packet);
+				break;
+			}
+			case DISCONNECT: {
+				
+				break;
+			}
+			case LOGIN: {
+				server.registerUser((Packet01Login)packet);
+				break;
+			}
+			case MESSAGE: {
+				server.sendPacketToAllClients(packet);
+				break;
+			}
+		}
+
 		logger.appendPacket(packet);
 	}
 

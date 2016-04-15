@@ -9,9 +9,16 @@ import util.Resources;
 public class Packet01Login extends Packet {
 	private static final long serialVersionUID = 1L;
 	
-	public Packet01Login(String data) {
+	private final String username;
+	
+	public Packet01Login(String data, String username) {
 		super(PacketTypes.LOGIN, Resources.HOST_ADDRESS);
 		super.data = data;
+		this.username = username;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 
 }

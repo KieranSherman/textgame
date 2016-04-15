@@ -17,8 +17,23 @@ public class Formatter {
 		return packet;
 	}
 	
+	public static Packet unformat(Packet packet) {
+		String str = getFormat(packet.getType());
+		packet.setData(((String)packet.getData()).substring(str.length()));
+		
+		return packet;
+	}
+	
+	public static Packet formatUsername(Packet packet, String username) {
+		packet = unformat(packet);
+		packet.setData("("+username+")"+packet.getData());
+		packet = format(packet);
+		
+		return packet;
+	}
+	
 	public static String getFormat(PacketTypes packetType) {
-		return "[#PACKET"+packetType.getType()+"]";
+		return "[PACKET->"+packetType.name()+"]";
 	}
 	
 }

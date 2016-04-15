@@ -9,11 +9,13 @@ BOOT: 		true
 													   Recent Updates
 =================================================================================================================================
 
-v1.24 - minor bug fixes/design improvements
+v1.24 - minor bug fixes/design improvements/network improvements
 	*all panels have been assigned a background color
+	*PC no longer displays blue-gray border around panels
 	*both the notes and the display have scroll bars now
 	*display autoscrolls
 	*fixed only displaying every other blocked packet
+	*basic client-client implementation
 
 v1.23 - added sound support
 	*background music automatically starts at launch

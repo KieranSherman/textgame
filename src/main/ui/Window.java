@@ -26,7 +26,6 @@ import network.packet.types.PacketTypes;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
-import util.out.Formatter;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
@@ -171,7 +170,7 @@ public class Window extends JPanel {
 	 */
 	public synchronized void appendPacket(Packet packet) {
 		PacketTypes packetType = packet.getType();
-		String str = ((String) packet.getData()).substring(Formatter.getFormat(packetType).length());
+		String str = (String)packet.getData();
 		
 		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
 		TextPaneDisplayUI.insertTextToDoc(str+"\n");
@@ -192,24 +191,38 @@ public class Window extends JPanel {
 			return true;
 		else
 		if(args[0].equals("server")) {
-			if(args.length == 1)
-				adapter.createServer();
-			if(args.length == 2)
-				adapter.createServer(Integer.parseInt(args[1]));
+			String port = "9999";
 			
+			for(String s : args)
+				if(s.contains("port:"))
+					port = s.substring(s.indexOf(":")+1);
+			
+			adapter.createServer(Integer.parseInt(port));
 			adapter.startServer();
+			
 			window.setTitle(Resources.VERSION+" | running server");
 		}
 		else
 		if(args[0].equals("client")) {
-			if(args.length == 1)
-				adapter.createClient();
-			else if(args.length == 2)
-				adapter.createClient(args[1]);
-			else if (args.length == 3)
-				adapter.createClient(args[1], Integer.parseInt(args[2]));
+			String username = "anonymous";
+			String address = "localhost";
+			String port = "9999";
 			
+			for(String s : args)
+				if(s.contains("username:"))
+					username = s.substring(s.indexOf(":")+1);
+			
+			for(String s : args)
+				if(s.contains("address:"))
+					address = s.substring(s.indexOf(":")+1);
+			
+			for(String s : args)
+				if(s.contains("port:"))
+					port = s.substring(s.indexOf(":")+1);
+						
+			adapter.createClient(address, Integer.parseInt(port), username);
 			adapter.startClient();
+			
 			window.setTitle(Resources.VERSION+" | running client");
 		}
 		else

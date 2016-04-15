@@ -40,7 +40,6 @@ public class TextPaneDisplayUI extends Window {
 		
 		Window.textPane.setEditable(false);
 		Window.textPane.setFont(Resources.USER_OUTPUT);
-		Window.textPane.setBackground(new Color(15, 15, 15));
 		Window.textPane.setForeground(Color.WHITE);
 		Window.textPane.setMargin(new Insets(0, 10, 0, 10));
 		Window.textPane.addMouseListener(new MouseListener() {
@@ -58,6 +57,7 @@ public class TextPaneDisplayUI extends Window {
 			public void mouseExited(MouseEvent e) {}
 		});
 		Window.textPane.setAutoscrolls(true);
+		Window.textPane.setBackground(new Color(15, 15, 15));
 		
 		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
 		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "COMMLINK", 
@@ -74,7 +74,6 @@ public class TextPaneDisplayUI extends Window {
 						   + "![text]\n\t[send an action]\n\n"
 						   + "!notes\n\t[send your notes]\n\n"
 						   + "!logout\n\t[close network connections]\n");
-		Window.notes.setBackground(new Color(20, 20, 20));
 		Window.notes.setForeground(Color.WHITE);
 		Window.notes.setFont(Resources.USER_OUTPUT);
 		Window.notes.setCaretColor(Color.WHITE);
@@ -99,7 +98,7 @@ public class TextPaneDisplayUI extends Window {
 				notes.setCursor(Cursor.getDefaultCursor());
 			}
 		});
-		Window.notes.setAutoscrolls(true);
+		Window.notes.setBackground(new Color(20, 20, 20));
 		
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new BorderLayout());
@@ -116,6 +115,7 @@ public class TextPaneDisplayUI extends Window {
 		scrollPane_COMMLINK.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_COMMLINK.getVerticalScrollBar().setUI(new ScrollBarUI_Vertical());
 		scrollPane_COMMLINK.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
+		scrollPane_COMMLINK.setBorder(null);
 		scrollPane_COMMLINK.setBackground(new Color(15, 15, 15));
 		
 		JScrollPane scrollPane_NOTES = new JScrollPane(rightPanel);
@@ -123,14 +123,15 @@ public class TextPaneDisplayUI extends Window {
 		scrollPane_NOTES.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_NOTES.getVerticalScrollBar().setUI(new ScrollBarUI_Vertical());
 		scrollPane_NOTES.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
+		scrollPane_NOTES.setBorder(null);
 		scrollPane_NOTES.setBackground(new Color(15, 15, 15));
 		
 		JSplitPane splitPane = new JSplitPaneUI(display);
 		splitPane.setLeftComponent(scrollPane_COMMLINK);
 		splitPane.setRightComponent(scrollPane_NOTES);
 		splitPane.setBorder(compoundBorder);
-		splitPane.setBackground(new Color(15, 15, 15));
 		splitPane.setDividerLocation(Resources.WIDTH/2);
+		splitPane.setBackground(new Color(15, 15, 15));
 
 		return splitPane;
 	}
