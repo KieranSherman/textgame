@@ -59,7 +59,7 @@ public class TextFieldInputUI extends Window {
 				textField.setText("");
 				
 				if(!str.startsWith("!") && str != null)
-					adapter.sendPacket(new Packet03Message("] "+str));
+					adapter.sendPacket(new Packet03Message(str));
 			}
 		});
 		

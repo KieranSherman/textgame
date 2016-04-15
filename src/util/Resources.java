@@ -59,7 +59,7 @@ public class Resources {
 		initialized = true;
 
 		colorer = new Colorer();
-		logger = new Logger(window);
+		logger = new Logger();
 		adapter = new Adapter();
 		
 		loadActionWords("src/files/Actions.txt");

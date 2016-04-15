@@ -50,8 +50,6 @@ public class PacketParser {
 	 * Parse a packet received from the server (i.e client handles this packet)
 	 */
 	private synchronized void parseServerPacket(Packet packet) {
-		packet = Formatter.format(packet);
-		
 		switch(packet.getType()) {
 			case ACTION: {
 				
@@ -78,7 +76,7 @@ public class PacketParser {
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
-		packet = Formatter.format(packet);
+		packet = Formatter.construct(packet);
 		
 		switch(packet.getType()) {
 			case ACTION: {
@@ -98,7 +96,7 @@ public class PacketParser {
 				break;
 			}
 		}
-
+		
 		logger.appendPacket(packet);
 	}
 

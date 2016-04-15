@@ -10,16 +10,22 @@ public class Formatter {
 	
 	private Formatter() {}
 	
-	public static Packet format(Packet packet) {
+	public static Packet construct(Packet packet) {
 		String str = getFormat(packet.getType());
 		packet.setData(str+packet.getData());
 		
 		return packet;
 	}
 	
-	public static Packet unformat(Packet packet) {
+	public static Packet deconstruct(Packet packet) {
 		String str = getFormat(packet.getType());
 		packet.setData(((String)packet.getData()).substring(str.length()));
+		
+		return packet;
+	}
+	
+	public static Packet formatServer(Packet packet) {
+		packet.setData("{SERVER} "+packet.getData());
 		
 		return packet;
 	}
@@ -30,8 +36,8 @@ public class Formatter {
 		return packet;
 	}
 	
-	public static String getFormat(PacketTypes packetType) {
-		return "[PACKET->"+packetType.name()+"]";
+	private static String getFormat(PacketTypes packetType) {
+		return "[PACKET->"+packetType.name()+"] ";
 	}
 	
 }

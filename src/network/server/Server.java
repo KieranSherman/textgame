@@ -121,6 +121,8 @@ public class Server extends Thread {
 	}
 	
 	public void sendPacket(Packet packet) {
+		packet = Formatter.formatServer(packet);
+		
 		for(ServerConnection sConnection : serverConnections)
 			sConnection.sendPacket(packet);
 	}
@@ -146,12 +148,16 @@ public class Server extends Thread {
 	}
 	
 	public void sendPacketToAllClients(Packet packet) {
-		packet = Formatter.unformat(packet);
+		packet = Formatter.deconstruct(packet);
 		ServerConnection packetHost = getUser(packet);
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(!packetHost.equals(sConnection))
-				sConnection.sendPacket(Formatter.formatUsername(packet, packetHost.getUser().getUsername()));
+			if(!packetHost.equals(sConnection)) {
+				packet = Formatter.formatUsername(packet, packetHost.getUser().getUsername());
+				sConnection.sendPacket(packet);
+			}
+		
+		packet = Formatter.construct(packet);
 	}
 	
 	 private ServerConnection getUser(Packet packet) {

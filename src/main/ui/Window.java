@@ -168,9 +168,14 @@ public class Window extends JPanel {
 	 * filter to method: insertTextToDoc();
 	 * exclusively for the PacketParser
 	 */
-	public synchronized void appendPacket(Packet packet) {
+	public synchronized static void appendPacket(Packet packet) {
 		PacketTypes packetType = packet.getType();
 		String str = (String)packet.getData();
+		
+		if(packetType == PacketTypes.ACTION) {
+			appendText(str);
+			return;
+		}
 		
 		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
 		TextPaneDisplayUI.insertTextToDoc(str+"\n");
