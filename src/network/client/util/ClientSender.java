@@ -13,16 +13,12 @@ public class ClientSender {
 	
 	private ObjectOutputStream sOutput;
 	
-	public ClientSender(Socket socket) throws IOException {
+	public ClientSender(Socket socket, String username) throws IOException {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
 		
-		init();
-	}
-	
-	private void init() {
 		try {
-			sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]"));
+			sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]", username));
 		} catch (UnknownHostException e) {
 			System.err.println("error sending login packet");
 		}

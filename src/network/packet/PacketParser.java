@@ -2,7 +2,7 @@ package network.packet;
 
 import network.NetworkTypes;
 import network.client.Client;
-import network.packet.types.PacketTypes;
+import network.packet.types.Packet01Login;
 import network.server.Server;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -15,7 +15,6 @@ import util.out.Logger;
 public class PacketParser {
 	
 	private Logger logger;
-	@SuppressWarnings("unused")
 	private Server server;
 	private Client client;
 	
@@ -42,7 +41,7 @@ public class PacketParser {
 	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(networkType == NetworkTypes.CLIENT)
 			parseServerPacket(packet);
-		
+		else
 		if(networkType == NetworkTypes.SERVER)
 			parseClientPacket(packet);
 	}
@@ -51,20 +50,53 @@ public class PacketParser {
 	 * Parse a packet received from the server (i.e client handles this packet)
 	 */
 	private synchronized void parseServerPacket(Packet packet) {
-		packet = Formatter.format(packet);
+		switch(packet.getType()) {
+			case ACTION: {
+				
+				break;
+			}
+			case DISCONNECT: {
+				client.disconnect();
+				break;
+			}
+			case LOGIN: {
+				
+				break;
+			}
+			case MESSAGE: {
+				
+				break;
+			}
+		}
 
-		if(packet.getType() == PacketTypes.DISCONNECT)
-			client.disconnect();
-		
 		logger.appendPacket(packet);
-
 	}
 	
 	/*
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
-		packet = Formatter.format(packet);
+		packet = Formatter.construct(packet);
+		
+		switch(packet.getType()) {
+			case ACTION: {
+				server.sendPacketToAllClients(packet);
+				break;
+			}
+			case DISCONNECT: {
+				
+				break;
+			}
+			case LOGIN: {
+				server.registerUser((Packet01Login)packet);
+				break;
+			}
+			case MESSAGE: {
+				server.sendPacketToAllClients(packet);
+				break;
+			}
+		}
+		
 		logger.appendPacket(packet);
 	}
 

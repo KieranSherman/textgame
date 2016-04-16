@@ -17,9 +17,10 @@ import util.exceptions.AlreadyRunningNetworkException;
 /*
  * Class models a network-UI adapter, bridging the two
  */
-public class Adapter  {
+public class Adapter {
 	
 	private boolean block;
+	private int blockedPacketCount;
 	
 	private Server server;		//server object
 	private Client client;		//client object
@@ -32,40 +33,16 @@ public class Adapter  {
 		packetParser = new PacketParser();
 		blockedPackets = new ArrayList<Object[]>();
 	}
-	
-	/*
-	 * Create a client
-	 */
-	public void createClient() {
-		try {
-			checkNetwork();
-			client = new Client();
-			packetParser.setClient(client);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/*
-	 * Create a client connecting to hostName
-	 */
-	public void createClient(String hostName) {
-		try {
-			checkNetwork();
-			client = new Client(hostName);
-			packetParser.setClient(client);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	/*
 	 * Create a client connection hostName:portNumber
 	 */
-	public void createClient(String hostName, int portNumber) {
+	public void createClient(String hostName, int portNumber, String username) {
 		try {
 			checkNetwork();
 			client = new Client(hostName, portNumber);
+			client.setUsername(username);
+
 			packetParser.setClient(client);
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
@@ -91,19 +68,6 @@ public class Adapter  {
 	public void destroyClient() {
 		client = null;
 		Window.setTitle(Resources.VERSION);
-	}
-	
-	/*
-	 * Create a server
-	 */
-	public void createServer() {
-		try {
-			checkNetwork();
-			server = new Server();
-			packetParser.setServer(server);
-		} catch (AlreadyRunningNetworkException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/*
@@ -162,7 +126,7 @@ public class Adapter  {
 	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(block) {
 			synchronized(blockedPackets) {
-				blockedPackets.add(new Object[] {networkType, packet});
+				blockedPackets.add(new Object[] {networkType, packet, ++blockedPacketCount});
 			}
 			return;
 		}
@@ -203,9 +167,10 @@ public class Adapter  {
 					Window.appendColoredText("[showing blocked packets...]", Color.GRAY);
 	
 					for(int i = 0; i < blockedPackets.size(); i++) {
-						Object [] obj = blockedPackets.remove(i);
+						Object [] obj = blockedPackets.get(i);
 						NetworkTypes networkType = (NetworkTypes) obj[0];
 						Packet packet = (Packet) obj[1];
+						Window.appendColoredText("["+obj[2]+"/"+blockedPacketCount+"]", Color.DARK_GRAY);
 						parsePacket(networkType, packet);
 					}
 					
@@ -213,6 +178,7 @@ public class Adapter  {
 				}
 				
 				blockedPackets.clear();
+				blockedPacketCount = 0;
 			}
 		} else
 		if(block == true) {
@@ -230,10 +196,9 @@ public class Adapter  {
 		else
 		if(server != null) {
 			try {
-				Window.appendColoredText("[server open at "+
-						InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
+				Window.appendColoredText("[server open at "+InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
 			} catch (UnknownHostException e) {
-				Window.appendColoredText("[server status unkown]", Color.RED);
+				Window.appendColoredText("[server status unknown]", Color.RED);
 			}
 		}
 		else {

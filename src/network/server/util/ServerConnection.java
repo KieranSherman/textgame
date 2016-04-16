@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import network.Adapter;
+import network.User;
 import network.packet.Packet;
 import network.server.Server;
 import util.Resources;
@@ -15,10 +16,19 @@ public class ServerConnection extends Thread {
 	private Socket clientSocket;
 	private ServerSender serverSender;
 	private ServerReceiver serverReceiver;
+	private User user;
 	
 	public ServerConnection(Server server, Socket clientSocket) {
 		this.server = server;
 		this.clientSocket = clientSocket;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 	
 	@Override
@@ -63,9 +73,12 @@ public class ServerConnection extends Thread {
 		serverReceiver.close();
 	}
 	
+	public String getConnectedAddress() {
+		String address = clientSocket.getRemoteSocketAddress().toString();
+		return address.substring(address.indexOf('/')+1, address.indexOf(':'));
+	}
+	
 	public void close() {
-		System.out.println("closing server connection");
-		
 		synchronized(this) {
 			this.notifyAll();
 		}
@@ -75,5 +88,5 @@ public class ServerConnection extends Thread {
 		if(serverSender != null)
 			serverSender.sendPacket(packet);
 	}
-
+	
 }
