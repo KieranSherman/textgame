@@ -11,6 +11,7 @@ import network.packet.Packet;
 import network.packet.PacketParser;
 import network.packet.types.Packet02Disconnect;
 import network.server.Server;
+import network.util.NetworkTypes;
 import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
 
