@@ -18,6 +18,7 @@ import javax.swing.text.StyleContext;
 import main.BootThread;
 import main.ui.components.TextFieldInputUI;
 import main.ui.components.TextPaneDisplayUI;
+import main.ui.components.PopUpPanelUI;
 import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.Packet03Message;
@@ -241,6 +242,10 @@ public class Window extends JPanel {
 		if(args[0].equals("clear")) {
 			textPane.setText("");
 		}
+		else
+			if(args[0].equals("popup")) {
+				new PopUpPanelUI(window, "Hello!");
+			}
 		else
 		if(args[0].equals("status")) {
 			adapter.status();
