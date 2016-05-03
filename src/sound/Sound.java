@@ -9,6 +9,7 @@ public class Sound {
 	private Clip clip;
 	
 	public static Sound background1 = new Sound("src/files/sounds/background1.wav");
+	public static Sound notification = new Sound("src/files/sounds/notification.wav");
 	
 	public Sound (String fileName) {
 		try {

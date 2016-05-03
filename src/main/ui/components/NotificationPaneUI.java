@@ -13,6 +13,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
+import sound.Sound;
 import util.Resources;
 
 public class NotificationPaneUI {
@@ -62,14 +63,16 @@ public class NotificationPaneUI {
 		notifications.add(panel);
 		notifications.revalidate();
 		notifications.repaint();
+		
+		Sound.notification.play();
 
 		Thread t = new Thread() {
 			public void run() {
 				JProgressBar progressBar = (JProgressBar)panel.getComponent(1);
-				progressBar.setMaximum(disposeTime/10);
+				progressBar.setMaximum(disposeTime/50);
 				
-				for(int i = 0; i < disposeTime/10; i++) {
-					try { Thread.sleep(10); } catch (Exception e) {}
+				for(int i = 0; i < disposeTime/50; i++) {
+					try { Thread.sleep(50); } catch (Exception e) {}
 					progressBar.setValue(i);
 				}
 				
