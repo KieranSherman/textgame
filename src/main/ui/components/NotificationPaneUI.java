@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
@@ -34,14 +35,14 @@ public class NotificationPaneUI {
 		JLabel label = new JLabel(obj.toString());
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setForeground(Color.WHITE);
-		label.setFont(Resources.USER_OUTPUT);
+		label.setFont(new Font("Avenir Next", Font.PLAIN, 12));
 		
 		JProgressBar progressBar = new JProgressBar();
-		progressBar.setOpaque(true);
+		progressBar.setBackground(new Color(255, 255, 255, 0));
 		
 		JPanel notification = new JPanel();
 		notification.setPreferredSize(new Dimension(Resources.WIDTH/6, 50));
-		notification.setBackground(new Color(120, 120, 120, 100));
+		notification.setBackground(new Color(120, 120, 180, 100));
 		notification.setLayout(new BorderLayout());
 		notification.add(label, BorderLayout.CENTER);
 		notification.add(progressBar, BorderLayout.SOUTH);
@@ -74,6 +75,9 @@ public class NotificationPaneUI {
 				for(int i = 0; i < disposeTime/50; i++) {
 					try { Thread.sleep(50); } catch (Exception e) {}
 					progressBar.setValue(i);
+					
+					if((disposeTime/50)-i <= 255)
+						panel.setBackground(new Color(120, 120, 180, (disposeTime/50)-i));
 				}
 				
 				notificationSize -= 1;

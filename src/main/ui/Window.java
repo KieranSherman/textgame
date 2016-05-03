@@ -126,6 +126,8 @@ public class Window extends JPanel {
 				mainPanel.add(TextFieldInputUI.createTextField(), BorderLayout.SOUTH);
 				BootThread.queueInfo("textField loaded");
 				
+				NotificationPaneUI.addNotification("Welcome.", 5000);
+				
 				window.add(mainPanel);
 				window.pack();
 				window.setSize(Resources.WIDTH, Resources.HEIGHT);
@@ -272,7 +274,7 @@ public class Window extends JPanel {
 			window.setTitle(Resources.VERSION);
 		}
 		else
-		if(args[0].equals("notes")) {
+		if(args[0].equals("n-otes")) {
 			adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+notes.getText()+"\n<<<<<<< END"));
 			appendColoredText("[sent notes]", Color.GRAY);
 		}
