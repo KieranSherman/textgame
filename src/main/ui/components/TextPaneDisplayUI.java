@@ -65,15 +65,7 @@ public class TextPaneDisplayUI extends Window {
 		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, textPane.getBorder());
 
 		Window.notes = new JTextPane();
-		Window.notes.setText("----dev command list----\n\n"
-						   + "!server\n\t[start a server]\n\n"
-						   + "!client (address) (port)\n\t[start client]\n\n"
-						   + "!block (boolean: showBlocked)\n\t[un/block incoming connections]\n\n"
-						   + "!clear\n\t[clear the display]\n\n"
-						   + "!status\n\t[report network status]\n\n"
-						   + "![text]\n\t[send an action]\n\n"
-						   + "!notes\n\t[send your notes]\n\n"
-						   + "!logout\n\t[close network connections]\n");
+		Window.notes.setLayout(new BorderLayout());
 		Window.notes.setForeground(Color.WHITE);
 		Window.notes.setFont(Resources.USER_OUTPUT);
 		Window.notes.setCaretColor(Color.WHITE);
@@ -100,6 +92,8 @@ public class TextPaneDisplayUI extends Window {
 		});
 		Window.notes.setBackground(new Color(20, 20, 20));
 		
+		notes.add(NotificationPaneUI.getNotificationPane(), BorderLayout.EAST);
+
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.add(Window.textPane, BorderLayout.CENTER);

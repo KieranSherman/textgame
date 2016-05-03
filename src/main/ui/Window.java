@@ -16,9 +16,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.BootThread;
+import main.ui.components.NotificationPaneUI;
+import main.ui.components.PopUpPanelUI;
 import main.ui.components.TextFieldInputUI;
 import main.ui.components.TextPaneDisplayUI;
-import main.ui.components.PopUpPanelUI;
 import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.Packet03Message;
@@ -243,9 +244,24 @@ public class Window extends JPanel {
 			textPane.setText("");
 		}
 		else
-			if(args[0].equals("popup")) {
-				new PopUpPanelUI(window, "Hello!");
-			}
+		if(args[0].equals("popup")) {
+			new PopUpPanelUI(window, "Hello!");
+		}
+		else
+		if(args[0].equals("notify")) {
+			String message = "notification test";
+			int time = 2000;
+			
+			for(String s : args)
+				if(s.contains("m:"))
+					message = s.substring(s.indexOf(":")+1);
+			
+			for(String s : args)
+				if(s.contains("t:"))
+					time = Integer.parseInt(s.substring(s.indexOf(":")+1));
+			
+			NotificationPaneUI.addNotification(message.toUpperCase(), time);
+		}
 		else
 		if(args[0].equals("status")) {
 			adapter.status();
