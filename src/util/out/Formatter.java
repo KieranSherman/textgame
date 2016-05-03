@@ -10,30 +10,22 @@ public class Formatter {
 	
 	private Formatter() {}
 	
-	public static Packet construct(Packet packet) {
+	public static void construct(Packet packet) {
 		String str = getFormat(packet.getType());
 		packet.setData(str+packet.getData());
-		
-		return packet;
 	}
 	
-	public static Packet deconstruct(Packet packet) {
+	public static void deconstruct(Packet packet) {
 		String str = getFormat(packet.getType());
 		packet.setData(((String)packet.getData()).substring(str.length()));
-		
-		return packet;
 	}
 	
-	public static Packet formatServer(Packet packet) {
+	public static void formatServer(Packet packet) {
 		packet.setData("{SERVER} "+packet.getData());
-		
-		return packet;
 	}
 	
-	public static Packet formatUsername(Packet packet, String username) {
+	public static void formatUsername(Packet packet, String username) {
 		packet.setData("("+username+") "+packet.getData());
-		
-		return packet;
 	}
 	
 	private static String getFormat(PacketTypes packetType) {

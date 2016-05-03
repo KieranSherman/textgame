@@ -16,9 +16,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.BootThread;
+import main.ui.components.NotificationPaneUI;
+import main.ui.components.PopUpPanelUI;
 import main.ui.components.TextFieldInputUI;
 import main.ui.components.TextPaneDisplayUI;
-import main.ui.components.PopUpPanelUI;
 import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.Packet03Message;
@@ -124,6 +125,8 @@ public class Window extends JPanel {
 				
 				mainPanel.add(TextFieldInputUI.createTextField(), BorderLayout.SOUTH);
 				BootThread.queueInfo("textField loaded");
+				
+				NotificationPaneUI.addNotification("Welcome.", 5000);
 				
 				window.add(mainPanel);
 				window.pack();
@@ -243,9 +246,24 @@ public class Window extends JPanel {
 			textPane.setText("");
 		}
 		else
-			if(args[0].equals("popup")) {
-				new PopUpPanelUI(window, "Hello!");
-			}
+		if(args[0].equals("popup")) {
+			new PopUpPanelUI(window, "Hello!");
+		}
+		else
+		if(args[0].equals("notify")) {
+			String message = "notification test";
+			int time = 2000;
+			
+			for(String s : args)
+				if(s.contains("m:"))
+					message = s.substring(s.indexOf(":")+1);
+			
+			for(String s : args)
+				if(s.contains("t:"))
+					time = Integer.parseInt(s.substring(s.indexOf(":")+1));
+			
+			NotificationPaneUI.addNotification(message.toUpperCase(), time);
+		}
 		else
 		if(args[0].equals("status")) {
 			adapter.status();
@@ -256,7 +274,7 @@ public class Window extends JPanel {
 			window.setTitle(Resources.VERSION);
 		}
 		else
-		if(args[0].equals("notes")) {
+		if(args[0].equals("n-otes")) {
 			adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+notes.getText()+"\n<<<<<<< END"));
 			appendColoredText("[sent notes]", Color.GRAY);
 		}

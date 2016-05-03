@@ -12,6 +12,7 @@ import network.Adapter;
 import network.User;
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
+import network.packet.types.Packet02Disconnect;
 import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -108,7 +109,7 @@ public class Server extends Thread {
 		ServerConnection serverConnection = new ServerConnection(this, clientSocket);
 		new Thread(serverConnection).start();
 		
-		serverConnections.add(serverConnection);
+		serverConnections.add(0, serverConnection);
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
@@ -121,7 +122,7 @@ public class Server extends Thread {
 	}
 	
 	public void sendPacket(Packet packet) {
-		packet = Formatter.formatServer(packet);
+		Formatter.formatServer(packet);
 		
 		for(ServerConnection sConnection : serverConnections)
 			sConnection.sendPacket(packet);
@@ -131,36 +132,83 @@ public class Server extends Thread {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
 		
-		logger.appendText("attempting to register user at "+hostAddress, Color.GRAY);
+		logger.appendText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
 		
-		for(ServerConnection sConnection : serverConnections) {
-			try {
-				if(sConnection.getConnectedAddress().equals(hostAddress) || 
-						(sConnection.getConnectedAddress().equals("127.0.0.1") 
-								&& hostAddress.equals(InetAddress.getLocalHost().getHostAddress())) ) {
-					logger.appendText("adding user: "+username, Color.GREEN);
-					sConnection.setUser(new User(hostAddress, username));
+		if(usernameTaken(username)) {
+			logger.appendText("username ("+username+") already taken", Color.RED);
+			for(ServerConnection sConnection : serverConnections)
+				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
+					sConnection.sendPacket(new Packet02Disconnect("[username already taken]"));
+					sConnection.close();
+					return;
 				}
-			} catch (UnknownHostException e) {
-				System.err.println("error registering user");
-			}
 		}
+		
+		if(alreadyConnected(hostAddress)) {
+			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
+			for(ServerConnection sConnection : serverConnections)
+				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
+					sConnection.sendPacket(new Packet02Disconnect("[already connected from another host]"));
+					sConnection.close();
+					return;
+				}
+		}
+		
+		for(ServerConnection sConnection : serverConnections)
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
+				logger.appendText("[adding user: "+username+"]", Color.GREEN);
+				sConnection.setUser(new User(hostAddress, username));
+			}
 	}
 	
 	public void sendPacketToAllClients(Packet packet) {
-		packet = Formatter.deconstruct(packet);
+		Formatter.deconstruct(packet);
 		ServerConnection packetHost = getUser(packet);
 		
 		for(ServerConnection sConnection : serverConnections)
 			if(!packetHost.equals(sConnection)) {
-				packet = Formatter.formatUsername(packet, packetHost.getUser().getUsername());
+				Formatter.formatUsername(packet, packetHost.getUser().getUsername());
 				sConnection.sendPacket(packet);
 			}
 		
-		packet = Formatter.construct(packet);
+		Formatter.construct(packet);
 	}
 	
-	 private ServerConnection getUser(Packet packet) {
+	private boolean isLocalHost(ServerConnection sConnection, String hostAddress) {
+		try {
+			return (sConnection.getConnectedAddress().equals("127.0.0.1") 
+					&& hostAddress.equals(InetAddress.getLocalHost().getHostAddress()));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	private boolean alreadyConnected(String hostAddress) {
+		for(ServerConnection sConnection : serverConnections) {
+			String address = sConnection.getConnectedAddress();
+			
+			if(address.equals(hostAddress))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean usernameTaken(String username) {
+		for(ServerConnection sConnection : serverConnections) {
+			User user = sConnection.getUser();
+			
+			if(user != null)
+				if(user.getUsername().equalsIgnoreCase(username))
+					return true;
+		}
+		
+		return false;
+	}
+	
+	private ServerConnection getUser(Packet packet) {
 		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
 				return sConnection;
