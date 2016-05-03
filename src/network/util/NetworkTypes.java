@@ -1,4 +1,4 @@
-package network;
+package network.util;
 
 /*
  * A network consists of a Server and a Client

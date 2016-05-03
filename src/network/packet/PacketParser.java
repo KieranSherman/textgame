@@ -1,9 +1,9 @@
 package network.packet;
 
-import network.NetworkTypes;
 import network.client.Client;
 import network.packet.types.Packet01Login;
 import network.server.Server;
+import network.util.NetworkTypes;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Formatter;
@@ -76,7 +76,7 @@ public class PacketParser {
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
 	private synchronized void parseClientPacket(Packet packet) {
-		packet = Formatter.construct(packet);
+		Formatter.construct(packet);
 		
 		switch(packet.getType()) {
 			case ACTION: {

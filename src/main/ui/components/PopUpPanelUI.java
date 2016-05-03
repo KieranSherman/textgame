@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
 
 import util.Resources;
 
@@ -21,6 +20,7 @@ public class PopUpPanelUI {
 			dialog.setLayout(new BorderLayout());
 			dialog.setSize(300, 200);
 			dialog.setLocationRelativeTo(frame);
+			
 		    JButton button = new JButton("Close");
 		    button.setFont(Resources.USER_OUTPUT);
 		    button.setBackground(Color.WHITE);
@@ -34,11 +34,13 @@ public class PopUpPanelUI {
 		      }
 		    });
 		    dialog.add(button, BorderLayout.SOUTH);
+		    
 		    JLabel label = new JLabel(message);
 		    label.setForeground(Color.WHITE);
 		    label.setHorizontalAlignment(JLabel.CENTER);
 		    label.setVerticalAlignment(JLabel.CENTER);
 		    label.setFont(Resources.USER_OUTPUT);
+		    
 		    dialog.add(label, BorderLayout.CENTER);
 		    dialog.setUndecorated(true);
 		    dialog.getRootPane().setOpaque(false);

@@ -5,8 +5,8 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 
 import network.Adapter;
-import network.NetworkTypes;
 import network.packet.Packet;
+import network.util.NetworkTypes;
 
 public class ServerReceiver extends Thread {
 
