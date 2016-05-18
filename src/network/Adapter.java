@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import main.ui.Window;
+import main.ui.components.notifications.NotificationPaneUI;
 import network.client.Client;
 import network.packet.Packet;
 import network.packet.PacketParser;
@@ -45,6 +46,7 @@ public class Adapter {
 			client.setUsername(username);
 
 			packetParser.setClient(client);
+			startClient();
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
 		}
@@ -53,13 +55,14 @@ public class Adapter {
 	/*
 	 * Start the client on a thread
 	 */
-	public void startClient() {
+	private void startClient() {
 		if(client == null) {
 			System.err.println("client not initialized");
 			return;
 		}
 		
 		System.out.println("running client");
+		NotificationPaneUI.addNotification("RUNNING CLIENT", 5000);
 		new Thread(client).start();
 	}
 	
@@ -78,7 +81,9 @@ public class Adapter {
 		try {
 			checkNetwork();
 			server = new Server(portNumber);
+			
 			packetParser.setServer(server);
+			startServer();
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
 		}
@@ -87,13 +92,14 @@ public class Adapter {
 	/*
 	 * Start the server on a thread
 	 */
-	public void startServer() {
+	private void startServer() {
 		if(server == null) {
 			System.err.println("server not initialized");
 			return;
 		}
 		
 		System.out.println("running server");
+		NotificationPaneUI.addNotification("RUNNING SERVER", 5000);
 		new Thread(server).start();
 	}
 	
@@ -208,8 +214,10 @@ public class Adapter {
 	}
 	
 	private void checkNetwork() throws AlreadyRunningNetworkException {
-		if(server != null || client != null)
+		if(server != null || client != null) {
+			Window.appendColoredText("[network already running]", Color.RED);
 			throw new AlreadyRunningNetworkException("You are already running a network!");
+		}
 	}
 	
 }

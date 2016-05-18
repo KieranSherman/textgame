@@ -3,6 +3,8 @@ package util;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +31,8 @@ public class Resources {
 	public final static int HEIGHT = 700, WIDTH = (int)(HEIGHT*1.618);	//height and width of window
 	
 	public final static Font USER_OUTPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
-	public final static Font UI = loadFont("src/files/fonts/vador.ttf").deriveFont(15f); //font for UI
+	public final static Font UI = loadFont("src/files/fonts/geogrotesque.ttf").deriveFont(15f); //font for UI
+	public final static Font DOS = loadFont("src/files/fonts/DOS.ttf").deriveFont(13f);
 	
 	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
 	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
@@ -41,10 +44,18 @@ public class Resources {
 	private static boolean initialized = false;		//whether or not the call to init() has been made
 	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
-	public static final String VERSION = loadVersion("src/files/reference/Reference.txt");
-	public static String HOST_ADDRESS;
+	public static  String VERSION = loadVersion("src/files/reference/Reference.txt");
+	public static  String HOST_ADDRESS;
+	
+	public static final int RENDER = 80;
 	
 	public static final BufferedImage bootImage = loadImage("src/files/imgs/pngs/booting1.png");
+	public static final BufferedImage tabletSide = loadImage("src/files/imgs/pngs/IPad_3.png");
+	
+	public static final Image notificationBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/notification.gif");
+	public static final Image terminalBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/terminal.gif");
+	public static final Image notesBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/notes.gif");
+	
 	public static final boolean boot = loadBoot("src/files/reference/Reference.txt");
 	
 	private Resources() {}							//prevent instantiation of Resources object

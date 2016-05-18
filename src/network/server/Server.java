@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import main.ui.components.notifications.NotificationPaneUI;
 import network.Adapter;
 import network.User;
 import network.packet.Packet;
@@ -65,7 +66,7 @@ public class Server extends Thread {
 			logger.appendText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
 					":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		} catch (IOException e) {
-			error = "server unable to initialize";
+			error = "[server unable to initialize]";
 			System.err.println(error);
 			logger.appendText(error, Color.RED);
 			adapter.destroyServer();
@@ -110,6 +111,7 @@ public class Server extends Thread {
 		new Thread(serverConnection).start();
 		
 		serverConnections.add(0, serverConnection);
+		NotificationPaneUI.addNotification("CLIENT CONNECTED", 5000);
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
@@ -118,6 +120,7 @@ public class Server extends Thread {
 		if(index != -1) {
 			serverConnections.remove(index);
 			logger.appendText("[client disconnected]", Color.GRAY);
+			NotificationPaneUI.addNotification("CLIENT DISCONNECTED", 5000);
 		}
 	}
 	
