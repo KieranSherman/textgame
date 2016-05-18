@@ -75,7 +75,7 @@ public class Client extends Thread {
 		try {
 			socket = new Socket(hostName, portNumber);
 		} catch (IOException e) {
-			error = "client unable to connect";
+			error = "[client unable to connect]";
 			System.err.println(error);
 			logger.appendText(error, Color.RED);
 			adapter.destroyClient();
@@ -84,7 +84,7 @@ public class Client extends Thread {
 		try {
 			clientSender = new ClientSender(socket, username);
 		} catch (IOException e) {
-			error = "client sender unable to initialize";
+			error = "[client sender unable to initialize]";
 			System.err.println(error);
 			logger.appendText(error, Color.RED);
 			adapter.destroyClient();
@@ -93,7 +93,7 @@ public class Client extends Thread {
 		try {
 			clientReceiver = new ClientReceiver(socket, adapter);
 		} catch (IOException e) {
-			error = "client receiver unable to initialize";
+			error = "[client receiver unable to initialize]";
 			System.err.println(error);
 			logger.appendText(error, Color.RED);
 			adapter.destroyClient();
