@@ -2,6 +2,7 @@ package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import network.packet.Packet;
@@ -15,7 +16,7 @@ public class ClientSender {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
 		
-		sendPacket(new Packet01Login("[client has connected from "+socket.getInetAddress().getHostAddress()+"]", username));
+		sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]", username));
 	}
 	
 	/*
