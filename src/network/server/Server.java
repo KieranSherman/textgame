@@ -164,8 +164,6 @@ public class Server extends Thread {
 		}
 		
 		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("SERVER CONNECTION ADDRESS: "+sConnection.getConnectedAddress());
-			System.out.println("HOST ADDRESS: "+hostAddress);
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
 				logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
