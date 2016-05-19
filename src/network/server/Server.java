@@ -149,7 +149,7 @@ public class Server extends Thread {
 				}
 		}
 		
-		if(alreadyConnected(hostAddress) && serverConnections.size() > 1) {
+		if(alreadyConnected(hostAddress)) {
 			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
 			for(ServerConnection sConnection : serverConnections)
 				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
@@ -160,8 +160,6 @@ public class Server extends Thread {
 		}
 		
 		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("SERVER CONNECTION ADDRESS: "+sConnection.getConnectedAddress());
-			System.out.println("HOSTADDRESS: "+hostAddress);
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
 				logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
