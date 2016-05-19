@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import main.ui.Window;
+import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationPaneUI;
 import network.client.Client;
 import network.packet.Packet;
@@ -13,6 +14,8 @@ import network.packet.PacketParser;
 import network.packet.types.Packet02Disconnect;
 import network.server.Server;
 import network.util.NetworkTypes;
+import sound.SoundPlayer;
+import util.Action;
 import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
 
@@ -61,9 +64,25 @@ public class Adapter {
 			return;
 		}
 		
-		System.out.println("running client");
-		NotificationPaneUI.addNotification("RUNNING CLIENT", 5000);
-		new Thread(client).start();
+		SoundPlayer.play("servoInsert");
+		Window.appendColoredText("[client loading...]", Color.ORANGE);
+		
+		Action action = new Action() {
+			private String username;
+			
+			public void pre() {
+				SoundPlayer.play("tapeInsert");
+				Window.appendText("[client ready]");
+				PopupUI.getInput("USERNAME");
+				username = PopupUI.getData();
+			}
+			public void execute() {
+				client.setUsername(username);
+				new Thread(client).start();
+			}
+		};
+		
+		NotificationPaneUI.queueNotification("CLIENT STARTUP", 1100, action, true);
 	}
 	
 	/*
@@ -98,9 +117,20 @@ public class Adapter {
 			return;
 		}
 		
-		System.out.println("running server");
-		NotificationPaneUI.addNotification("RUNNING SERVER", 5000);
-		new Thread(server).start();
+		SoundPlayer.play("servoInsert");
+		Window.appendColoredText("[server loading...]", Color.ORANGE);
+		
+		Action action = new Action() {
+			public void pre() {
+				SoundPlayer.play("tapeInsert");
+				Window.appendText("[server ready]");
+			}
+			public void execute() {
+				new Thread(server).start();
+			}
+		};
+		
+		NotificationPaneUI.queueNotification("SERVER STARTUP", 1100, action, true);
 	}
 	
 	/*
@@ -151,12 +181,34 @@ public class Adapter {
 	public void close() {
 		if(client != null) {
 			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
-			client.disconnect();
+			
+			SoundPlayer.play("servoEject");
+			Action action = new Action() {
+				public void pre() {
+					SoundPlayer.play("tapeInsert");
+				}
+				public void execute() {
+					client.disconnect();
+				}
+			};
+			
+			NotificationPaneUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
 		}
 		else
 		if(server != null) {
 			server.sendPacket(new Packet02Disconnect("[server is closing...]"));
-			server.close();
+			
+			SoundPlayer.play("servoEject");
+			Action action = new Action() {
+				public void pre() {
+					SoundPlayer.play("tapeInsert");
+				}
+				public void execute() {
+					server.close();
+				}
+			};
+			
+			NotificationPaneUI.queueNotification("SERVER CLOSING", 600, action, true);
 		}
 	}
 	
@@ -209,12 +261,14 @@ public class Adapter {
 			}
 		}
 		else {
+			SoundPlayer.play("error");
 			Window.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	
 	private void checkNetwork() throws AlreadyRunningNetworkException {
 		if(server != null || client != null) {
+			SoundPlayer.play("error");
 			Window.appendColoredText("[network already running]", Color.RED);
 			throw new AlreadyRunningNetworkException("You are already running a network!");
 		}

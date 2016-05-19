@@ -9,8 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
-import util.Resources;
-
 /*
  * Class sets the UI for a scroll bar
  */
@@ -36,15 +34,12 @@ public class ScrollBarUI_Vertical extends BasicScrollBarUI {
 	}
 
     @Override
-    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-        g.setColor(new Color(15, 15, 15));
-        g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
-    }
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
 
     @Override
     protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-    	g.setColor(Resources.DARK_RED);
-        g.fillRect(thumbBounds.x, thumbBounds.y, 3, thumbBounds.height);
+    	g.setColor(new Color(255, 255, 255, 175));
+        g.fillRect(thumbBounds.x, thumbBounds.y, 2, thumbBounds.height);
     }
     
 }
