@@ -16,15 +16,16 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.BootThread;
-import main.ui.components.NotificationPaneUI;
 import main.ui.components.PopUpPanelUI;
-import main.ui.components.TextFieldInputUI;
-import main.ui.components.TextPaneDisplayUI;
+import main.ui.components.InputUI;
+import main.ui.components.DisplayUI;
+import main.ui.components.notifications.NotificationPaneUI;
 import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.Packet03Message;
 import network.packet.types.Packet04Action;
 import network.packet.types.PacketTypes;
+import sound.Sound;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -38,7 +39,7 @@ public class Window extends JPanel {
 	
 	private static JFrame window;				//JFrame container
 	
-	protected static JTextPane textPane;		//Pane to display output
+	public static JTextPane textPane;		//Pane to display output
 	protected static JTextPane notes;
 	protected static JTextField textField;		//Field for input
 	
@@ -46,8 +47,8 @@ public class Window extends JPanel {
 	protected static StyleContext context;		//* Styled for coloring output
 	protected static Style style;				//*
 	
-	protected static Colorer colorer;				//Parser determines coloring
-	protected static Adapter adapter;				//Network adapter
+	protected static Colorer colorer;			//Parser determines coloring
+	protected static Adapter adapter;			//Network adapter
 	
 	private BootThread bootThread;				//Thread controlling boot
 	
@@ -102,8 +103,8 @@ public class Window extends JPanel {
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				UIManager.put("ScrollBarUI", "main.ui.components.ScrollBarUI_Vertical");
-				UIManager.put("ScrollBarUI", "main.ui.components.ScrollBarUI_Horizontal");
+				UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
+				UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
 
 				try {
 					adapter = Resources.getAdapter();
@@ -115,18 +116,17 @@ public class Window extends JPanel {
 				window = new JFrame(Resources.VERSION);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				window.addWindowListener(new WindowHandler());
+				window.setResizable(false);
 				
 				mainPanel.setBackground(new Color(15, 15, 15));
 				mainPanel.setBorder(new LineBorder(new Color(15, 15, 15), 2, true));
 				mainPanel.setLayout(new BorderLayout());
 		
-				mainPanel.add(TextPaneDisplayUI.createTextPane(), BorderLayout.CENTER);
+				mainPanel.add(DisplayUI.createTextPane(), BorderLayout.CENTER);
 				BootThread.queueInfo("textPane loaded");
 				
-				mainPanel.add(TextFieldInputUI.createTextField(), BorderLayout.SOUTH);
+				mainPanel.add(InputUI.createTextField(), BorderLayout.SOUTH);
 				BootThread.queueInfo("textField loaded");
-				
-				NotificationPaneUI.addNotification("Welcome.", 5000);
 				
 				window.add(mainPanel);
 				window.pack();
@@ -155,16 +155,19 @@ public class Window extends JPanel {
 			return;
 	
 		for(String word : str.split("\\s+")) {
-			StyleConstants.setForeground(style, colorer.getColor(word));
-			TextPaneDisplayUI.insertTextToDoc(word+" ");
+			Color color = colorer.getColor(word);
+			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+			StyleConstants.setForeground(style, alpha);
+			DisplayUI.insertTextToDoc(word+" ");
 		}
 		
-		TextPaneDisplayUI.insertTextToDoc("\n");
+		DisplayUI.insertTextToDoc("\n");
 	}
 	
 	public synchronized static void appendColoredText(String str, Color color) {
-		StyleConstants.setForeground(style, color);
-		TextPaneDisplayUI.insertTextToDoc(str+"\n");
+		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+		StyleConstants.setForeground(style, alpha);
+		DisplayUI.insertTextToDoc(str+"\n");
 	}
 	
 	/*
@@ -181,9 +184,14 @@ public class Window extends JPanel {
 			return;
 		}
 		
-		StyleConstants.setForeground(style, colorer.getPacketColor(packetType));
-		TextPaneDisplayUI.insertTextToDoc(str+"\n");
-	}	
+		Color color = colorer.getPacketColor(packetType);
+		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+		StyleConstants.setForeground(style, alpha);
+		DisplayUI.insertTextToDoc(str+"\n");
+		
+		int ran = (int)(Math.random()*10);
+		Sound.keyboardKeys[ran].play();
+	}
 	
 	/*
 	 * Checks to see if str is a command and executes
@@ -207,8 +215,6 @@ public class Window extends JPanel {
 					port = s.substring(s.indexOf(":")+1);
 			
 			adapter.createServer(Integer.parseInt(port));
-			adapter.startServer();
-			
 			window.setTitle(Resources.VERSION+" | running server");
 		}
 		else
@@ -230,8 +236,6 @@ public class Window extends JPanel {
 					port = s.substring(s.indexOf(":")+1);
 						
 			adapter.createClient(address, Integer.parseInt(port), username);
-			adapter.startClient();
-			
 			window.setTitle(Resources.VERSION+" | running client");
 		}
 		else
@@ -253,6 +257,8 @@ public class Window extends JPanel {
 		if(args[0].equals("notify")) {
 			String message = "notification test";
 			int time = 2000;
+			int repeat = 1;
+			boolean random = false;
 			
 			for(String s : args)
 				if(s.contains("m:"))
@@ -262,7 +268,19 @@ public class Window extends JPanel {
 				if(s.contains("t:"))
 					time = Integer.parseInt(s.substring(s.indexOf(":")+1));
 			
-			NotificationPaneUI.addNotification(message.toUpperCase(), time);
+			for(String s : args)
+				if(s.contains("x"))
+					repeat = Integer.parseInt(s.substring(s.indexOf("x")+1));
+			
+			for(String s : args)
+				if(s.contains("r:"))
+					random = Boolean.parseBoolean(s.substring(s.indexOf(":")+1));
+			
+			for(int i = 0; i < repeat; i++)
+				if(random)
+					NotificationPaneUI.addNotification(message.toUpperCase(), (int)(time+Math.random()*10000));
+				else
+					NotificationPaneUI.addNotification(message.toUpperCase(), time);
 		}
 		else
 		if(args[0].equals("status")) {
@@ -274,7 +292,7 @@ public class Window extends JPanel {
 			window.setTitle(Resources.VERSION);
 		}
 		else
-		if(args[0].equals("n-otes")) {
+		if(args[0].equals("notes")) {
 			adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+notes.getText()+"\n<<<<<<< END"));
 			appendColoredText("[sent notes]", Color.GRAY);
 		}

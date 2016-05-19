@@ -1,0 +1,25 @@
+======================== LET'S BEGIN =========================
+
+* SERVER SIDE *
+1. TYPE "!SERVER" TO OPEN A CONNECTION
+
+* CLIENT SIDE *
+1. TYPE "!CLIENT A:[IP ADDRESS] P:[PORT NUMBER]" TO CONNECT
+
+* COMMANDS *
+!POPUP
+
+!NOTES
+
+!CLEAR
+
+!STATUS
+
+!LOGOUT
+
+!NOTIFY M:[MESSAGE] T:[TIME IN MS] R:[TRUE | FALSE] 
+	(RANDOM TIMES) x[NUMBER] (NUMBER OF NOTIFICATIONS)
+	
+!BLOCK [TRUE | FALSE] (ON UNBLOCK TO DISPLAY BLOCKED PACKETS)
+
+================================================================
