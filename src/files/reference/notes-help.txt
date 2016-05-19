@@ -1,25 +1,59 @@
 ======================== LET'S BEGIN =========================
 
-* SERVER SIDE *
-1. TYPE "!SERVER" TO OPEN A CONNECTION
+*** TO ENTER A DEV COMMAND, PRESS THE [ ` ] KEY ***	
 
-* CLIENT SIDE *
-1. TYPE "!CLIENT A:[IP ADDRESS] P:[PORT NUMBER]" TO CONNECT
+SERVER		...		STARTS A SERVER
 
-* COMMANDS *
-!POPUP
+CLIENT		...		STARTS A CLIENT
 
-!NOTES
+POPUP		...		DISPLAYS A POPUP WINDOW
 
-!CLEAR
+NOTES		...		SENDS NOTES OVER NETWORK
 
-!STATUS
+CLEAR		...		CLEARS THE SCREEN
 
-!LOGOUT
+STATUS		...		SHOWS STATUS OF NETWORK
 
-!NOTIFY M:[MESSAGE] T:[TIME IN MS] R:[TRUE | FALSE] 
-	(RANDOM TIMES) x[NUMBER] (NUMBER OF NOTIFICATIONS)
+LOGOUT		...		CLOSES CURRENT NETWORK
+
+NOTIFY		...		DISPLAYS A NOTIFICATION
+
+BLOCK		...		BLOCK/UNBLOCKS PACKETS
+
+================================================================
+
+**CLIENT USAGE**
+a:[ADDRESS]
+p:[PORT]
+
+E.G: "client a:127.0.0.1 p:1234"
+
+DEFAULTS TO a:LOCALHOST AND p:9999 IF NOT ENTERED
+
+================================================================
+
+**SERVER USAGE**
+p:[PORT]
+
+E.G: "server p:1234"
+
+DEFAULTS TO p:1234 IF NOT ENTERED
+
+================================================================
+
+** NOTIFY USAGE **
+m:[MESSAGE]
+t:[TIME] (IN MILLISECONDS) 
+r:[TRUE | FALSE] (RANDOM TIMES)
+x[NUMBER] (NUMBER OF NOTIFICATIONS)
+
+E.G: "notify m:test t:5000 r:true x25"
+
+================================================================
 	
-!BLOCK [TRUE | FALSE] (ON UNBLOCK TO DISPLAY BLOCKED PACKETS)
+** BLOCK USAGE **
+[true | false]
+
+E.G: "block true"
 
 ================================================================

@@ -12,29 +12,27 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextPane;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import main.ui.components.backgrounds.NotificationBackground;
-import main.ui.components.backgrounds.NotificationPanelBackground;
-import sound.Sound;
+import main.ui.components.backgrounds.PanelBackground;
+import sound.SoundPlayer;
+import util.Action;
 import util.Resources;
 
 public class NotificationPaneUI {
 	
-	private static JPanel notifications = new NotificationPanelBackground();
+	private static JPanel notifications = new PanelBackground(Resources.notesBG);
 	private static ArrayList<Notification> notificationQueue = new ArrayList<Notification>();
 	private static int notificationSize = 0;
 	private static int notificationCapacity = 10;
 	
 	public static Component getNotificationPane() {
 		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
-		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "NOTIFICATIONS", 
+		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "TODO", 
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), new Color(40, 190, 230, 180));
 		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, notifications.getBorder());
 		
@@ -45,45 +43,48 @@ public class NotificationPaneUI {
 		return notifications;
 	}
 	
-	public static void addNotification(Object obj, int disposeTime) {
+	public static void queueNotification(Object obj, int disposeTime, Action action, boolean playSound) {
+		JPanel notification = new PanelBackground(Resources.notesBG);
+
 		JTextPane area = new JTextPane();
 		area.setEditable(false);
 		area.setOpaque(false);
 		area.setHighlighter(null);
-		area.setMargin(new Insets(7, 0, 0, 0));
+		area.setMargin(new Insets(25, 0, 0, 0));
 		area.setFont(Resources.DOS.deriveFont(12f));
 		area.setForeground(new Color(255, 255, 255, 180));
-		area.setText(obj.toString());
+		
+		if(obj.toString().length() > 20) {
+			area.setText(obj.toString().substring(0, 18)+"...");
+			notification.setToolTipText(obj.toString());
+		} else {
+			area.setText(obj.toString());
+		}
 		
 		StyledDocument doc = area.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		
-		UIManager.put("ProgressBar.selectionForeground", Color.WHITE);
+		JProgressBar pB = new JProgressBar();
+		pB.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
+		pB.setFont(Resources.DOS.deriveFont(12f));
+		pB.setStringPainted(true);
 		
-		JProgressBar progressBar = new JProgressBar();
-		progressBar.setOpaque(false);
-		progressBar.setFont(Resources.DOS.deriveFont(12f));
-		progressBar.setStringPainted(true);
-		
-		JPanel notification = new NotificationBackground();
 		notification.setPreferredSize(new Dimension(Resources.WIDTH/6, 50));
 		notification.setLayout(new BorderLayout());
-		notification.setBorder(new MatteBorder(0, 0, 2, 0, new Color(40, 190, 230, 180)));
 		notification.add(area, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createEmptyBorder(-8, 0, -2, 0));
 		panel.setOpaque(false);
-		panel.add(progressBar);
+		panel.add(pB);
 		
 		notification.add(panel, BorderLayout.SOUTH);
 		
-		addNotification(new Notification(notification, disposeTime));
+		addNotification(new Notification(notification, disposeTime, action), playSound);
 	}
 	
-	private static void addNotification(Notification notification) {
+	private static void addNotification(Notification notification, boolean playSound) {
 		if(notificationSize >= notificationCapacity) {
 			notificationQueue.add(notification);
 			return;
@@ -98,8 +99,8 @@ public class NotificationPaneUI {
 		notifications.revalidate();
 		notifications.repaint();
 		
-		Sound.notification.setGain(-6f);
-		Sound.notification.play();
+		if(playSound)
+			SoundPlayer.play("notification");
 		
 		Thread t = new Thread() {
 			public void run() {
@@ -112,11 +113,13 @@ public class NotificationPaneUI {
 					panel.repaint();
 				}
 				
+				notification.execute();
+				
 				notificationSize -= 1;
 				notifications.remove(panel);
 				
 				if(!notificationQueue.isEmpty() && notificationSize < notificationCapacity)
-					addNotification(notificationQueue.remove(0));
+					addNotification(notificationQueue.remove(0), true);
 				
 				notifications.revalidate();
 				notifications.repaint();

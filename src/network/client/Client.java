@@ -8,6 +8,7 @@ import network.Adapter;
 import network.client.util.ClientReceiver;
 import network.client.util.ClientSender;
 import network.packet.Packet;
+import sound.SoundPlayer;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
@@ -76,6 +77,7 @@ public class Client extends Thread {
 			socket = new Socket(hostName, portNumber);
 		} catch (IOException e) {
 			error = "[client unable to connect]";
+			SoundPlayer.play("error");
 			System.err.println(error);
 			logger.appendText(error, Color.RED);
 			adapter.destroyClient();
