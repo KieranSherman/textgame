@@ -111,7 +111,8 @@ public class Server extends Thread {
 		new Thread(serverConnection).start();
 		
 		serverConnections.add(0, serverConnection);
-		NotificationPaneUI.addNotification("CLIENT CONNECTED", 5000);
+
+		NotificationPaneUI.queueNotification("CLIENT CONNECTED", 5000, null, true);
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
@@ -120,7 +121,8 @@ public class Server extends Thread {
 		if(index != -1) {
 			serverConnections.remove(index);
 			logger.appendText("[client disconnected]", Color.GRAY);
-			NotificationPaneUI.addNotification("CLIENT DISCONNECTED", 5000);
+			
+			NotificationPaneUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
 		}
 	}
 	

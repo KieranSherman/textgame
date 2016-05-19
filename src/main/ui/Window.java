@@ -3,29 +3,32 @@ package main.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.UIManager;
+import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import main.BootThread;
-import main.ui.components.PopUpPanelUI;
-import main.ui.components.InputUI;
-import main.ui.components.DisplayUI;
+import main.ui.components.display.DisplayUI;
+import main.ui.components.handlers.WindowHandler;
+import main.ui.components.input.InputUI;
+import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationPaneUI;
 import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.Packet03Message;
 import network.packet.types.Packet04Action;
 import network.packet.types.PacketTypes;
-import sound.Sound;
+import sound.SoundPlayer;
+import util.Action;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
@@ -39,53 +42,56 @@ public class Window extends JPanel {
 	
 	private static JFrame window;				//JFrame container
 	
-	public static JTextPane textPane;		//Pane to display output
-	protected static JTextPane notes;
-	protected static JTextField textField;		//Field for input
+	public static JTextPane terminal;		//Pane to display output
+	public static JTextPane notes;
+	public static JTextField input;		//Field for input
 	
-	protected static DefaultStyledDocument doc;	//*
-	protected static StyleContext context;		//* Styled for coloring output
-	protected static Style style;				//*
+	public static DefaultStyledDocument doc;	//*
+	public static StyleContext context;		//* Styled for coloring output
+	public static Style style;				//*
 	
-	protected static Colorer colorer;			//Parser determines coloring
-	protected static Adapter adapter;			//Network adapter
-	
-	private BootThread bootThread;				//Thread controlling boot
+	public static Colorer colorer;			//Parser determines coloring
+	public static Adapter adapter;			//Network adapter
 	
 	public Window() {
-		boot();
-		
-		Resources.init(this);
 		this.init();
 
-		synchronized(this) {
-			try { this.wait(); } catch (InterruptedException e) {}
-		}
-		
-		synchronized(this) {
-			BootThread.startWindow(this);
-			try { this.wait(); } catch (InterruptedException e) {}
-		}
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				window.setVisible(true);
+				
+				Action welcome = new Action() {
+					public void execute() {
+						PopupUI.displayMessage("WELCOME "+System.getProperty("user.name").toUpperCase());
+					}
+				};
+				
+				Action load = new Action() {
+					public void pre() {
+						SoundPlayer.play("tapeInsert");
+						SoundPlayer.play("computerBeep1");
+					}
+					public void execute() {
+						DisplayUI.boot();
+						Window.input.setEnabled(true);
+						Window.input.requestFocus();
+					}
+					public void post() {
+						welcome.execute();
+						
+						NotificationPaneUI.queueNotification("LOGIN FINISHING", 1000, null, false);
+						NotificationPaneUI.queueNotification("LOADING RESOURCES", 800, null, false);
+						NotificationPaneUI.queueNotification("LOADING TEXTURES", 900, null, false);
+						NotificationPaneUI.queueNotification("LOADING AMBIENCE", 700, null, false);
+						NotificationPaneUI.queueNotification("GENERATING CHEESE", 800, null, false);
+						NotificationPaneUI.queueNotification("AQUIRING GPS", 800, null, false);
+						NotificationPaneUI.queueNotification("LOSING SANITY", 900, null, false);
+						NotificationPaneUI.queueNotification("EATING PIE", 700, null, false);
+					}
+				};
+				NotificationPaneUI.queueNotification("AUTHORIZING", 500, load, false);
 			}
 		});
-		
-		if(bootThread != null)
-			bootThread.close();
-	}
-	
-	/*
-	 * Handles boot
-	 */
-	private void boot() {
-		if(!Resources.boot)
-			return;
-		
-		bootThread = new BootThread();
-		Resources.sleep(400);
 	}
 	
 	/*
@@ -103,9 +109,6 @@ public class Window extends JPanel {
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
-				UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
-
 				try {
 					adapter = Resources.getAdapter();
 				} catch (ResourcesNotInitializedException e) {
@@ -121,12 +124,8 @@ public class Window extends JPanel {
 				mainPanel.setBackground(new Color(15, 15, 15));
 				mainPanel.setBorder(new LineBorder(new Color(15, 15, 15), 2, true));
 				mainPanel.setLayout(new BorderLayout());
-		
 				mainPanel.add(DisplayUI.createTextPane(), BorderLayout.CENTER);
-				BootThread.queueInfo("textPane loaded");
-				
 				mainPanel.add(InputUI.createTextField(), BorderLayout.SOUTH);
-				BootThread.queueInfo("textField loaded");
 				
 				window.add(mainPanel);
 				window.pack();
@@ -135,9 +134,21 @@ public class Window extends JPanel {
 				window.setLocationRelativeTo(null);
 				window.setAlwaysOnTop(true);
 				
-				textField.requestFocus();
+				AbstractAction command = new AbstractAction() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						PopupUI.getInput("{ ENTER COMMAND }");
+						String command = PopupUI.getData();
+						Window.input.setText("");
+						Window.parseCommand(command);
+					}
+				};
 				
-				BootThread.queueInfo("window initialized");
+				input.getInputMap().put(KeyStroke.getKeyStroke('`'), "EnterCommand");
+				input.getActionMap().put("EnterCommand", command);
+				input.setEnabled(false);
 				
 				synchronized(mainPanel) {
 					mainPanel.notifyAll();
@@ -151,9 +162,6 @@ public class Window extends JPanel {
 	 * filter to method: insertTextToDoc()
 	 */
 	public synchronized static void appendText(String str) {
-		if(parseCommand(str))
-			return;
-	
 		for(String word : str.split("\\s+")) {
 			Color color = colorer.getColor(word);
 			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
@@ -189,24 +197,19 @@ public class Window extends JPanel {
 		StyleConstants.setForeground(style, alpha);
 		DisplayUI.insertTextToDoc(str+"\n");
 		
-		int ran = (int)(Math.random()*10);
-		Sound.keyboardKeys[ran].play();
+		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 	}
 	
 	/*
 	 * Checks to see if str is a command and executes
 	 * the necessary action
 	 */
-	private static boolean parseCommand(String str) {
-		if(str == null || !(str = str.substring(2)).startsWith("!"))
-			return false;
+	public static void parseCommand(String str) {
+		if(str == null)
+			return;
 		
-		str = str.toLowerCase().substring(1);
 		String [] args = str.split("\\s+");
 		
-		if(args.length == 0 || args == null)
-			return true;
-		else
 		if(args[0].equals("server")) {
 			String port = "9999";
 			
@@ -247,15 +250,15 @@ public class Window extends JPanel {
 		}
 		else
 		if(args[0].equals("clear")) {
-			textPane.setText("");
+			terminal.setText("");
 		}
 		else
 		if(args[0].equals("popup")) {
-			new PopUpPanelUI(window, "Hello!");
+			PopupUI.getInput("POPUP TEST");
 		}
 		else
 		if(args[0].equals("notify")) {
-			String message = "notification test";
+			String message = "NOTIFICATION TEST";
 			int time = 2000;
 			int repeat = 1;
 			boolean random = false;
@@ -278,9 +281,9 @@ public class Window extends JPanel {
 			
 			for(int i = 0; i < repeat; i++)
 				if(random)
-					NotificationPaneUI.addNotification(message.toUpperCase(), (int)(time+Math.random()*10000));
+					NotificationPaneUI.queueNotification(message.toUpperCase()+" "+(i+1), (int)(time+Math.random()*10000), null, true);
 				else
-					NotificationPaneUI.addNotification(message.toUpperCase(), time);
+					NotificationPaneUI.queueNotification(message.toUpperCase()+" "+(i+1), time, null, true);
 		}
 		else
 		if(args[0].equals("status")) {
@@ -298,14 +301,16 @@ public class Window extends JPanel {
 		}
 		else {
 			adapter.sendPacket(new Packet04Action(str));
-			appendText("> "+str);
+			appendText("! "+str);
 		}
-		
-		return true;
 	}
 	
 	public static void setTitle(String str) {
 		window.setTitle(str);
+	}
+	
+	public static JFrame getFrame() {
+		return window;
 	}
 	
 }
