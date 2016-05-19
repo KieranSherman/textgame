@@ -149,7 +149,7 @@ public class Server extends Thread {
 				}
 		}
 		
-		if(alreadyConnected(hostAddress)) {
+		if(alreadyConnected(hostAddress) && serverConnections.size() > 1) {
 			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
 			for(ServerConnection sConnection : serverConnections)
 				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {

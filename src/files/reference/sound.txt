@@ -1,4 +1,4 @@
-new Sound("background1", "src/files/sounds/background1.wav");
+new Sound("background1", "src/files/sounds/background1.wav", -6);
 new Sound("notification", "src/files/sounds/notification.wav", -14);
 new Sound("clock", "src/files/sounds/clock.wav", -14);
 new Sound("error", "src/files/sounds/error.wav", -9);
