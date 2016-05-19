@@ -169,7 +169,8 @@ public class Window extends JPanel {
 			DisplayUI.insertTextToDoc(word+" ");
 		}
 		
-		DisplayUI.insertTextToDoc("\n");
+		if(!str.contains("\n"))
+			DisplayUI.insertTextToDoc("\n");
 	}
 	
 	public synchronized static void appendColoredText(String str, Color color) {
@@ -250,7 +251,7 @@ public class Window extends JPanel {
 		}
 		else
 		if(args[0].equals("clear")) {
-			terminal.setText("");
+			DisplayUI.clear();
 		}
 		else
 		if(args[0].equals("popup")) {

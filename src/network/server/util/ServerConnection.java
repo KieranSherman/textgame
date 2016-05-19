@@ -74,8 +74,7 @@ public class ServerConnection extends Thread {
 	}
 	
 	public String getConnectedAddress() {
-		String address = clientSocket.getRemoteSocketAddress().toString();
-		return address.substring(address.indexOf('/')+1, address.indexOf(':'));
+		return clientSocket.getInetAddress().getHostAddress();
 	}
 	
 	public void close() {

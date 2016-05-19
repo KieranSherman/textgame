@@ -44,6 +44,8 @@ public class DisplayUI extends Window {
 	private static JTextArea terminalHead;
 	private static JSplitPane splitPane;
 	
+	private static int lines;
+	
 	private DisplayUI() {
 		display = this;
 	}
@@ -211,11 +213,24 @@ public class DisplayUI extends Window {
 	public static void insertTextToDoc(String str) {
 		try {
 			Window.doc.insertString(Window.doc.getLength(), str, style);
+			
+			if(str.contains("\n"))
+				lines++;
+			
+			if(lines > 37) {
+				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
+				lines--;
+			}
+			
 			Window.terminal.setCaretPosition(Window.doc.getLength());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public static void clear() {
+		lines = 0;
+		Window.terminal.setText("");
 	}
 	
 }

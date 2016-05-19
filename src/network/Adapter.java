@@ -75,9 +75,9 @@ public class Adapter {
 				Window.appendText("[client ready]");
 				PopupUI.getInput("USERNAME");
 				username = PopupUI.getData();
+				client.setUsername(username);
 			}
 			public void execute() {
-				client.setUsername(username);
 				new Thread(client).start();
 			}
 		};

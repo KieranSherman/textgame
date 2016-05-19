@@ -159,11 +159,14 @@ public class Server extends Thread {
 				}
 		}
 		
-		for(ServerConnection sConnection : serverConnections)
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("SERVER CONNECTION ADDRESS: "+sConnection.getConnectedAddress());
+			System.out.println("HOSTADDRESS: "+hostAddress);
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection, hostAddress)) {
 				logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
 			}
+		}
 	}
 	
 	public void sendPacketToAllClients(Packet packet) {
@@ -214,9 +217,12 @@ public class Server extends Thread {
 	}
 	
 	private ServerConnection getUser(Packet packet) {
-		for(ServerConnection sConnection : serverConnections)
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println(sConnection.getUser());
 			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
 				return sConnection;
+			
+		}
 		
 		return null;
 	}

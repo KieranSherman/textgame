@@ -58,16 +58,15 @@ public class InputUI extends Window {
 			public void actionPerformed(ActionEvent e) {
 				String str = input.getText();
 
-				appendText("> "+str);
+				Window.appendText("> "+str);
 				input.setText("");
 				
-				if(!str.startsWith("!") && str != null)
+				if(str != null)
 					adapter.sendPacket(new Packet03Message(str));
 			}
 		});
 		
 		input.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyTyped(KeyEvent e) {}
 

@@ -2,9 +2,7 @@ package network.client.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
@@ -17,11 +15,7 @@ public class ClientSender {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
 		
-		try {
-			sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]", username));
-		} catch (UnknownHostException e) {
-			System.err.println("error sending login packet");
-		}
+		sendPacket(new Packet01Login("[client has connected from "+socket.getInetAddress().getHostAddress()+"]", username));
 	}
 	
 	/*

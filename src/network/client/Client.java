@@ -77,8 +77,8 @@ public class Client extends Thread {
 			socket = new Socket(hostName, portNumber);
 		} catch (IOException e) {
 			error = "[client unable to connect]";
-			SoundPlayer.play("error");
 			System.err.println(error);
+			SoundPlayer.play("error");
 			logger.appendText(error, Color.RED);
 			adapter.destroyClient();
 		}
