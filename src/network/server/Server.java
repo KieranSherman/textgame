@@ -189,7 +189,7 @@ public class Server extends Thread {
 		}
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(user != null && !sConnection.equals(user))
+			if(!sConnection.equals(user))
 				user.sendPacket(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"));
 	}
 	
