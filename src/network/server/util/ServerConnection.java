@@ -2,7 +2,6 @@ package network.server.util;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import network.Adapter;
 import network.User;
@@ -74,15 +73,8 @@ public class ServerConnection extends Thread {
 		serverReceiver.close();
 	}
 	
-	@SuppressWarnings("static-access")
 	public String getConnectedAddress() {
-		try {
-			return clientSocket.getInetAddress().getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+		return clientSocket.getInetAddress().getHostAddress();
 	}
 	
 	public void close() {
