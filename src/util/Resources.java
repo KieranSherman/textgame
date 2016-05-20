@@ -43,6 +43,8 @@ public class Resources {
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
 	public final static String VERSION;
 	
+	public final static String[] BANLIST;
+	
 	public static final int RENDER_SPEED = 80;
 	public static Image commandBG, terminalBG, devterminalBG, notesBG;
 	
@@ -61,6 +63,7 @@ public class Resources {
 		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/notes.gif");
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
+		BANLIST = parseText(DIRECTORY+"src/files/reference/banlist.txt");
 	}
 	
 	public static void installer() {

@@ -151,7 +151,7 @@ public class Adapter {
 		}
 		
 		if(server != null)
-			server.sendPacket(packet);
+			server.sendPacketToAllClients(packet);
 		else
 		if(client != null)
 			client.sendPacket(packet);
@@ -196,7 +196,7 @@ public class Adapter {
 		}
 		else
 		if(server != null) {
-			server.sendPacket(new Packet02Disconnect("[server is closing...]"));
+			server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
 			Action action = new Action() {

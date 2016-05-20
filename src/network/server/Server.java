@@ -14,6 +14,7 @@ import network.User;
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
+import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
 import util.Resources;
 import util.exceptions.ResourcesNotInitializedException;
@@ -130,11 +131,32 @@ public class Server extends Thread {
 		}
 	}
 	
-	public void sendPacket(Packet packet) {
+	public void sendPacketToClient(Packet packet, String hostAddress) {
+		for(ServerConnection sConnection : serverConnections)
+			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+				sConnection.sendPacket(packet);
+				break;
+			}
+	}
+	
+	public void sendPacketToAllClients(Packet packet) {
 		Formatter.formatServer(packet);
 		
 		for(ServerConnection sConnection : serverConnections)
 			sConnection.sendPacket(packet);
+	}
+	
+	public void sendPacketToAllOtherClients(Packet packet) {
+		Formatter.deconstruct(packet);
+		ServerConnection packetHostAddress = getUser(packet);
+		
+		for(ServerConnection sConnection : serverConnections)
+			if(!packetHostAddress.equals(sConnection)) {
+				Formatter.formatUsername(packet, packetHostAddress.getUser().getUsername());
+				sConnection.sendPacket(packet);
+			}
+		
+		Formatter.construct(packet);
 	}
 	
 	public void registerUser(Packet01Login packet) {
@@ -142,46 +164,68 @@ public class Server extends Thread {
 		String username = packet.getUsername();
 		
 		logger.appendText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
+				
+		if(checkBanList(hostAddress))
+			return;
 		
-		if(usernameTaken(username)) {
-			logger.appendText("username ("+username+") already taken", Color.RED);
-			for(ServerConnection sConnection : serverConnections)
-				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
-					sConnection.sendPacket(new Packet02Disconnect("[username already taken]"));
-					sConnection.close();
-					return;
-				}
-		}
+		if(checkUsername(username, hostAddress))
+			return;
+			
+		if(checkConnected(hostAddress))
+			return;
 		
-		if(alreadyConnected(hostAddress)) {
-			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
-			for(ServerConnection sConnection : serverConnections)
-				if(sConnection.getConnectedAddress().equals(hostAddress)) {
-					sConnection.sendPacket(new Packet02Disconnect("[already connected from another host]"));
-					sConnection.close();
-					return;
-				}
-		}
-		
-		for(ServerConnection sConnection : serverConnections) {
-			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
-				logger.appendText("[adding user: "+username+"]", Color.GREEN);
-				sConnection.setUser(new User(hostAddress, username));
-			}
-		}
+		addUser(username, hostAddress);
 	}
 	
-	public void sendPacketToAllClients(Packet packet) {
-		Formatter.deconstruct(packet);
-		ServerConnection packetHost = getUser(packet);
+	private void addUser(String username, String hostAddress) {
+		ServerConnection user = null;
+		
+		for(ServerConnection sConnection : serverConnections) {
+			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+				logger.appendText("[adding user: "+username+"]", Color.GREEN);
+				sConnection.setUser(new User(hostAddress, username));
+				user = sConnection;
+			}
+		}
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(!packetHost.equals(sConnection)) {
-				Formatter.formatUsername(packet, packetHost.getUser().getUsername());
-				sConnection.sendPacket(packet);
+			if(user != null && !sConnection.equals(user))
+				user.sendPacket(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"));
+	}
+	
+	private void disconnectUser(String hostAddress, String message) {
+		for(ServerConnection sConnection : serverConnections)
+			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+				sConnection.sendPacket(new Packet02Disconnect(message));
+				sConnection.close();
 			}
+	}
+	
+	private boolean checkBanList(String hostAddress) {
+		for(String address : Resources.BANLIST)
+			if(address.equals(hostAddress)) {
+				logger.appendText("user at ("+address+") is banned", Color.RED);
+				disconnectUser(hostAddress, "[you have been banned]");
+			}
+		return false;
+	}
+	
+	private boolean checkUsername(String username, String hostAddress) {
+		if(usernameTaken(username)) {
+			logger.appendText("username ("+username+") already taken", Color.RED);
+			disconnectUser(hostAddress, "[username already taken]");
+		}
 		
-		Formatter.construct(packet);
+		return false;
+	}
+	
+	private boolean checkConnected(String hostAddress) {
+		if(alreadyConnected(hostAddress)) {
+			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
+			disconnectUser(hostAddress, "[already connected from another host]");
+		}
+		
+		return false;
 	}
 	
 	private boolean isLocalHost(String hostAddress) {
@@ -236,7 +280,6 @@ public class Server extends Thread {
 			System.out.println(sConnection.getUser());
 			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
 				return sConnection;
-			
 		}
 		
 		return null;
