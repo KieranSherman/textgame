@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import main.ui.components.notifications.NotificationPaneUI;
+import main.ui.components.notifications.NotificationUI;
 import network.Adapter;
 import network.User;
 import network.packet.Packet;
@@ -113,7 +113,7 @@ public class Server extends Thread {
 		
 		serverConnections.add(0, serverConnection);
 
-		NotificationPaneUI.queueNotification("CLIENT CONNECTED", 5000, null, true);
+		NotificationUI.queueNotification("CLIENT CONNECTED", 5000, null, true);
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
@@ -126,7 +126,7 @@ public class Server extends Thread {
 			serverConnections.remove(index);
 			logger.appendText("[client disconnected]", Color.GRAY);
 			
-			NotificationPaneUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
+			NotificationUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class Server extends Thread {
 		if(alreadyConnected(hostAddress)) {
 			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
 			for(ServerConnection sConnection : serverConnections)
-				if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
+				if(sConnection.getConnectedAddress().equals(hostAddress)) {
 					sConnection.sendPacket(new Packet02Disconnect("[already connected from another host]"));
 					sConnection.close();
 					return;
@@ -195,20 +195,28 @@ public class Server extends Thread {
 	}
 	
 	private boolean alreadyConnected(String hostAddress) {
-		if(isLocalHost(hostAddress))
+		System.out.println("TESTING IF "+hostAddress+" IS ALREADY CONNECTED (IGNORING ONCE)");
+		
+		if(isLocalHost(hostAddress)) {
+			System.out.println("IS LOCALHOST");
 			if(localhostConnected == true)
 				return true;
 			else
 				localhostConnected = true;
+		}
+		
+		int connections = 0;
 		
 		for(ServerConnection sConnection : serverConnections) {
 			String address = sConnection.getConnectedAddress();
 			
+			System.out.println("sCONNECTION ADDRESS: "+address);
+			
 			if(address.equals(hostAddress))
-				return true;
+				connections++;
 		}
 		
-		return false;
+		return connections > 1;
 	}
 	
 	private boolean usernameTaken(String username) {

@@ -1,4 +1,4 @@
-package main.ui.components.misc;
+package main.ui.components.display;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -11,8 +11,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-
-import main.ui.components.display.DisplayUI;
 
 public class SplitPaneUI extends JSplitPane {
 	private static final long serialVersionUID = 1L;

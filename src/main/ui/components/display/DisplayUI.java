@@ -9,7 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -28,8 +30,7 @@ import javax.swing.text.StyleContext;
 
 import main.ui.Window;
 import main.ui.components.backgrounds.PanelBackground;
-import main.ui.components.misc.SplitPaneUI;
-import main.ui.components.notifications.NotificationPaneUI;
+import main.ui.components.notifications.NotificationUI;
 import main.ui.components.scrollbars.ScrollBarUI_Horizontal;
 import main.ui.components.scrollbars.ScrollBarUI_Vertical;
 import sound.SoundPlayer;
@@ -43,6 +44,7 @@ public class DisplayUI extends Window {
 	
 	private static JTextArea terminalHead;
 	private static JSplitPane splitPane;
+	private static JPanel terminalPanel;
 	
 	private static int lines;
 	
@@ -52,14 +54,19 @@ public class DisplayUI extends Window {
 	
 	public static void boot() {
 		terminalHead.setText(
-				System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
+				"BUILD "+Resources.VERSION+"\n"
+				+ System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
 				+ "\tKLETUS INDUSTRIES UNIFIED OPERATING SYSTEM\n"
 				+ "\t  COPYRIGHT 3015-3067 KLETUS INDUSTRIES\n"
 				+ "\t             -TERMINAL 1-");
 		terminalHead.setForeground(new Color(102, 186, 49, 150));
 		
-		splitPane.setDividerLocation(Resources.WIDTH/2);
+		splitPane.setDividerLocation(splitPane.getWidth()-12);
 		splitPane.setEnabled(true);
+	}
+	
+	public static PanelBackground getTerminalPanel() {
+		return (PanelBackground)terminalPanel;
 	}
 
 	public static Component createTextPane() {
@@ -99,9 +106,9 @@ public class DisplayUI extends Window {
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_RED);
 		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, terminal.getBorder());
 
-		JPanel leftPanel = new PanelBackground(Resources.terminalBG);
-		leftPanel.setOpaque(false);
-		leftPanel.setLayout(new BorderLayout());
+		terminalPanel = new PanelBackground(Resources.terminalBG);
+		terminalPanel.setOpaque(false);
+		terminalPanel.setLayout(new BorderLayout());
 		
 		terminalHead = new JTextArea(
 				System.getProperty("user.home").toUpperCase()+": *ACCESS DENIED*\n\n");
@@ -112,11 +119,11 @@ public class DisplayUI extends Window {
 		terminalHead.setEditable(false);
 		terminalHead.setHighlighter(null);
 		
-		leftPanel.add(terminalHead, BorderLayout.NORTH);
-		leftPanel.add(Window.terminal, BorderLayout.CENTER);
-		leftPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
+		terminalPanel.add(terminalHead, BorderLayout.NORTH);
+		terminalPanel.add(Window.terminal, BorderLayout.CENTER);
+		terminalPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 		
-		JScrollPane scrollPane_COMMLINK = new JScrollPane(leftPanel);
+		JScrollPane scrollPane_COMMLINK = new JScrollPane(terminalPanel);
 		scrollPane_COMMLINK.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrollPane_COMMLINK.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_COMMLINK.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
@@ -134,6 +141,7 @@ public class DisplayUI extends Window {
 		Window.notes.setCaretColor(Color.WHITE);
 		Window.notes.setSelectionColor(Color.GRAY);
 		Window.notes.setBorder(new EmptyBorder(0, 0, 0, 20));
+		Window.notes.setText("[ ` ] { HELP }\n\n");
 		notesPanel.add(Window.notes, BorderLayout.CENTER);
 		
 		JTextArea noteHead = new JTextArea(
@@ -165,7 +173,7 @@ public class DisplayUI extends Window {
 		rightComponent.add(scrollPane_NOTES, BorderLayout.CENTER);
 		
 		splitPane = new SplitPaneUI(display);
-		splitPane.setLeftComponent(leftPanel);
+		splitPane.setLeftComponent(terminalPanel);
 		splitPane.setRightComponent(rightComponent);
 		splitPane.setBorder(compoundBorder);
 		splitPane.setDividerLocation(Resources.WIDTH);
@@ -176,31 +184,40 @@ public class DisplayUI extends Window {
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(splitPane, BorderLayout.CENTER);
 		mainPanel.setOpaque(false);
-		mainPanel.add(NotificationPaneUI.getNotificationPane(), BorderLayout.EAST);
+		mainPanel.add(NotificationUI.getNotificationPane(), BorderLayout.EAST);
 		
 		SoundPlayer.play("computerStartup");
 		SoundPlayer.loop("computerHum");
 		SoundPlayer.loop("computerHardDrive");
 		SoundPlayer.loop("clock");
 		
-		try {
-			loadNotesHelp();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		
 		return mainPanel;
 	}
 	
-	private static void loadNotesHelp() throws Exception {
-		FileReader fr = new FileReader(new File("src/files/reference/notes-help.txt"));
+	public static void loadNotesHelp() {
+		FileReader fr = null;
+		try {
+			fr = new FileReader(new File(Resources.DIRECTORY+"src/files/reference/notes-help.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		BufferedReader br = new BufferedReader(fr);
 		
 		String line;
-		while((line = br.readLine()) != null)
-			Window.notes.setText(Window.notes.getText()+line+"\n");
+		try {
+			while((line = br.readLine()) != null)
+				Window.notes.setText(Window.notes.getText()+line+"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		br.close();
+		Window.notes.setCaretPosition(0);
+		
+		try {
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void setCursor(int cursorType) {
@@ -217,7 +234,7 @@ public class DisplayUI extends Window {
 			if(str.contains("\n"))
 				lines++;
 			
-			if(lines > 37) {
+			if(lines > 34) {
 				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
 				lines--;
 			}

@@ -23,7 +23,7 @@ import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 
-public class NotificationPaneUI {
+public class NotificationUI {
 	
 	private static JPanel notifications = new PanelBackground(Resources.notesBG);
 	private static ArrayList<Notification> notificationQueue = new ArrayList<Notification>();

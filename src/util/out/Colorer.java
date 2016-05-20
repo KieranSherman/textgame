@@ -71,7 +71,7 @@ public class Colorer {
 	 * Coloring rules for different types of words
 	 */
 	public enum ColorRules {
-		ACTION(Color.RED), PLACE(Color.GREEN);
+		ACTION(Color.ORANGE), PLACE(Color.GREEN);
 		
 		private Color c;
 		

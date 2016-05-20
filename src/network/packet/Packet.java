@@ -1,6 +1,8 @@
 package network.packet;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import network.packet.types.PacketTypes;
 
@@ -15,9 +17,13 @@ public abstract class Packet implements Serializable {
 	private PacketTypes packetType;		//what kind of packet it is
 	protected Object data;
 	
-	public Packet(PacketTypes packetType, String hostAddress) {
+	public Packet(PacketTypes packetType) {
 		this.packetType = packetType;
-		this.hostAddress = hostAddress;
+		try {
+			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		};
 	}
 	
 	public void setData(Object data) {

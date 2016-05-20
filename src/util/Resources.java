@@ -6,16 +6,13 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 
 import network.Adapter;
 import util.exceptions.ResourcesNotInitializedException;
@@ -27,12 +24,14 @@ import util.out.Logger;
  * Class holds resources used throughout classes
  */
 public class Resources {
+	public static String DIRECTORY = "";
+
 	public final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
-	public final static int HEIGHT = (int)screenSize.getHeight()-50, WIDTH = (int)screenSize.getWidth()-20;	//height and width of window
+	public final static int HEIGHT = 800, WIDTH = 1300;	//height and width of window
 	
 	public final static Font USER_INPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
-	public final static Font DOS = loadFont("src/files/fonts/DOS.ttf").deriveFont(13f);
+	public final static Font DOS;
 	
 	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
 	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
@@ -42,32 +41,39 @@ public class Resources {
 	private static Adapter adapter;					//Adapter to bridge between network and UI
 	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
-	public static String VERSION = loadVersion("src/files/reference/Reference.txt");
-	public static String HOST_ADDRESS;
+	public final static String VERSION;
 	
 	public static final int RENDER_SPEED = 80;
-	
-	public static final BufferedImage bootImage = loadImage("src/files/imgs/pngs/booting1.png");
-	
-	public static final Image commandBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/command.gif");
-	public static final Image terminalBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/terminal.gif");
-	public static final Image notesBG = Toolkit.getDefaultToolkit().getImage("src/files/imgs/gifs/notes.gif");
+	public static Image commandBG, terminalBG, devterminalBG, notesBG;
 	
 	private Resources() {}							//prevent instantiation of Resources object
 	
 	static {
-		try {
-			HOST_ADDRESS = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		
 		colorer = new Colorer();
 		logger = new Logger();
 		adapter = new Adapter();
 		
-		loadActionWords("src/files/Actions.txt");
-		loadPlaceWords("src/files/Places.txt");
+		loadActionWords(DIRECTORY+"src/files/Actions.txt");
+		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
+		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/command.gif");
+		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/terminal.gif");
+		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/devterminal.gif");
+		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/notes.gif");
+		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
+		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
+	}
+	
+	public static void installer() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnValue = fileChooser.showOpenDialog(null);
+		
+		if(returnValue == JFileChooser.CANCEL_OPTION) {
+			System.exit(0);
+		} else if (returnValue == JFileChooser.APPROVE_OPTION) {
+			File f = fileChooser.getSelectedFile();
+			DIRECTORY = f.getAbsolutePath()+"/";
+		}
 	}
 	
 	/*
@@ -115,16 +121,6 @@ public class Resources {
 		for(int i = 0; i < lines.length-1; i++)
 			if(lines[i].equalsIgnoreCase("version:"))
 				return lines[i+1];
-		
-		return null;
-	}
-	
-	private static BufferedImage loadImage(String filePath) {
-		try {
-			return ImageIO.read(new File(filePath));
-		} catch (IOException e) {
-			System.err.println("error loading image");
-		}
 		
 		return null;
 	}

@@ -13,7 +13,7 @@ public class SoundPlayer {
 	static {
 		allSounds = new ArrayList<Sound>();
 		
-		String [] soundData = Resources.readText("src/files/reference/sound.txt");
+		String [] soundData = Resources.readText(Resources.DIRECTORY+"src/files/reference/sound.txt");
 		String [] data;
 		String name, filePath, gain;
 		Sound sound;
@@ -31,7 +31,7 @@ public class SoundPlayer {
 			if(data.length > 2)
 				gain = data[2].substring(1);
 			
-			sound = new Sound(name, filePath);
+			sound = new Sound(name, Resources.DIRECTORY+filePath);
 			sound.setGain(Float.parseFloat(gain));
 			allSounds.add(sound);
 		}

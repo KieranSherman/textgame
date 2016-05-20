@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import main.ui.Window;
 import main.ui.components.misc.PopupUI;
-import main.ui.components.notifications.NotificationPaneUI;
+import main.ui.components.notifications.NotificationUI;
 import network.client.Client;
 import network.packet.Packet;
 import network.packet.PacketParser;
@@ -73,7 +73,7 @@ public class Adapter {
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
 				Window.appendText("[client ready]");
-				PopupUI.getInput("USERNAME");
+				PopupUI.promptInput("USERNAME");
 				username = PopupUI.getData();
 				client.setUsername(username);
 			}
@@ -82,7 +82,7 @@ public class Adapter {
 			}
 		};
 		
-		NotificationPaneUI.queueNotification("CLIENT STARTUP", 1100, action, true);
+		NotificationUI.queueNotification("CLIENT STARTUP", 1100, action, true);
 	}
 	
 	/*
@@ -90,7 +90,7 @@ public class Adapter {
 	 */
 	public void destroyClient() {
 		client = null;
-		Window.setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.VERSION);
 	}
 	
 	/*
@@ -130,7 +130,7 @@ public class Adapter {
 			}
 		};
 		
-		NotificationPaneUI.queueNotification("SERVER STARTUP", 1100, action, true);
+		NotificationUI.queueNotification("SERVER STARTUP", 1100, action, true);
 	}
 	
 	/*
@@ -138,7 +138,7 @@ public class Adapter {
 	 */
 	public void destroyServer() {
 		server = null;
-		Window.setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.VERSION);
 	}
 	
 	/*
@@ -192,7 +192,7 @@ public class Adapter {
 				}
 			};
 			
-			NotificationPaneUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
+			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
 		}
 		else
 		if(server != null) {
@@ -208,7 +208,7 @@ public class Adapter {
 				}
 			};
 			
-			NotificationPaneUI.queueNotification("SERVER CLOSING", 600, action, true);
+			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
 		}
 	}
 	
@@ -219,7 +219,7 @@ public class Adapter {
 		block = !block;
 
 		if(block == false) {
-			Window.appendColoredText("[removed block from incoming connections]", Color.GRAY);
+			Window.appendColoredText("[removed block from incoming packets]", Color.GRAY);
 			
 			synchronized(blockedPackets) {
 				if(showBlockedPackets) {
@@ -241,7 +241,7 @@ public class Adapter {
 			}
 		} else
 		if(block == true) {
-			Window.appendColoredText("[blocking incoming connections]", Color.GRAY);
+			Window.appendColoredText("[blocking incoming packets]", Color.GRAY);
 		}
 	}
 	

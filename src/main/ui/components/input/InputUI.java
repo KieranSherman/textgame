@@ -8,15 +8,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import main.ui.Window;
+import main.ui.components.Developer;
+import main.ui.components.misc.PopupUI;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
 import util.Resources;
@@ -38,12 +42,12 @@ public class InputUI extends Window {
 		promptText.setFont(Resources.USER_INPUT);
 		inputField.add(promptText, BorderLayout.WEST);
 		
-		input = new JTextField();
-		input.setFont(Resources.USER_INPUT);
-		input.setBackground(new Color(15, 15, 15));
-		input.setForeground(Color.WHITE);
-		input.setCaretColor(Color.WHITE);
-		input.setBorder(null);
+		Window.input = new JTextField();
+		Window.input.setFont(Resources.USER_INPUT);
+		Window.input.setBackground(new Color(15, 15, 15));
+		Window.input.setForeground(Color.WHITE);
+		Window.input.setCaretColor(Color.WHITE);
+		Window.input.setBorder(null);
 		inputField.add(input, BorderLayout.CENTER);
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
@@ -53,7 +57,7 @@ public class InputUI extends Window {
 		
 		inputField.setBorder(compound);
 		
-		input.addActionListener(new ActionListener() {
+		Window.input.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String str = input.getText();
@@ -66,7 +70,7 @@ public class InputUI extends Window {
 			}
 		});
 		
-		input.addKeyListener(new KeyListener() {
+		Window.input.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
 
@@ -80,6 +84,22 @@ public class InputUI extends Window {
 			public void keyReleased(KeyEvent e) {}
 			
 		});
+		
+		AbstractAction command = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PopupUI.promptInput("{ ENTER COMMAND }");
+				String command = PopupUI.getData();
+				Window.input.setText("");
+				Developer.parseCommand(command);
+			}
+		};
+		
+		Window.input.getInputMap().put(KeyStroke.getKeyStroke('`'), "EnterCommand");
+		Window.input.getActionMap().put("EnterCommand", command);
+		Window.input.setEnabled(false);
 		
 		return inputField;
 	}

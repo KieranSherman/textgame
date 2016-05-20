@@ -1,7 +1,6 @@
-new Sound("background1", "src/files/sounds/background1.wav", -6);
-new Sound("notification", "src/files/sounds/notification.wav", -14);
-new Sound("clock", "src/files/sounds/clock.wav", -14);
-new Sound("error", "src/files/sounds/error.wav", -9);
+new Sound("background1", "src/files/sounds/misc/background1.wav", -15);
+new Sound("notification", "src/files/sounds/misc/notification.wav", -14);
+new Sound("clock", "src/files/sounds/misc/clock.wav", -14);
 
 new Sound("key1", "src/files/sounds/keyboard/key1.wav", -12);
 new Sound("key2", "src/files/sounds/keyboard/key2.wav", -12);
@@ -21,8 +20,11 @@ new Sound("tapeInsert", "src/files/sounds/tape/tape-insert.wav", -8);
 new Sound("tapeEject", "src/files/sounds/tape/tape-eject.wav", -21);
 new Sound("tapeClick", "src/files/sounds/tape/tape-click.wav", -21);
 
-new Sound("computerStartup", "src/files/sounds/startup.wav", -20);
-new Sound("computerHardDrive", "src/files/sounds/hard-drive.wav", -30);
-new Sound("computerHum", "src/files/sounds/hum.wav", -20);
-new Sound("computerBeep1", "src/files/sounds/computer-beep1.wav", -6);
-new Sound("computerBeep2", "src/files/sounds/computer-beep2.wav");
+new Sound("error", "src/files/sounds/computer/error.wav", -10);
+new Sound("computerStartup", "src/files/sounds/computer/startup.wav", -20);
+new Sound("computerHardDrive", "src/files/sounds/computer/hard-drive.wav", -30);
+new Sound("computerHum", "src/files/sounds/computer/hum.wav", -20);
+new Sound("computerBeep1", "src/files/sounds/computer/computer-beep1.wav", -6);
+new Sound("computerBeep2", "src/files/sounds/computer/computer-beep2.wav", 0);
+
+new Sound("remix", "src/files/sounds/music/remix.wav", -12);

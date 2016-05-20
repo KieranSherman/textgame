@@ -40,6 +40,8 @@ public class PopupUI {
 		dialog.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -49,8 +51,6 @@ public class PopupUI {
 				}
 			}
 
-			@Override
-			public void keyReleased(KeyEvent e) {}
 		});
 		
 	    JButton button = new JButton("[ CLOSE ]");
@@ -83,7 +83,7 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
-	public static void getInput(String prompt) {
+	public static void promptInput(String prompt) {
 	    SoundPlayer.play("computerBeep2");
 
 		JDialog dialog = new JDialog(frame, "child", true);
@@ -122,6 +122,22 @@ public class PopupUI {
 	    		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 	    	}
 	    });
+	    textField.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					data = null;
+					dialog.dispose();
+					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
+				}
+			}
+
+		});
 	    inputPanel.add(textField, BorderLayout.CENTER);
 	    
 	    JLabel in = new JLabel(" >> ");
@@ -136,21 +152,6 @@ public class PopupUI {
 		panel.setLayout(new BorderLayout());
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(inputPanel, BorderLayout.CENTER);
-		textField.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					dialog.dispose();
-					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {}
-		});
 	    
 	    dialog.add(panel, BorderLayout.CENTER);
 	    dialog.getRootPane().setOpaque(false);
