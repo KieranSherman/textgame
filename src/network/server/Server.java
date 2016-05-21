@@ -159,7 +159,7 @@ public class Server {
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
-		User user = getServerConnectionAtPacket(packet).getUser();
+		User user = getServerConnectionAtPacket(hostAddress).getUser();
 		
 		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
 		System.out.println("\tUSER IS AT: "+user.getHostAddress());
@@ -370,13 +370,10 @@ public class Server {
 	/*
 	 * Returns the user who sent packet
 	 */
-	private static ServerConnection getServerConnectionAtPacket(Packet packet) {
-		System.out.println("PACKET HOST ADDRESS: "+packet.getHostAddress());
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("getConnectedAddress(): "+sConnection.getConnectedAddress());
-			if(sConnection.getConnectedAddress().equals(packet.getHostAddress()))
+	private static ServerConnection getServerConnectionAtPacket(String hostAddress) {
+		for(ServerConnection sConnection : serverConnections) 
+			if(sConnection.getConnectedAddress().equals(hostAddress))
 				return sConnection;
-		}
 		
 		return null;
 	}
