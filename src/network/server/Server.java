@@ -159,7 +159,7 @@ public class Server {
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
-		User user = getUserAtPacket(packet).getUser();
+		User user = getServerConnectionAtPacket(packet).getUser();
 		
 		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
 		System.out.println("\tUSER IS AT: "+user.getHostAddress());
@@ -220,15 +220,17 @@ public class Server {
 				userConnection = sConnection;
 				
 				Logger.appendColoredText("[adding user: "+username+"]", Color.GREEN);
-				sConnection.setUser(new User(hostAddress, username));
+				userConnection.setUser(new User(hostAddress, username));
 				break;
 			}
 		}
 		
+		if(userConnection == null)
+			System.err.println("FATAL ERROR << userConnection NULL");
+		
 		for(ServerConnection sConnection : serverConnections)
 			if(userConnection != null && !sConnection.equals(userConnection))
 				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
-		
 		
 		Packet03Message connected = new Packet03Message("["+username+" has connected]");
 		
@@ -368,9 +370,11 @@ public class Server {
 	/*
 	 * Returns the user who sent packet
 	 */
-	private static ServerConnection getUserAtPacket(Packet packet) {
+	private static ServerConnection getServerConnectionAtPacket(Packet packet) {
+		System.out.println("PACKET HOST ADDRESS: "+packet.getHostAddress());
 		for(ServerConnection sConnection : serverConnections) {
-			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
+			System.out.println("getConnectedAddress(): "+sConnection.getConnectedAddress());
+			if(sConnection.getConnectedAddress().equals(packet.getHostAddress()))
 				return sConnection;
 		}
 		

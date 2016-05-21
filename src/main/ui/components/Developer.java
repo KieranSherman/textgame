@@ -203,7 +203,6 @@ public class Developer {
 		}
 		
 		return true;
-		
 	}
 	
 	public static boolean isDeveloperModeEnabled() {
