@@ -2,8 +2,13 @@ package util.out;
 
 import java.awt.Color;
 
+import javax.swing.text.StyleConstants;
+
 import main.ui.Window;
+import main.ui.components.display.DisplayUI;
 import network.packet.Packet;
+import network.packet.types.PacketTypes;
+import sound.SoundPlayer;
 
 /*
  * Logger class has direct access to the Game's Window
@@ -12,19 +17,52 @@ public class Logger {
 	
 	private Logger() {}
 	
-	public static void appendPacket(Packet packet) {
-		if(packet.getData() != null)
-			Window.appendPacket(packet);
+	/*
+	 * Appends str to the end of textPane; acts as
+	 * filter to method: insertTextToDoc()
+	 */
+	public synchronized static void appendText(String str) {
+		for(String word : str.split("\\s+")) {
+			Color color = Colorer.getColor(word);
+			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+			StyleConstants.setForeground(Window.style, alpha);
+			DisplayUI.insertTextToDoc(word+" ");
+		}
+		
+		if(!str.contains("\n"))
+			DisplayUI.insertTextToDoc("\n");
 	}
 	
-	public static void appendText(String str) {
-		if(str != null)
-			Window.appendText(str);
+	/*
+	 * Appends str to the end of textPane with set color;
+	 * acts as filter to method: insertTextToDoc();
+	 */
+	public synchronized static void appendColoredText(String str, Color color) {
+		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+		StyleConstants.setForeground(Window.style, alpha);
+		DisplayUI.insertTextToDoc(str+"\n");
 	}
 	
-	public static void appendText(String str, Color color) {
-		if(str != null)
-			Window.appendColoredText(str, color);
+	/*
+	 * Appends str to the end of textPane; acts as
+	 * filter to method: insertTextToDoc();
+	 * exclusively for the PacketParser
+	 */
+	public synchronized static void appendPacket(Packet packet) {
+		PacketTypes packetType = packet.getType();
+		String str = (String)packet.getData();
+		
+		if(packetType == PacketTypes.ACTION) {
+			appendText(str);
+			return;
+		}
+		
+		Color color = Colorer.getPacketColor(packetType);
+		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
+		StyleConstants.setForeground(Window.style, alpha);
+		DisplayUI.insertTextToDoc(str+"\n");
+		
+		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 	}
 	
 }

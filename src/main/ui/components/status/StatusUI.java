@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -35,7 +34,7 @@ public class StatusUI {
 		list.setFont(Resources.DOS.deriveFont(16f));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent evt) {
+		    public void mousePressed(MouseEvent evt) {
 		    	@SuppressWarnings("unchecked")
 				JList<Object> list = (JList<Object>)evt.getSource();
 		    	int index = list.locationToIndex(evt.getPoint());
@@ -48,20 +47,6 @@ public class StatusUI {
 		        if (evt.getClickCount() == 3)
 		            getStatus(index).execute();
 		    }
-		});
-		list.addMouseMotionListener(new MouseMotionListener() {
-			@Override
-			public void mouseMoved(MouseEvent evt) {}
-			
-			@Override
-			public void mouseDragged(MouseEvent evt) {
-				@SuppressWarnings("unchecked")
-				JList<Object> list = (JList<Object>)evt.getSource();
-		    	int index = list.locationToIndex(evt.getPoint());
-		    	
-		    	if(!list.getCellBounds(index, index).contains(evt.getPoint()))
-		    		list.clearSelection();
-			}
 		});
 		list.addKeyListener(new KeyListener() {
 			@Override

@@ -36,16 +36,16 @@ public class Main {
 		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
 		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
 		
-		start();
+		start(args);
 	}
 	
-	public static void restart() {
+	public static void restart(String[] args) {
 		Adapter.close();
-		start();
+		start(args);
 	}
 	
-	private static void start() {
-		Game.init();
+	private static void start(String[] args) {
+		Game.init(args);
 		Game.play();
 	}
 	

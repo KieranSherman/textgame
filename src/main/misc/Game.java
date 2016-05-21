@@ -10,8 +10,8 @@ public class Game {
 	
 	private Game() {}
 	
-	public static void init() {
-		Window.initialize();
+	public static void init(String[] args) {
+		Window.initialize(args);
 		SoundPlayer.loop("background1");
 	}
 	

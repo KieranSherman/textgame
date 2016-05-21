@@ -18,6 +18,7 @@ import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
+import util.out.Logger;
 
 /*
  * Class models a network-UI adapter, bridging the two
@@ -27,17 +28,11 @@ public class Adapter {
 	private static boolean block;
 	private static int blockedPacketCount;
 	
-	private static Server server;		//server object
-	private static Client client;		//client object
-	
-	private static PacketParser packetParser;	//packet receiver
-	
 	private static ArrayList<Object[]> blockedPackets;
 	
 	private Adapter() {}
 	
 	static {
-		packetParser = new PacketParser();
 		blockedPackets = new ArrayList<Object[]>();
 	}
 
@@ -46,11 +41,9 @@ public class Adapter {
 	 */
 	public static void createClient(String hostName, int portNumber) {
 		try {
-			checkNetwork();
-			client = new Client(hostName, portNumber);
-
-			packetParser.setClient(client);
-			startClient();
+			Adapter.checkNetwork();
+			Client.initialize(hostName, portNumber);
+			Adapter.startClient();
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
 		}
@@ -60,26 +53,26 @@ public class Adapter {
 	 * Start the client on a thread
 	 */
 	private static void startClient() {
-		if(client == null) {
+		if(!Client.isInitialized()) {
 			System.err.println("client not initialized");
 			return;
 		}
 		
 		SoundPlayer.play("servoInsert");
-		Window.appendColoredText("[client loading...]", Color.ORANGE);
+		Logger.appendColoredText("[client loading...]", Color.ORANGE);
 		
 		Action action = new Action() {
 			private String username;
 			
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
-				Window.appendText("[client ready]");
+				Logger.appendText("[client ready]");
 				PopupUI.promptInput("USERNAME");
 				username = PopupUI.getData();
-				client.setUsername(username);
+				Client.setUsername(username);
 			}
 			public void execute() {
-				new Thread(client).start();
+				Client.startClient();
 			}
 		};
 		
@@ -90,44 +83,42 @@ public class Adapter {
 	 * Destroy the client
 	 */
 	public static void destroyClient() {
-		client = null;
+		Client.disconnect();
 		Window.getFrame().setTitle(Resources.VERSION);
 	}
 	
 	/*
-	 * Create a server on 127.0.0.1:portNumber
+	 * Create a server
 	 */
 	public static void createServer(int portNumber) {
 		try {
-			checkNetwork();
-			server = new Server(portNumber);
-			
-			packetParser.setServer(server);
-			startServer();
+			Adapter.checkNetwork();
+			Server.initialize(portNumber);
+			Adapter.startServer();
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/*
-	 * Start the server on a thread
+	 * Start the server
 	 */
 	private static void startServer() {
-		if(server == null) {
+		if(!Server.isInitialized()) {
 			System.err.println("server not initialized");
 			return;
 		}
 		
 		SoundPlayer.play("servoInsert");
-		Window.appendColoredText("[server loading...]", Color.ORANGE);
+		Logger.appendColoredText("[server loading...]", Color.ORANGE);
 		
 		Action action = new Action() {
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
-				Window.appendText("[server ready]");
+				Logger.appendText("[server ready]");
 			}
 			public void execute() {
-				new Thread(server).start();
+				Server.startServer();
 			}
 			public void post() {
 				NotificationUI.createStatusDisplay();
@@ -141,7 +132,7 @@ public class Adapter {
 	 * Destory the server
 	 */
 	public static void destroyServer() {
-		server = null;
+		Server.close();
 		Window.getFrame().setTitle(Resources.VERSION);
 		NotificationUI.removeStatusDisplay();
 	}
@@ -155,11 +146,11 @@ public class Adapter {
 			return;
 		}
 		
-		if(server != null)
-			server.sendPacketToAllClients(packet);
+		if(Server.isRunning())
+			Server.sendPacketToAllClients(packet);
 		else
-		if(client != null)
-			client.sendPacket(packet);
+		if(Client.isRunning())
+			Client.sendPacket(packet);
 	}
 	
 	/*
@@ -173,11 +164,11 @@ public class Adapter {
 			return;
 		}
 		
-		if(networkType == NetworkTypes.CLIENT && client != null)
-			packetParser.parsePacket(NetworkTypes.CLIENT, packet);
+		if(networkType == NetworkTypes.CLIENT && Client.isRunning())
+			PacketParser.parsePacket(NetworkTypes.CLIENT, packet);
 		
-		if(networkType == NetworkTypes.SERVER && server != null)
-			packetParser.parsePacket(NetworkTypes.SERVER, packet);
+		if(networkType == NetworkTypes.SERVER && Server.isRunning())
+			PacketParser.parsePacket(NetworkTypes.SERVER, packet);
 	}
 
 	/*
@@ -187,21 +178,21 @@ public class Adapter {
 		block = !block;
 
 		if(block == false) {
-			Window.appendColoredText("[removed block from incoming packets]", Color.GRAY);
+			Logger.appendColoredText("[removed block from incoming packets]", Color.GRAY);
 			
 			synchronized(blockedPackets) {
 				if(showBlockedPackets) {
-					Window.appendColoredText("[showing blocked packets...]", Color.GRAY);
+					Logger.appendColoredText("[showing blocked packets...]", Color.GRAY);
 	
 					for(int i = 0; i < blockedPackets.size(); i++) {
 						Object [] obj = blockedPackets.get(i);
 						NetworkTypes networkType = (NetworkTypes) obj[0];
 						Packet packet = (Packet) obj[1];
-						Window.appendColoredText("["+obj[2]+"/"+blockedPacketCount+"]", Color.DARK_GRAY);
+						Logger.appendColoredText("["+obj[2]+"/"+blockedPacketCount+"]", Color.DARK_GRAY);
 						parsePacket(networkType, packet);
 					}
 					
-					Window.appendColoredText("[...end of blocked packets]", Color.GRAY);
+					Logger.appendColoredText("[...end of blocked packets]", Color.GRAY);
 				}
 				
 				blockedPackets.clear();
@@ -209,7 +200,7 @@ public class Adapter {
 			}
 		} else
 		if(block == true) {
-			Window.appendColoredText("[blocking incoming packets]", Color.GRAY);
+			Logger.appendColoredText("[blocking incoming packets]", Color.GRAY);
 		}
 	}
 	
@@ -217,27 +208,27 @@ public class Adapter {
 	 * Displays the status of the network
 	 */
 	public static void status() {
-		if(client != null) {
-			Window.appendColoredText("[client connected to server]", Color.CYAN);
+		if(Client.isRunning()) {
+			Logger.appendColoredText("[client connected to Server]", Color.CYAN);
 		}
 		else
-		if(server != null) {
+		if(Server.isRunning()) {
 			try {
-				Window.appendColoredText("[server open at "+InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
+				Logger.appendColoredText("[Server open at "+InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
 			} catch (UnknownHostException e) {
-				Window.appendColoredText("[server status unknown]", Color.RED);
+				Logger.appendColoredText("[Server status unknown]", Color.RED);
 			}
 		}
 		else {
 			SoundPlayer.play("error");
-			Window.appendColoredText("[no network detected]", Color.RED);
+			Logger.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	
 	private static void checkNetwork() throws AlreadyRunningNetworkException {
-		if(server != null || client != null) {
+		if(Server.isRunning() || Client.isRunning()) {
 			SoundPlayer.play("error");
-			Window.appendColoredText("[network already running]", Color.RED);
+			Logger.appendColoredText("[network already running]", Color.RED);
 			throw new AlreadyRunningNetworkException("You are already running a network!");
 		}
 	}
@@ -246,8 +237,8 @@ public class Adapter {
 	 * Close down connections
 	 */
 	public static void close() {
-		if(client != null) {
-			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
+		if(Client.isRunning()) {
+			Client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
 			
 			SoundPlayer.play("servoEject");
 			Action action = new Action() {
@@ -255,15 +246,15 @@ public class Adapter {
 					SoundPlayer.play("tapeInsert");
 				}
 				public void execute() {
-					client.disconnect();
+					Client.disconnect();
 				}
 			};
 			
 			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
 		}
 		else
-		if(server != null) {
-			server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
+		if (Server.isRunning()) {
+			Server.sendPacketToAllClients(new Packet02Disconnect("[Server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
 			Action action = new Action() {
@@ -271,14 +262,14 @@ public class Adapter {
 					SoundPlayer.play("tapeInsert");
 				}
 				public void execute() {
-					server.close();
+					Server.close();
 				}
 				public void post() {
 					NotificationUI.removeStatusDisplay();
 				}
 			};
 			
-			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
+			NotificationUI.queueNotification("Server CLOSING", 600, action, true);
 		}
 	}
 	

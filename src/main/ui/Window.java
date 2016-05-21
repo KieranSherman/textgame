@@ -11,7 +11,6 @@ import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.ui.components.Developer;
@@ -20,12 +19,9 @@ import main.ui.components.handlers.WindowHandler;
 import main.ui.components.input.InputUI;
 import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationUI;
-import network.packet.Packet;
-import network.packet.types.PacketTypes;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
-import util.out.Colorer;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
@@ -45,7 +41,7 @@ public class Window {
 	
 	private Window() {}
 	
-	public static void initialize() {
+	public static void initialize(String[] args) {
 		createWindow();
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -55,7 +51,9 @@ public class Window {
 				Action welcome = new Action() {
 					public void execute() {
 						PopupUI.displayMessage("WELCOME "+System.getProperty("user.name").toUpperCase());
-						Developer.parseCommand("dev kletus");
+						
+						for(String command : args)
+							Developer.parseCommand(command);
 					}
 				};
 				
@@ -113,54 +111,6 @@ public class Window {
 				SoundPlayer.loop("clock");
 			}
 		});
-	}
-	
-	/*
-	 * Appends str to the end of textPane; acts as
-	 * filter to method: insertTextToDoc()
-	 */
-	public synchronized static void appendText(String str) {
-		for(String word : str.split("\\s+")) {
-			Color color = Colorer.getColor(word);
-			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
-			StyleConstants.setForeground(style, alpha);
-			DisplayUI.insertTextToDoc(word+" ");
-		}
-		
-		if(!str.contains("\n"))
-			DisplayUI.insertTextToDoc("\n");
-	}
-	
-	/*
-	 * Appends str to the end of textPane with set color;
-	 * acts as filter to method: insertTextToDoc();
-	 */
-	public synchronized static void appendColoredText(String str, Color color) {
-		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
-		StyleConstants.setForeground(style, alpha);
-		DisplayUI.insertTextToDoc(str+"\n");
-	}
-	
-	/*
-	 * Appends str to the end of textPane; acts as
-	 * filter to method: insertTextToDoc();
-	 * exclusively for the PacketParser
-	 */
-	public synchronized static void appendPacket(Packet packet) {
-		PacketTypes packetType = packet.getType();
-		String str = (String)packet.getData();
-		
-		if(packetType == PacketTypes.ACTION) {
-			appendText(str);
-			return;
-		}
-		
-		Color color = Colorer.getPacketColor(packetType);
-		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
-		StyleConstants.setForeground(style, alpha);
-		DisplayUI.insertTextToDoc(str+"\n");
-		
-		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 	}
 	
 	public static JFrame getFrame() {

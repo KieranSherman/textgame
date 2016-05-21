@@ -1,22 +1,16 @@
 ============================ HELP ==============================
 
-SERVER		...		STARTS A SERVER
+SERVER      ...     STARTS A SERVER
 
-CLIENT		...		STARTS A CLIENT
+CLIENT      ...     STARTS A CLIENT
 
-POPUP		...		DISPLAYS A POPUP WINDOW
+NOTES       ...     SENDS NOTES OVER NETWORK
 
-NOTES		...		SENDS NOTES OVER NETWORK
+CLEAR       ...     CLEARS THE SCREEN
 
-CLEAR		...		CLEARS THE SCREEN
+STATUS      ...     SHOWS STATUS OF NETWORK
 
-STATUS		...		SHOWS STATUS OF NETWORK
-
-LOGOUT		...		CLOSES CURRENT NETWORK
-
-NOTIFY		...		DISPLAYS A NOTIFICATION
-
-BLOCK		...		BLOCK/UNBLOCKS PACKETS
+LOGOUT      ...     CLOSES CURRENT NETWORK
 
 ----------------------------------------------------------------
 
@@ -37,9 +31,28 @@ E.G: "server p:1234"
 
 DEFAULTS TO p:9999 IF NOT ENTERED
 
+==================== DEVELOPER COMMANDS ========================
+
+LOCAL_HOST_MAXIMUM    ...    CHANGE LOCAL HOST CONNECTION MAXIMUM
+
+PLAY_REMIX            ...    JUST A LITTLE FUN
+
+DISPLAY_POPUP         ...    DISPLAY A POPUP
+
+DISPLAY_NOTIFICATION  ...    DISPLAY A NOTIFICATION
+
+ADAPTER_BLOCK         ...    BLOCK/UNBLOCK PACKETS
+
 ----------------------------------------------------------------
 
-** NOTIFY USAGE **
+** LOCAL_HOST_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "local_host_maximum 3"
+
+----------------------------------------------------------------
+
+** DISPLAY_NOTIFICATION USAGE **
 m:[MESSAGE]
 t:[TIME] (IN MILLISECONDS) 
 r:[TRUE | FALSE] (RANDOM TIMES)
@@ -49,9 +62,9 @@ E.G: "notify m:test t:5000 r:true x25"
 
 ----------------------------------------------------------------
 	
-** BLOCK USAGE **
+** ADAPTER_BLOCK USAGE **
 d:[TRUE | FALSE]
 
 E.G: "block d:true"
 
-================================================================
+

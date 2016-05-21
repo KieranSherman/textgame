@@ -14,48 +14,51 @@ import util.out.Logger;
 /*
  * Class models a threadable client in a network
  */
-public class Client extends Thread {
+public class Client {
 	
-	private String username;
-	private String hostName;			//ip address
-	private int portNumber;				//port number
+	private static String username;
+	private static String hostName;			//ip address
+	private static int portNumber;				//port number
+	private static boolean initialized;
 	
-	private Socket socket;				//TCP socket	
+	private static Socket socket;				//TCP socket	
 	
-	private ClientReceiver clientReceiver;
-	private ClientSender clientSender;
+	private static ClientReceiver clientReceiver;
+	private static ClientSender clientSender;
 	
-	public Client() {
-		this.hostName = "localhost";
-		this.portNumber = 9999;
+	private static Thread clientThread;
+	
+	private Client() {}
+
+	public static void initialize(String hostName, int portNumber) {
+		Client.hostName = hostName;
+		Client.portNumber = portNumber;
+		Client.initialized = true;
 	}
 	
-	public Client(String hostName) {
-		this();
-		this.hostName = hostName;
+	public static void setUsername(String username) {
+		Client.username = username;
 	}
 	
-	public Client(String hostName, int portNumber) {
-		this(hostName);
-		this.portNumber = portNumber;
-	}
-	
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
-	public String getUsername() {
+	public static String getUsername() {
 		return username;
 	}
 	
-	@Override
+	public static void startClient() {
+		clientThread = new Thread("ClientThread-Main") {
+			public void run() {
+				Client.run();
+			}
+		};
+		
+		clientThread.start();
+	}
+	
 	/*
 	 * connects to server on hostName, portNumber; opens the input/output streams;
 	 * sends a confirmation login packet; receives and parses packets 
 	 */
-	public void run() {
-		super.setName("ClientThread-Main");
-		
+	private static void run() {
 		String error = null;
 		try {
 			socket = new Socket(hostName, portNumber);
@@ -63,7 +66,7 @@ public class Client extends Thread {
 			error = "[client unable to connect]";
 			System.err.println(error);
 			SoundPlayer.play("error");
-			Logger.appendText(error, Color.RED);
+			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 		}
 				
@@ -72,7 +75,7 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			error = "[client sender unable to initialize]";
 			System.err.println(error);
-			Logger.appendText(error, Color.RED);
+			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 		}
 		
@@ -81,19 +84,20 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			error = "[client receiver unable to initialize]";
 			System.err.println(error);
-			Logger.appendText(error, Color.RED);
+			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 		}
 		
 		Thread cReceiver_T = new Thread(clientReceiver);
 		cReceiver_T.start();
-		
-		synchronized(this) {
-			try {
-				this.wait();
-			} catch (InterruptedException e) {}
-		}
-			
+	}
+
+	public static void sendPacket(Packet packet) {
+		if(clientSender != null)
+			clientSender.sendPacket(packet);
+	}
+	
+	public static void disconnect() {
 		clientSender.close();
 		clientReceiver.close();
 		
@@ -103,20 +107,15 @@ public class Client extends Thread {
 			System.err.println("error closing client socket");
 		}
 		
-		Logger.appendText("[you have been disconnected]", Color.GRAY);
-		
-		Adapter.destroyClient();
-	}
-
-	public void sendPacket(Packet packet) {
-		if(clientSender != null)
-			clientSender.sendPacket(packet);
+		Logger.appendColoredText("[you have been disconnected]", Color.GRAY);
 	}
 	
-	public void disconnect() {
-		synchronized(this) {
-			this.notifyAll();
-		}
+	public static boolean isInitialized() {
+		return Client.initialized;
+	}
+	
+	public static boolean isRunning() {
+		return clientThread != null;
 	}
 	
 }

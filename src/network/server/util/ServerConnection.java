@@ -9,14 +9,12 @@ import network.server.Server;
 
 public class ServerConnection extends Thread {
 	
-	private Server server;
 	private Socket clientSocket;
 	private ServerSender serverSender;
 	private ServerReceiver serverReceiver;
 	private User user;
 	
-	public ServerConnection(Server server, Socket clientSocket) {
-		this.server = server;
+	public ServerConnection(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 	
@@ -58,7 +56,7 @@ public class ServerConnection extends Thread {
 			} catch (InterruptedException e) {}
 		}
 		
-		server.removeConnection(this);
+		Server.removeConnection(this);
 		
 		serverSender.close();
 		serverReceiver.close();

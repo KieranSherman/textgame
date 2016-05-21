@@ -2,16 +2,17 @@ package main.ui.components;
 
 import java.awt.Color;
 
-import main.Main;
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
+import network.server.ServerModifier;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
+import util.out.Logger;
 
 public class Developer {
 	
@@ -22,10 +23,18 @@ public class Developer {
 	public static void parseCommand(String str) {
 		if(str == null)
 			return;
-		
+
 		str = str.toLowerCase();
 		String [] args = str.split("\\s+");
 		
+		if(!Developer.userCommand(args) && !Developer.developerCommand(args)) {
+			Logger.appendColoredText("[unrecognized command]", Color.RED);
+			SoundPlayer.play("error");
+		}
+
+	}
+	
+	public static boolean userCommand(String[] args) {
 		if(args[0].equals("server")) {
 			String port = "9999";
 			
@@ -53,25 +62,93 @@ public class Developer {
 			Window.getFrame().setTitle(Resources.VERSION+" | running client");
 		}
 		else
-		if(args[0].equals("block") && dev) {
-			String display = "false";
-			
-			for(String s : args)
-				if(s.contains("d:"))
-					display = s.substring(s.indexOf(":")+1);
-			
-			Adapter.block(Boolean.parseBoolean(display));
-		}
-		else
 		if(args[0].equals("clear")) {
 			DisplayUI.clear();
 		}
 		else
-		if(args[0].equals("popup") && dev) {
+		if(args[0].equals("status")) {
+			Adapter.status();
+		}
+		else
+		if(args[0].equals("logout")) {
+			Adapter.close();
+			Window.getFrame().setTitle(Resources.VERSION);
+		}
+		else
+		if(args[0].equals("notes")) {
+			Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
+			Logger.appendColoredText("[sent notes]", Color.GRAY);
+		}
+		else
+		if(args[0].equals("help")) {
+			DisplayUI.loadNotesHelp();
+		}
+		else
+		if(args[0].equals("dev")) {
+			if(dev) {
+				dev = false;
+				Logger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
+				return true;
+			}
+			
+			if(args.length == 2 && args[1].equals("kletus")) {
+				Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
+				dev = true;
+			} else {
+				PopupUI.promptInput("ENTER PASSWORD");
+				if(!PopupUI.getData().equalsIgnoreCase("kletus")) {
+					SoundPlayer.play("error");
+					Logger.appendColoredText("[incorrect password]", Color.RED);
+				}
+				else {
+					dev = true;
+					Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
+				}
+			}
+		}
+		else {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public static boolean developerCommand(String[] args) {
+		if(dev == false)
+			return false;
+		
+		if(args[0].equals("local_host_maximum")) {
+			int localHostCount = 1;
+			
+			if(args.length == 2)
+				localHostCount = Integer.parseInt(args[1]);
+		
+			ServerModifier.setLocalHostMaximum(localHostCount);
+			Logger.appendColoredText("[local_host_maximum set to "+localHostCount+"]", Resources.DARK_GREEN);
+		}
+		else
+		if(args[0].equals("play_remix")) {
+			SoundPlayer.play("remix");
+			
+			Action action = new Action() {
+				@Override
+				public void execute() {
+					NotificationUI.queueNotification("RAVE RIGHT", 11000, null, false);
+					Logger.appendColoredText("/o/", Color.CYAN);
+					Logger.appendColoredText("\\o/", Color.CYAN);
+				}
+			};
+			
+			NotificationUI.queueNotification("RAVE LEFT", 8300, action, false);
+			Logger.appendColoredText("\\o\\", Color.CYAN);
+			Logger.appendColoredText("\\o/", Color.CYAN);
+		}
+		else
+		if(args[0].equals("display_popup")) {
 			PopupUI.promptInput("POPUP TEST");
 		}
 		else
-		if(args[0].equals("notify") && dev) {
+		if(args[0].equals("display_notification")) {
 			String message = "NOTIFICATION TEST";
 			int time = 2000;
 			int repeat = 1;
@@ -100,66 +177,20 @@ public class Developer {
 					NotificationUI.queueNotification(message.toUpperCase()+" "+(i+1), time, null, true);
 		}
 		else
-		if(args[0].equals("status")) {
-			Adapter.status();
-		}
-		else
-		if(args[0].equals("logout")) {
-			Adapter.close();
-			Window.getFrame().setTitle(Resources.VERSION);
-		}
-		else
-		if(args[0].equals("notes")) {
-			Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
-			Window.appendColoredText("[sent notes]", Color.GRAY);
-		}
-		else
-		if(args[0].equals("help")) {
-			DisplayUI.loadNotesHelp();
-		}
-		else
-		if(args[0].equals("dev")) {
-			if(args.length == 2 && args[1].equals("kletus")) {
-				Window.appendColoredText("[developer commands enabled]", Color.GREEN);
-				dev = true;
-			} else {
-				PopupUI.promptInput("ENTER PASSWORD");
-				if(!PopupUI.getData().equalsIgnoreCase("kletus")) {
-					Window.appendColoredText("[incorrect password]", Color.RED);
-					SoundPlayer.play("error");
-				}
-				else {
-					Window.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
-					dev = true;
-				}
-			}
-		}
-		else
-		if(args[0].equals("remix") && dev) {
-			SoundPlayer.play("remix");
+		if(args[0].equals("adapter_block")) {
+			String display = "false";
 			
-			Action action = new Action() {
-				@Override
-				public void execute() {
-					NotificationUI.queueNotification("RAVE RIGHT", 11000, null, false);
-					Window.appendColoredText("/o/", Color.CYAN);
-					Window.appendColoredText("\\o/", Color.CYAN);
-				}
-			};
+			if(args.length == 2)
+				display = args[1];
 			
-			NotificationUI.queueNotification("RAVE LEFT", 8300, action, false);
-			Window.appendColoredText("\\o\\", Color.CYAN);
-			Window.appendColoredText("\\o/", Color.CYAN);
-		}
-		else
-		if(args[0].equals("restart") && dev) {
-			Window.getFrame().dispose();
-			Main.restart();
+			Adapter.block(Boolean.parseBoolean(display));
 		}
 		else {
-			Window.appendColoredText("[unrecognized command: "+str+"]", Color.RED);
-			SoundPlayer.play("error");
+			return false;
 		}
+		
+		return true;
+		
 	}
 
 }
