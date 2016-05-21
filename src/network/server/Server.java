@@ -26,7 +26,7 @@ import util.out.Logger;
  */
 public class Server extends Thread {
 	
-	private boolean localhostConnected;	//whether localhost is connected
+	private int localhostConnections;	//whether localhost is connected
 	private int portNumber;				//port number
 	private Socket clientSocket;		//socket the client connects from
 	private ServerSocket serverSocket;	//socket the client connects to
@@ -122,12 +122,14 @@ public class Server extends Thread {
 		
 		if(index != -1) {
 			if(isLocalHost(serverConnection.getConnectedAddress()))
-				localhostConnected = false;
+				localhostConnections--;
 			
 			serverConnections.remove(index);
 			logger.appendText("[client disconnected]", Color.GRAY);
 			
 			NotificationUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
+			
+			System.out.println("*REMOVED CONNECTION @ "+serverConnection.getConnectedAddress()+"*");
 		}
 	}
 	
@@ -159,6 +161,16 @@ public class Server extends Thread {
 		Formatter.construct(packet);
 	}
 	
+	public void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
+		Formatter.deconstruct(packet);
+		
+		for(ServerConnection sConnection : serverConnections)
+			if(!sConnection.getConnectedAddress().equals(hostAddress))
+				sConnection.sendPacket(packet);
+		
+		Formatter.construct(packet);
+	}
+	
 	public void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
@@ -178,26 +190,31 @@ public class Server extends Thread {
 	}
 	
 	private void addUser(String username, String hostAddress) {
-		ServerConnection user = null;
+		ServerConnection userConnection = null;
 		
 		for(ServerConnection sConnection : serverConnections) {
-			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
 				logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
-				user = sConnection;
+				userConnection = sConnection;
+				break;
 			}
 		}
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(user != null && !sConnection.equals(user))
-				user.sendPacket(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"));
+			if(userConnection != null && !sConnection.equals(userConnection)) {
+				sConnection.sendPacket(new Packet03Message("["+userConnection.getUser().getUsername()+" has connected]"));
+				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
+			}
 	}
 	
 	private void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
-			if(sConnection.getConnectedAddress().equals(hostAddress)) {
+			if(sConnection.getConnectedAddress().equals(hostAddress) || 
+					(isLocalHost(hostAddress) && isLocalHost(sConnection.getConnectedAddress()))) {
 				sConnection.sendPacket(new Packet02Disconnect(message));
 				sConnection.close();
+				break;
 			}
 	}
 	
@@ -206,7 +223,9 @@ public class Server extends Thread {
 			if(address.equals(hostAddress)) {
 				logger.appendText("user at ("+address+") is banned", Color.RED);
 				disconnectUser(hostAddress, "[you have been banned]");
+				return true;
 			}
+		
 		return false;
 	}
 	
@@ -214,6 +233,7 @@ public class Server extends Thread {
 		if(usernameTaken(username)) {
 			logger.appendText("username ("+username+") already taken", Color.RED);
 			disconnectUser(hostAddress, "[username already taken]");
+			return true;
 		}
 		
 		return false;
@@ -223,6 +243,7 @@ public class Server extends Thread {
 		if(alreadyConnected(hostAddress)) {
 			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
 			disconnectUser(hostAddress, "[already connected from another host]");
+			return true;
 		}
 		
 		return false;
@@ -239,17 +260,20 @@ public class Server extends Thread {
 	}
 	
 	private boolean alreadyConnected(String hostAddress) {
+		System.out.println("TESTING IF "+hostAddress+" IS ALREADY CONNECTED");
+		
 		if(isLocalHost(hostAddress)) {
-			if(localhostConnected == true)
+			System.out.println("\t*IS LOCALHOST*");
+			
+			if(++localhostConnections > 1)
 				return true;
-			else
-				localhostConnected = true;
 		}
 		
 		int connections = 0;
 		
 		for(ServerConnection sConnection : serverConnections) {
 			String address = sConnection.getConnectedAddress();
+			System.out.println("CONNECTION @: "+address);
 			
 			if(address.equals(hostAddress))
 				connections++;
