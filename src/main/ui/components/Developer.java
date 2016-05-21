@@ -36,13 +36,8 @@ public class Developer {
 		}
 		else
 		if(args[0].equals("client")) {
-			String username = "anonymous";
 			String address = "localhost";
 			String port = "9999";
-			
-			for(String s : args)
-				if(s.contains("u:"))
-					username = s.substring(s.indexOf(":")+1);
 			
 			for(String s : args)
 				if(s.contains("a:"))
@@ -52,7 +47,7 @@ public class Developer {
 				if(s.contains("p:"))
 					port = s.substring(s.indexOf(":")+1);
 						
-			Window.adapter.createClient(address, Integer.parseInt(port), username);
+			Window.adapter.createClient(address, Integer.parseInt(port));
 			Window.getFrame().setTitle(Resources.VERSION+" | running client");
 		}
 		else

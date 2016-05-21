@@ -23,7 +23,7 @@ public abstract class Packet implements Serializable {
 			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		};
+		}
 	}
 	
 	public void setData(Object data) {

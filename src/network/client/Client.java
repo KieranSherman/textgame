@@ -56,6 +56,8 @@ public class Client extends Thread {
 	 * sends a confirmation login packet; receives and parses packets 
 	 */
 	public void run() {
+		super.setName("ClientThread-Main");
+		
 		Adapter adapter = null;
 		try {
 			adapter = Resources.getAdapter();
@@ -101,11 +103,9 @@ public class Client extends Thread {
 			adapter.destroyClient();
 		}
 		
-		// start a new thread to receive and handle incoming packets
 		Thread cReceiver_T = new Thread(clientReceiver);
 		cReceiver_T.start();
 		
-		// wait until close call
 		synchronized(this) {
 			try {
 				this.wait();

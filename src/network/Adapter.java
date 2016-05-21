@@ -42,11 +42,10 @@ public class Adapter {
 	/*
 	 * Create a client connection hostName:portNumber
 	 */
-	public void createClient(String hostName, int portNumber, String username) {
+	public void createClient(String hostName, int portNumber) {
 		try {
 			checkNetwork();
 			client = new Client(hostName, portNumber);
-			client.setUsername(username);
 
 			packetParser.setClient(client);
 			startClient();

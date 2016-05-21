@@ -80,7 +80,7 @@ public class PacketParser {
 		
 		switch(packet.getType()) {
 			case ACTION: {
-				server.sendPacketToAllOtherClients(packet);
+				server.sendPacketToAllOtherClients(packet, packet.getHostAddress());
 				break;
 			}
 			case DISCONNECT: {
@@ -92,7 +92,7 @@ public class PacketParser {
 				break;
 			}
 			case MESSAGE: {
-				server.sendPacketToAllOtherClients(packet);
+				server.sendPacketToAllOtherClients(packet, packet.getHostAddress());
 				break;
 			}
 		}

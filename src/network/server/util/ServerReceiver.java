@@ -22,6 +22,8 @@ public class ServerReceiver extends Thread {
 	
 	@Override
 	public void run() {
+		super.setName("ServerThread-ServerReceiverThread_@"+serverConnection.getConnectedAddress());
+		
 		do {
 			Packet packet = null;
 			

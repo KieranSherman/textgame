@@ -33,6 +33,8 @@ public class ServerConnection extends Thread {
 	
 	@Override
 	public void run() {
+		super.setName("ServerThread-ServerConnectionThread_@"+clientSocket.getInetAddress().getHostAddress());
+		
 		openConnection();
 	}
 	

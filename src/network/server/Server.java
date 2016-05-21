@@ -52,6 +52,8 @@ public class Server extends Thread {
 	 * sends confirmation login packet; receives and parses packets
 	 */
 	public void run() {
+		super.setName("ServerThread-Main");
+		
 		serverConnections = new ArrayList<ServerConnection>();
 		
 		Adapter adapter = null;
@@ -74,7 +76,7 @@ public class Server extends Thread {
 			adapter.destroyServer();
 		}
 		
-		new Thread() {
+		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
 				while(true) {
 					try {
@@ -89,7 +91,6 @@ public class Server extends Thread {
 			}
 		}.start();
 		
-		// wait until call from close
 		synchronized(this) {
 			try {
 				this.wait();
@@ -133,6 +134,9 @@ public class Server extends Thread {
 		}
 	}
 	
+	/*
+	 * Sends a packet to a client at hostAddress
+	 */
 	public void sendPacketToClient(Packet packet, String hostAddress) {
 		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getConnectedAddress().equals(hostAddress)) {
@@ -141,6 +145,9 @@ public class Server extends Thread {
 			}
 	}
 	
+	/*
+	 * Sends a packet to all connected clients
+	 */
 	public void sendPacketToAllClients(Packet packet) {
 		Formatter.formatServer(packet);
 		
@@ -148,47 +155,58 @@ public class Server extends Thread {
 			sConnection.sendPacket(packet);
 	}
 	
-	public void sendPacketToAllOtherClients(Packet packet) {
-		Formatter.deconstruct(packet);
-		ServerConnection packetHostAddress = getUser(packet);
-		
-		for(ServerConnection sConnection : serverConnections)
-			if(!packetHostAddress.equals(sConnection)) {
-				Formatter.formatUsername(packet, packetHostAddress.getUser().getUsername());
-				sConnection.sendPacket(packet);
-			}
-		
-		Formatter.construct(packet);
-	}
-	
+	/*
+	 * Relays a packet to all clients except for client at hostAddress
+	 */
 	public void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
+		User user = getUserAtPacket(packet).getUser();
 		
-		for(ServerConnection sConnection : serverConnections)
-			if(!sConnection.getConnectedAddress().equals(hostAddress))
+		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
+		System.out.println("USER IS AT: "+user.getHostAddress());
+		System.out.println("HOST ADDRESS: "+hostAddress);
+		
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("CONNECTION @ "+sConnection.getConnectedAddress());
+			if(!sConnection.getConnectedAddress().equals(hostAddress)) {
+				Formatter.formatUsername(packet, user.getUsername());
 				sConnection.sendPacket(packet);
+			}
+		}
 		
 		Formatter.construct(packet);
 	}
 	
+	/*
+	 * Registers a user provided they're not banned, their username isn't taken, and they're not already connected
+	 */
 	public void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
 		
 		logger.appendText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
 				
-		if(checkBanList(hostAddress))
+		if(checkBanList(hostAddress)) {
+			disconnectUser(hostAddress, "[you have been banned]");
 			return;
+		}
 		
-		if(checkUsername(username, hostAddress))
+		if(checkConnected(hostAddress)) {
+			disconnectUser(hostAddress, "[already connected from another host]");
 			return;
-			
-		if(checkConnected(hostAddress))
+		}
+		
+		if(checkUsername(username)) {
+			disconnectUser(hostAddress, "[username already taken]");
 			return;
+		}
 		
 		addUser(username, hostAddress);
 	}
 	
+	/*
+	 * Sets a server connection's user
+	 */
 	private void addUser(String username, String hostAddress) {
 		ServerConnection userConnection = null;
 		
@@ -208,6 +226,9 @@ public class Server extends Thread {
 			}
 	}
 	
+	/*
+	 * Disconnects a user at hostAddress with a message
+	 */
 	private void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getConnectedAddress().equals(hostAddress) || 
@@ -218,37 +239,46 @@ public class Server extends Thread {
 			}
 	}
 	
+	/*
+	 * Checks the ban list for hostAddress
+	 */
 	private boolean checkBanList(String hostAddress) {
 		for(String address : Resources.BANLIST)
 			if(address.equals(hostAddress)) {
 				logger.appendText("user at ("+address+") is banned", Color.RED);
-				disconnectUser(hostAddress, "[you have been banned]");
 				return true;
 			}
 		
 		return false;
 	}
 	
-	private boolean checkUsername(String username, String hostAddress) {
+	/*
+	 * Checks connected clients to see if username is already taken
+	 */
+	private boolean checkUsername(String username) {
 		if(usernameTaken(username)) {
 			logger.appendText("username ("+username+") already taken", Color.RED);
-			disconnectUser(hostAddress, "[username already taken]");
 			return true;
 		}
 		
 		return false;
 	}
 	
+	/*
+	 * Checks connected clients to see if connection request is already connected
+	 */
 	private boolean checkConnected(String hostAddress) {
 		if(alreadyConnected(hostAddress)) {
 			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
-			disconnectUser(hostAddress, "[already connected from another host]");
 			return true;
 		}
 		
 		return false;
 	}
 	
+	/*
+	 * Checks to see if hostAddress matches the localhost
+	 */
 	private boolean isLocalHost(String hostAddress) {
 		try {
 			return (hostAddress.equals(InetAddress.getLocalHost().getHostAddress()) || hostAddress.equals("127.0.0.1"));
@@ -259,6 +289,10 @@ public class Server extends Thread {
 		return false;
 	}
 	
+	/*
+	 * Checks connected clients to see if connection request is already connected.
+	 * Used in checkConnected()
+	 */
 	private boolean alreadyConnected(String hostAddress) {
 		System.out.println("TESTING IF "+hostAddress+" IS ALREADY CONNECTED");
 		
@@ -282,6 +316,10 @@ public class Server extends Thread {
 		return connections > 1;
 	}
 	
+	/*
+	 * Checks connected clients to see if username is already taken.
+	 * Used in checkUsername()
+	 */
 	private boolean usernameTaken(String username) {
 		for(ServerConnection sConnection : serverConnections) {
 			User user = sConnection.getUser();
@@ -294,9 +332,11 @@ public class Server extends Thread {
 		return false;
 	}
 	
-	private ServerConnection getUser(Packet packet) {
+	/*
+	 * Returns the user who sent packet
+	 */
+	private ServerConnection getUserAtPacket(Packet packet) {
 		for(ServerConnection sConnection : serverConnections) {
-			System.out.println(sConnection.getUser());
 			if(sConnection.getUser().getHostAddress().equals(packet.getHostAddress()))
 				return sConnection;
 		}
@@ -304,6 +344,9 @@ public class Server extends Thread {
 		return null;
 	}
 	
+	/*
+	 * Notifies the server to close
+	 */
 	public void close() {
 		synchronized(this) {
 			this.notifyAll();

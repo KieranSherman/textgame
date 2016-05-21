@@ -20,6 +20,8 @@ public class ClientReceiver extends Thread {
 	
 	@Override
 	public void run() {
+		super.setName("ClientThread-ClientReceiverThread");
+		
 		do {
 			Packet packet = null;
 			
