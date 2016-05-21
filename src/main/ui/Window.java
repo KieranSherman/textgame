@@ -68,15 +68,6 @@ public class Window {
 			public void run() {
 				windowFrame.setVisible(true);
 				
-				Action welcome = new Action() {
-					public void execute() {
-						PopupUI.displayMessage("WELCOME "+System.getProperty("user.name").toUpperCase());
-						
-						for(String command : args)
-							Developer.parseCommand(command);
-					}
-				};
-				
 				Action load = new Action() {
 					public void pre() {
 						SoundPlayer.play("tapeInsert");
@@ -88,8 +79,10 @@ public class Window {
 						Window.input.requestFocus();
 					}
 					public void post() {
-						welcome.execute();
 						NotificationUI.queueNotification("LOGIN FINISHING", 500, null, false);
+						
+						for(String command : args)
+							Developer.parseCommand(command);
 					}
 				};
 				

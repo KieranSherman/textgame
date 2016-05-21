@@ -53,7 +53,6 @@ public class PopupUI {
 					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 				}
 			}
-
 		});
 		
 	    JButton button = new JButton("[ CLOSE ]");
@@ -139,6 +138,9 @@ public class PopupUI {
 					data = null;
 					dialog.dispose();
 					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
+				} else
+				if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					textField.setCaretPosition(textField.getText().length());
 				}
 			}
 

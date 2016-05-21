@@ -1,4 +1,4 @@
-============================ HELP ==============================
+============================ HELP ==============================================
 
 SERVER      ...     STARTS A SERVER
 
@@ -12,7 +12,7 @@ STATUS      ...     SHOWS STATUS OF NETWORK
 
 LOGOUT      ...     CLOSES CURRENT NETWORK
 
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 **CLIENT USAGE**
 a:[ADDRESS]
@@ -22,7 +22,7 @@ E.G: "client a:127.0.0.1 p:1234"
 
 DEFAULTS TO a:LOCALHOST AND p:9999 IF NOT ENTERED
 
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 **SERVER USAGE**
 p:[PORT]
@@ -31,7 +31,7 @@ E.G: "server p:1234"
 
 DEFAULTS TO p:9999 IF NOT ENTERED
 
-==================== DEVELOPER COMMANDS ========================
+=================== DEVELOPER COMMANDS =========================================
 
 LOCAL_HOST_MAXIMUM             ...    CHANGE LOCAL HOST CONNECTION MAXIMUM
 
@@ -47,14 +47,28 @@ DISPLAY_NOTIFICATION           ...    DISPLAY A NOTIFICATION
 
 ADAPTER_BLOCK                  ...    BLOCK/UNBLOCK PACKETS
 
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 ** LOCAL_HOST_MAXIMUM USAGE **
 [NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
 
 E.G: "local_host_maximum 3"
 
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+** SAME_CLIENT_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "same_client_maximum 3"
+
+--------------------------------------------------------------------------------
+
+** CLIENT_CONNECTION_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "client_connection_maximum 3"
+
+--------------------------------------------------------------------------------
 
 ** DISPLAY_NOTIFICATION USAGE **
 m:[MESSAGE]
@@ -64,11 +78,11 @@ x[NUMBER] (NUMBER OF NOTIFICATIONS)
 
 E.G: "notify m:test t:5000 r:true x25"
 
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 	
 ** ADAPTER_BLOCK USAGE **
-d:[TRUE | FALSE]
+[TRUE | FALSE]
 
-E.G: "block d:true"
+E.G: "adapter_block true"
 
 
