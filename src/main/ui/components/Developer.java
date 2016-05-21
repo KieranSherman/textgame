@@ -16,7 +16,7 @@ import util.out.Logger;
 
 public class Developer {
 	
-	private static boolean dev = false;
+	private static boolean developerMode = false;
 	
 	private Developer() {}
 	
@@ -84,27 +84,20 @@ public class Developer {
 			DisplayUI.loadNotesHelp();
 		}
 		else
-		if(args[0].equals("dev")) {
-			if(dev) {
-				dev = false;
-				Logger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
-				return true;
-			}
+		if(args[0].equals("devmode_set")) {
+			String devMode = "false";
 			
-			if(args.length == 2 && args[1].equals("kletus")) {
+			if(args.length == 2)
+				devMode = args[1];
+			
+			developerMode = Boolean.parseBoolean(devMode);
+			
+			if(developerMode)
 				Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
-				dev = true;
-			} else {
-				PopupUI.promptInput("ENTER PASSWORD", false);
-				if(!PopupUI.getData().equalsIgnoreCase("kletus")) {
-					SoundPlayer.play("error");
-					Logger.appendColoredText("[incorrect password]", Color.RED);
-				}
-				else {
-					dev = true;
-					Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
-				}
-			}
+			else
+				Logger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
+			
+			return true;
 		}
 		else {
 			return false;
@@ -114,7 +107,7 @@ public class Developer {
 	}
 	
 	public static boolean developerCommand(String[] args) {
-		if(dev == false)
+		if(!developerMode)
 			return false;
 		
 		if(args[0].equals("local_host_maximum")) {
@@ -211,6 +204,10 @@ public class Developer {
 		
 		return true;
 		
+	}
+	
+	public static boolean isDeveloperModeEnabled() {
+		return developerMode;
 	}
 
 }

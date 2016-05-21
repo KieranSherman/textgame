@@ -1,9 +1,3 @@
-server
-client
-notes
-clear
-status
-logout
 local_host_maximum
 same_client_maximmum
 client_connection_maximum
@@ -11,4 +5,4 @@ play_remix
 display_notification
 display_popup
 adapter_block
-help
+devmode_set

@@ -19,6 +19,7 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import main.ui.Window;
+import main.ui.components.Developer;
 import main.ui.components.display.background.PanelBackground;
 import main.ui.components.input.AutoComplete;
 import sound.SoundPlayer;
@@ -148,7 +149,12 @@ public class PopupUI {
 	    inputPanel.add(textField, BorderLayout.CENTER);
 
 	    if(useAutoComplete) {
-			AutoComplete autoComplete = new AutoComplete(textField, Resources.COMMANDLIST);
+	    	AutoComplete autoComplete = null;
+	    	if(Developer.isDeveloperModeEnabled())
+	    		autoComplete = new AutoComplete(textField, Resources.MASTER_COMMANDLIST);
+	    	else
+	    		autoComplete = new AutoComplete(textField, Resources.USER_COMMANDLIST);
+	    	
 			textField.getDocument().addDocumentListener(autoComplete);
 			textField.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "commit");
 			textField.getActionMap().put("commit", autoComplete.new CommitAction());

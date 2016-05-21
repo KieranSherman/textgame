@@ -61,7 +61,7 @@ public class Adapter {
 		SoundPlayer.play("servoInsert");
 		Logger.appendColoredText("[client loading...]", Color.ORANGE);
 		
-		Action action = new Action() {
+		Action clientStartup = new Action() {
 			private String username;
 			
 			public void pre() {
@@ -76,7 +76,7 @@ public class Adapter {
 			}
 		};
 		
-		NotificationUI.queueNotification("CLIENT STARTUP", 1100, action, true);
+		NotificationUI.queueNotification("CLIENT STARTUP", 1100, clientStartup, true);
 	}
 	
 	/*
@@ -112,7 +112,7 @@ public class Adapter {
 		SoundPlayer.play("servoInsert");
 		Logger.appendColoredText("[server loading...]", Color.ORANGE);
 		
-		Action action = new Action() {
+		Action serverStartup = new Action() {
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
 				Logger.appendText("[server ready]");
@@ -125,7 +125,7 @@ public class Adapter {
 			}
 		};
 		
-		NotificationUI.queueNotification("SERVER STARTUP", 1100, action, true);
+		NotificationUI.queueNotification("SERVER STARTUP", 1100, serverStartup, true);
 	}
 	
 	/*
@@ -241,7 +241,7 @@ public class Adapter {
 			Client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
 			
 			SoundPlayer.play("servoEject");
-			Action action = new Action() {
+			Action clientDisconnect = new Action() {
 				public void pre() {
 					SoundPlayer.play("tapeInsert");
 				}
@@ -250,14 +250,14 @@ public class Adapter {
 				}
 			};
 			
-			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
+			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, clientDisconnect, true);
 		}
 		else
 		if(Server.isRunning()) {
 			Server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
-			Action action = new Action() {
+			Action serverDisconnect = new Action() {
 				public void pre() {
 					SoundPlayer.play("tapeInsert");
 				}
@@ -269,7 +269,7 @@ public class Adapter {
 				}
 			};
 			
-			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
+			NotificationUI.queueNotification("SERVER CLOSING", 600, serverDisconnect, true);
 		}
 	}
 	

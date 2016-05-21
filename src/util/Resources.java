@@ -42,7 +42,10 @@ public class Resources {
 	public final static String VERSION;
 	
 	public final static String[] BANLIST;
-	public final static ArrayList<String> COMMANDLIST;
+	public static ArrayList<String> MASTER_COMMANDLIST;
+	public final static ArrayList<String> USER_COMMANDLIST;
+	public final static ArrayList<String> DEV_COMMANDLIST;
+
 	public static ArrayList<String> tempBanList;
 	
 	public static final int RENDER_SPEED = 80;
@@ -53,14 +56,23 @@ public class Resources {
 	static {
 		loadActionWords(DIRECTORY+"src/files/Actions.txt");
 		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
+		
 		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/command.gif");
 		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/terminal.gif");
 		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/devterminal.gif");
 		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/notes.gif");
+		
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
-		BANLIST = parseText(DIRECTORY+"src/files/reference/banlist.txt");
-		COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/commandlist.txt")));
+		
+		BANLIST = parseText(DIRECTORY+"src/files/reference/lists/banlist.txt");
+		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/lists/user_commandlist.txt")));
+		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt")));
+		
+		MASTER_COMMANDLIST = new ArrayList<String>();
+		MASTER_COMMANDLIST.addAll(USER_COMMANDLIST);
+		MASTER_COMMANDLIST.addAll(DEV_COMMANDLIST);
+		
 		tempBanList = new ArrayList<String>();
 	}
 	
