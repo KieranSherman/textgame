@@ -31,8 +31,10 @@ import util.out.Logger;
  */
 public class Server {
 	
-	private static int localHostConnections;	//whether localhost is connected
+	protected static int localHostConnections;	//whether localhost is connected
 	protected static int localHostMaximum;		//localhost maximum connections
+	protected static int sameClientMaximum;			//client maximum connections from same address
+	protected static int clientConnectionMaximum;	//maximum number of clients
 	protected static int portNumber;			//port number
 	protected static boolean initialized;
 
@@ -44,6 +46,8 @@ public class Server {
 	static {
 		localHostConnections = 0;
 		localHostMaximum = 1;
+		sameClientMaximum = 1;
+		clientConnectionMaximum = -1;
 		portNumber = 9999;
 		initialized = false;
 		serverConnections = new ArrayList<ServerConnection>();
@@ -181,7 +185,12 @@ public class Server {
 		String username = packet.getUsername();
 		
 		Logger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
-				
+			
+		if(checkMaximum()) {
+			disconnectUser(hostAddress, "[server full]");
+			return;
+		}
+		
 		if(checkBanList(hostAddress)) {
 			disconnectUser(hostAddress, "[you have been banned]");
 			return;
@@ -262,6 +271,13 @@ public class Server {
 				break;
 			}
 	}
+
+	/*
+	 * 
+	 */
+	private static boolean checkMaximum() {
+		return clientConnectionMaximum != -1 && serverConnections.size() >= clientConnectionMaximum;
+	}
 	
 	/*
 	 * Checks the ban list for hostAddress
@@ -306,7 +322,6 @@ public class Server {
 		return false;
 	}
 	
-	
 	/*
 	 * Checks connected clients to see if connection request is already connected.
 	 * Used in checkConnected()
@@ -315,7 +330,7 @@ public class Server {
 		System.out.println("TESTING IF "+hostAddress+" IS ALREADY CONNECTED");
 		
 		if(isLocalHost(hostAddress)) {
-			System.out.println("\t*IS LOCALHOST*");
+			System.out.println("\t*IS LOCALHOST* (MAX "+localHostMaximum+")");
 			
 			if(++localHostConnections > localHostMaximum)
 				return true;
@@ -331,7 +346,7 @@ public class Server {
 				connections++;
 		}
 		
-		return connections > 1;
+		return connections > sameClientMaximum;
 	}
 	
 	/*
@@ -401,7 +416,8 @@ public class Server {
 	 */
 	public static void close() {
 		try {
-			serverSocket.close();
+			if(serverSocket != null)
+				serverSocket.close();
 		} catch (IOException e) {
 			System.err.println("error closing server socket");
 		}

@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -41,6 +42,7 @@ public class Resources {
 	public final static String VERSION;
 	
 	public final static String[] BANLIST;
+	public final static ArrayList<String> COMMANDLIST;
 	public static ArrayList<String> tempBanList;
 	
 	public static final int RENDER_SPEED = 80;
@@ -58,6 +60,7 @@ public class Resources {
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
 		BANLIST = parseText(DIRECTORY+"src/files/reference/banlist.txt");
+		COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/commandlist.txt")));
 		tempBanList = new ArrayList<String>();
 	}
 	

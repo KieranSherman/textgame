@@ -7,19 +7,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import main.ui.Window;
-import main.ui.components.Developer;
-import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
@@ -72,32 +68,16 @@ public class InputUI {
 		Window.input.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {}
-			
 		});
 		
-		AbstractAction command = new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PopupUI.promptInput("{ ENTER COMMAND }");
-				String command = PopupUI.getData();
-				Window.input.setText("");
-				Developer.parseCommand(command);
-			}
-		};
-		
-		Window.input.getInputMap().put(KeyStroke.getKeyStroke('`'), "EnterCommand");
-		Window.input.getActionMap().put("EnterCommand", command);
 		Window.input.setEnabled(false);
 		
 		return inputPanel;

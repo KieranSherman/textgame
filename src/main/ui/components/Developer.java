@@ -95,7 +95,7 @@ public class Developer {
 				Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
 				dev = true;
 			} else {
-				PopupUI.promptInput("ENTER PASSWORD");
+				PopupUI.promptInput("ENTER PASSWORD", false);
 				if(!PopupUI.getData().equalsIgnoreCase("kletus")) {
 					SoundPlayer.play("error");
 					Logger.appendColoredText("[incorrect password]", Color.RED);
@@ -118,13 +118,33 @@ public class Developer {
 			return false;
 		
 		if(args[0].equals("local_host_maximum")) {
-			int localHostCount = 1;
+			int localHostMaximum = 1;
 			
 			if(args.length == 2)
-				localHostCount = Integer.parseInt(args[1]);
+				localHostMaximum = Integer.parseInt(args[1]);
 		
-			ServerModifier.setLocalHostMaximum(localHostCount);
-			Logger.appendColoredText("[local_host_maximum set to "+localHostCount+"]", Resources.DARK_GREEN);
+			ServerModifier.setLocalHostMaximum(localHostMaximum);
+			Logger.appendColoredText("[local_host_maximum set to "+localHostMaximum+"]", Resources.DARK_GREEN);
+		}
+		else
+		if(args[0].equals("same_client_maximum")) {
+			int sameClientMaximum = 1;
+			
+			if(args.length == 2)
+				sameClientMaximum = Integer.parseInt(args[1]);
+		
+			ServerModifier.setLocalHostMaximum(sameClientMaximum);
+			Logger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.DARK_GREEN);
+		}
+		else
+		if(args[0].equals("client_connection_maximum")) {
+			int clientConnectionMaximum = 1;
+			
+			if(args.length == 2)
+				clientConnectionMaximum = Integer.parseInt(args[1]);
+		
+			ServerModifier.setClientConnectionMaximum(clientConnectionMaximum);
+			Logger.appendColoredText("[client_connection_maximum set to "+clientConnectionMaximum+"]", Resources.DARK_GREEN);
 		}
 		else
 		if(args[0].equals("play_remix")) {
@@ -145,7 +165,7 @@ public class Developer {
 		}
 		else
 		if(args[0].equals("display_popup")) {
-			PopupUI.promptInput("POPUP TEST");
+			PopupUI.promptInput("POPUP TEST", false);
 		}
 		else
 		if(args[0].equals("display_notification")) {

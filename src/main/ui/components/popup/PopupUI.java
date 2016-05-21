@@ -15,10 +15,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import main.ui.Window;
 import main.ui.components.display.background.PanelBackground;
+import main.ui.components.input.AutoComplete;
 import sound.SoundPlayer;
 import util.Resources;
 
@@ -84,7 +86,7 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
-	public static void promptInput(String prompt) {
+	public static void promptInput(String prompt, boolean useAutoComplete) {
 	    SoundPlayer.play("computerBeep2");
 
 		JDialog dialog = new JDialog(frame, "child", true);
@@ -98,7 +100,7 @@ public class PopupUI {
 		
 	    JLabel label = new JLabel(prompt);
 	    label.setOpaque(false);
-	    label.setBorder(new EmptyBorder(12, 0, 12, 0));
+	    label.setBorder(new EmptyBorder(20, 0, 20, 0));
 	    label.setForeground(Color.WHITE);
 	    label.setHorizontalAlignment(JLabel.CENTER);
 	    label.setVerticalAlignment(JLabel.CENTER);
@@ -111,9 +113,11 @@ public class PopupUI {
 	    
 	    JTextField textField = new JTextField();
 	    textField.setOpaque(false);
+		textField.setFocusTraversalKeysEnabled(false);
 	    textField.setCaretColor(Color.WHITE);
-	    textField.setFont(Resources.DOS.deriveFont(16f));
+	    textField.setFont(Resources.DOS.deriveFont(14f));
 	    textField.setForeground(Color.WHITE);
+	    textField.setSelectionColor(Color.GRAY);
 	    textField.setBorder(null);
 	    textField.addActionListener(new ActionListener() {
 	    	@Override
@@ -140,7 +144,14 @@ public class PopupUI {
 
 		});
 	    inputPanel.add(textField, BorderLayout.CENTER);
-	    
+
+	    if(useAutoComplete) {
+			AutoComplete autoComplete = new AutoComplete(textField, Resources.COMMANDLIST);
+			textField.getDocument().addDocumentListener(autoComplete);
+			textField.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "commit");
+			textField.getActionMap().put("commit", autoComplete.new CommitAction());
+	    }
+		
 	    JLabel in = new JLabel(" >> ");
 	    in.setOpaque(false);
 	    in.setFont(Resources.DOS.deriveFont(16f));

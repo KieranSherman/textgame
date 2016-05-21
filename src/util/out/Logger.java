@@ -22,6 +22,9 @@ public class Logger {
 	 * filter to method: insertTextToDoc()
 	 */
 	public synchronized static void appendText(String str) {
+		if(str == null)
+			return;
+		
 		for(String word : str.split("\\s+")) {
 			Color color = Colorer.getColor(word);
 			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
@@ -38,6 +41,9 @@ public class Logger {
 	 * acts as filter to method: insertTextToDoc();
 	 */
 	public synchronized static void appendColoredText(String str, Color color) {
+		if(str == null)
+			return;
+		
 		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 		StyleConstants.setForeground(Window.style, alpha);
 		DisplayUI.insertTextToDoc(str+"\n");
@@ -51,6 +57,9 @@ public class Logger {
 	public synchronized static void appendPacket(Packet packet) {
 		PacketTypes packetType = packet.getType();
 		String str = (String)packet.getData();
+		
+		if(str == null)
+			return;
 		
 		if(packetType == PacketTypes.ACTION) {
 			appendText(str);

@@ -17,11 +17,11 @@ import util.out.Logger;
 public class Client {
 	
 	private static String username;
-	private static String hostName;			//ip address
-	private static int portNumber;				//port number
+	private static String hostAddress;
+	private static int portNumber;
 	private static boolean initialized;
 	
-	private static Socket socket;				//TCP socket	
+	private static Socket clientSocket;
 	
 	private static ClientReceiver clientReceiver;
 	private static ClientSender clientSender;
@@ -30,8 +30,8 @@ public class Client {
 	
 	private Client() {}
 
-	public static void initialize(String hostName, int portNumber) {
-		Client.hostName = hostName;
+	public static void initialize(String hostAddress, int portNumber) {
+		Client.hostAddress = hostAddress;
 		Client.portNumber = portNumber;
 		Client.initialized = true;
 	}
@@ -61,31 +61,34 @@ public class Client {
 	private static void run() {
 		String error = null;
 		try {
-			socket = new Socket(hostName, portNumber);
+			clientSocket = new Socket(hostAddress, portNumber);
 		} catch (IOException e) {
 			error = "[client unable to connect]";
 			System.err.println(error);
 			SoundPlayer.play("error");
 			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
+			return;
 		}
 				
 		try {
-			clientSender = new ClientSender(socket, username);
+			clientSender = new ClientSender(clientSocket, username);
 		} catch (IOException e) {
 			error = "[client sender unable to initialize]";
 			System.err.println(error);
 			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
+			return;
 		}
 		
 		try {
-			clientReceiver = new ClientReceiver(socket);
+			clientReceiver = new ClientReceiver(clientSocket);
 		} catch (IOException e) {
 			error = "[client receiver unable to initialize]";
 			System.err.println(error);
 			Logger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
+			return;
 		}
 		
 		Thread cReceiver_T = new Thread(clientReceiver);
@@ -98,11 +101,15 @@ public class Client {
 	}
 	
 	public static void disconnect() {
-		clientSender.close();
-		clientReceiver.close();
+		if(clientSender != null)
+			clientSender.close();
+		
+		if(clientReceiver != null)
+			clientReceiver.close();
 		
 		try {
-			socket.close();
+			if(clientSocket != null)
+				clientSocket.close();
 		} catch (IOException e) {
 			System.err.println("error closing client socket");
 		}

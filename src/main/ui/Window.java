@@ -3,6 +3,9 @@ package main.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,6 +46,23 @@ public class Window {
 	
 	public static void initialize(String[] args) {
 		createWindow();
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			boolean isPressed = false;
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed) {
+					isPressed = true;
+					PopupUI.promptInput("{ ENTER COMMAND }", true);
+					String command = PopupUI.getData();
+					Window.input.setText("");
+					Developer.parseCommand(command);
+					isPressed = false;
+				}
+				
+				return false;
+			}
+		});
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
