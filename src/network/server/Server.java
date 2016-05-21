@@ -189,7 +189,7 @@ public class Server extends Thread {
 		}
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(user != null && !sConnection.getConnectedAddress().equals(user.getConnectedAddress()))
+			if(user != null && !sConnection.equals(user))
 				user.sendPacket(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"));
 	}
 	
@@ -239,10 +239,7 @@ public class Server extends Thread {
 	}
 	
 	private boolean alreadyConnected(String hostAddress) {
-		System.out.println("TESTING IF "+hostAddress+" IS ALREADY CONNECTED (IGNORING ONCE)");
-		
 		if(isLocalHost(hostAddress)) {
-			System.out.println("IS LOCALHOST");
 			if(localhostConnected == true)
 				return true;
 			else
@@ -253,8 +250,6 @@ public class Server extends Thread {
 		
 		for(ServerConnection sConnection : serverConnections) {
 			String address = sConnection.getConnectedAddress();
-			
-			System.out.println("sCONNECTION ADDRESS: "+address);
 			
 			if(address.equals(hostAddress))
 				connections++;
