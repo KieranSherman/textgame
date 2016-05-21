@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.border.LineBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -20,57 +20,37 @@ import main.ui.components.handlers.WindowHandler;
 import main.ui.components.input.InputUI;
 import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationUI;
-import network.Adapter;
 import network.packet.Packet;
 import network.packet.types.PacketTypes;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
 
 /*
  * Class models a window with an exterior JFrame and interior JPanel
  */
-public class Window extends JPanel {	
+public class Window {	
 	
-	private static final long serialVersionUID = 1L;
-	
-	private static JFrame window;				//JFrame container
+	private static JFrame windowFrame;		//JFrame container
+	private static JPanel windowPanel;
 	
 	public static JTextPane terminal;		//Pane to display output
-	public static JTextPane notes;
-	public static JTextField input;		//Field for input
+	public static JTextPane notes;			//Pane to display notes
+	public static JTextField input;			//Field for input
 	
 	public static DefaultStyledDocument doc;	//*
-	public static StyleContext context;		//* Styled for coloring output
-	public static Style style;				//*
+	public static StyleContext context;			//* Styled for coloring output
+	public static Style style;					//*
 	
-	public static Colorer colorer;			//Parser determines coloring
-	public static Adapter adapter;			//Network adapter
+	private Window() {}
 	
-	static {
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	public static void initialize() {
+		createWindow();
 		
-		try {
-			colorer = Resources.getColorer();
-		} catch (ResourcesNotInitializedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	public Window() {
-		this.init();
-
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				window.setVisible(true);
+				windowFrame.setVisible(true);
 				
 				Action welcome = new Action() {
 					public void execute() {
@@ -85,7 +65,7 @@ public class Window extends JPanel {
 						SoundPlayer.play("computerBeep1");
 					}
 					public void execute() {
-						DisplayUI.boot();
+						DisplayUI.initialize();
 						Window.input.setEnabled(true);
 						Window.input.requestFocus();
 					}
@@ -102,40 +82,38 @@ public class Window extends JPanel {
 						NotificationUI.queueNotification("EATING PIE", 700, null, false);
 					}
 				};
+				
 				NotificationUI.queueNotification("AUTHORIZING", 500, load, false);
 			}
 		});
 	}
+
 	
 	/*
 	 * Initializes all components of the Window
 	 */
-	private void init() {
-		Window mainPanel = this;
-		
+	private static void createWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				window = new JFrame(Resources.VERSION);
-				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				window.addWindowListener(new WindowHandler());
-				window.setResizable(false);
+				windowFrame = new JFrame(Resources.VERSION);
+				windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				windowFrame.addWindowListener(new WindowHandler());
+				windowFrame.setResizable(false);
 				
-				mainPanel.setBackground(new Color(15, 15, 15));
-				mainPanel.setBorder(new LineBorder(new Color(15, 15, 15), 2, true));
-				mainPanel.setLayout(new BorderLayout());
-				mainPanel.add(DisplayUI.createTextPane(), BorderLayout.CENTER);
-				mainPanel.add(InputUI.createTextField(), BorderLayout.SOUTH);
+				windowPanel = new JPanel();
+				windowPanel.setBackground(new Color(15, 15, 15));
+				windowPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+				windowPanel.setLayout(new BorderLayout());
 				
-				window.add(mainPanel);
-				window.pack();
-				window.setSize(Resources.WIDTH, Resources.HEIGHT);
-				window.setLocationByPlatform(true);
-				window.setLocationRelativeTo(null);
-				window.setAlwaysOnTop(true);
-
-				synchronized(mainPanel) {
-					mainPanel.notifyAll();
-				}
+				windowPanel.add(DisplayUI.createDisplay(), BorderLayout.CENTER);
+				windowPanel.add(InputUI.createInput(), BorderLayout.SOUTH);
+				
+				windowFrame.add(windowPanel);
+				windowFrame.pack();
+				windowFrame.setSize(Resources.WIDTH, Resources.HEIGHT);
+				windowFrame.setLocationByPlatform(true);
+				windowFrame.setLocationRelativeTo(null);
+				windowFrame.setAlwaysOnTop(true);
 			}
 		});
 	}
@@ -146,7 +124,7 @@ public class Window extends JPanel {
 	 */
 	public synchronized static void appendText(String str) {
 		for(String word : str.split("\\s+")) {
-			Color color = colorer.getColor(word);
+			Color color = Colorer.getColor(word);
 			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 			StyleConstants.setForeground(style, alpha);
 			DisplayUI.insertTextToDoc(word+" ");
@@ -156,6 +134,10 @@ public class Window extends JPanel {
 			DisplayUI.insertTextToDoc("\n");
 	}
 	
+	/*
+	 * Appends str to the end of textPane with set color;
+	 * acts as filter to method: insertTextToDoc();
+	 */
 	public synchronized static void appendColoredText(String str, Color color) {
 		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 		StyleConstants.setForeground(style, alpha);
@@ -176,7 +158,7 @@ public class Window extends JPanel {
 			return;
 		}
 		
-		Color color = colorer.getPacketColor(packetType);
+		Color color = Colorer.getPacketColor(packetType);
 		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 		StyleConstants.setForeground(style, alpha);
 		DisplayUI.insertTextToDoc(str+"\n");
@@ -185,7 +167,7 @@ public class Window extends JPanel {
 	}
 	
 	public static JFrame getFrame() {
-		return window;
+		return windowFrame;
 	}
 	
 }

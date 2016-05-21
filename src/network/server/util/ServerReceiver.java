@@ -11,13 +11,11 @@ import network.util.NetworkTypes;
 public class ServerReceiver extends Thread {
 
 	private ServerConnection serverConnection;
-	private Adapter adapter;
 	private ObjectInputStream sInput;
 	
-	public ServerReceiver(ServerConnection serverConnection, Socket socket, Adapter adapter) throws IOException {
+	public ServerReceiver(ServerConnection serverConnection, Socket socket) throws IOException {
 		this.serverConnection = serverConnection;
 		this.sInput = new ObjectInputStream(socket.getInputStream());
-		this.adapter = adapter;
 	}
 	
 	@Override
@@ -37,8 +35,7 @@ public class ServerReceiver extends Thread {
 			if(packet == null)
 				continue;
 			
-			if(adapter != null)
-				adapter.parsePacket(NetworkTypes.SERVER, packet);
+			Adapter.parsePacket(NetworkTypes.SERVER, packet);
 			
 		} while (true);
 		
@@ -69,9 +66,6 @@ public class ServerReceiver extends Thread {
 			} catch (IOException e) {
 				System.err.println("error closing client input stream");
 			}
-		
-		if(adapter != null)
-			adapter = null;
 	}
 	
 }

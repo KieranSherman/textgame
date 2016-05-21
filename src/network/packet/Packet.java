@@ -19,6 +19,7 @@ public abstract class Packet implements Serializable {
 	
 	public Packet(PacketTypes packetType) {
 		this.packetType = packetType;
+		
 		try {
 			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {

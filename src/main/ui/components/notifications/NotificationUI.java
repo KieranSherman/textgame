@@ -2,7 +2,6 @@ package main.ui.components.notifications;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -25,17 +24,20 @@ import util.Resources;
 
 public class NotificationUI {
 	
-	private static JPanel notifications = new PanelBackground(Resources.notesBG);
+	private static JPanel notifications;
 	private static ArrayList<Notification> notificationQueue = new ArrayList<Notification>();
 	private static int notificationSize = 0;
 	private static int notificationCapacity = 10;
 	
-	public static Component getNotificationPane() {
+	private NotificationUI() {}
+	
+	public static JPanel createNotificationPane() {
 		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
 		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "TODO", 
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), new Color(40, 190, 230, 180));
 		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, notifications.getBorder());
 		
+		notifications = new PanelBackground(Resources.notesBG);
 		notifications.setLayout(new GridLayout(notificationCapacity, 1, 0, 8));
 		notifications.setPreferredSize(new Dimension(200, Resources.HEIGHT));
 		notifications.setBorder(compoundBorder);
@@ -102,7 +104,7 @@ public class NotificationUI {
 		if(playSound)
 			SoundPlayer.play("notification");
 		
-		Thread t = new Thread() {
+		new Thread("NotificationThread-"+notificationSize) {
 			public void run() {
 				JProgressBar progressBar = (JProgressBar)((JPanel)panel.getComponent(1)).getComponent(0);
 				progressBar.setMaximum(disposeTime/fps);
@@ -124,9 +126,7 @@ public class NotificationUI {
 				notifications.revalidate();
 				notifications.repaint();
 			}
-		};
-		
-		t.start();
+		}.start();
 	}
 
 }

@@ -24,17 +24,19 @@ import util.exceptions.AlreadyRunningNetworkException;
  */
 public class Adapter {
 	
-	private boolean block;
-	private int blockedPacketCount;
+	private static boolean block;
+	private static int blockedPacketCount;
 	
-	private Server server;		//server object
-	private Client client;		//client object
+	private static Server server;		//server object
+	private static Client client;		//client object
 	
 	private static PacketParser packetParser;	//packet receiver
 	
-	private ArrayList<Object[]> blockedPackets;
+	private static ArrayList<Object[]> blockedPackets;
 	
-	public Adapter() {
+	private Adapter() {}
+	
+	static {
 		packetParser = new PacketParser();
 		blockedPackets = new ArrayList<Object[]>();
 	}
@@ -42,7 +44,7 @@ public class Adapter {
 	/*
 	 * Create a client connection hostName:portNumber
 	 */
-	public void createClient(String hostName, int portNumber) {
+	public static void createClient(String hostName, int portNumber) {
 		try {
 			checkNetwork();
 			client = new Client(hostName, portNumber);
@@ -57,7 +59,7 @@ public class Adapter {
 	/*
 	 * Start the client on a thread
 	 */
-	private void startClient() {
+	private static void startClient() {
 		if(client == null) {
 			System.err.println("client not initialized");
 			return;
@@ -87,7 +89,7 @@ public class Adapter {
 	/*
 	 * Destroy the client
 	 */
-	public void destroyClient() {
+	public static void destroyClient() {
 		client = null;
 		Window.getFrame().setTitle(Resources.VERSION);
 	}
@@ -95,7 +97,7 @@ public class Adapter {
 	/*
 	 * Create a server on 127.0.0.1:portNumber
 	 */
-	public void createServer(int portNumber) {
+	public static void createServer(int portNumber) {
 		try {
 			checkNetwork();
 			server = new Server(portNumber);
@@ -110,7 +112,7 @@ public class Adapter {
 	/*
 	 * Start the server on a thread
 	 */
-	private void startServer() {
+	private static void startServer() {
 		if(server == null) {
 			System.err.println("server not initialized");
 			return;
@@ -135,7 +137,7 @@ public class Adapter {
 	/*
 	 * Destory the server
 	 */
-	public void destroyServer() {
+	public static void destroyServer() {
 		server = null;
 		Window.getFrame().setTitle(Resources.VERSION);
 	}
@@ -143,7 +145,7 @@ public class Adapter {
 	/*
 	 * Send a packet
 	 */
-	public synchronized void sendPacket(Packet packet) {
+	public static synchronized void sendPacket(Packet packet) {
 		if(packet == null) {
 			System.err.println("error constructing packet");
 			return;
@@ -159,7 +161,7 @@ public class Adapter {
 	/*
 	 * Parse a packet
 	 */
-	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
+	public static synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(block) {
 			synchronized(blockedPackets) {
 				blockedPackets.add(new Object[] {networkType, packet, ++blockedPacketCount});
@@ -175,46 +177,9 @@ public class Adapter {
 	}
 
 	/*
-	 * Close down connections
-	 */
-	public void close() {
-		if(client != null) {
-			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
-			
-			SoundPlayer.play("servoEject");
-			Action action = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
-				public void execute() {
-					client.disconnect();
-				}
-			};
-			
-			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
-		}
-		else
-		if(server != null) {
-			server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
-			
-			SoundPlayer.play("servoEject");
-			Action action = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
-				public void execute() {
-					server.close();
-				}
-			};
-			
-			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
-		}
-	}
-	
-	/*
 	 * Blocks incoming connections
 	 */
-	public void block(boolean showBlockedPackets) {
+	public static void block(boolean showBlockedPackets) {
 		block = !block;
 
 		if(block == false) {
@@ -247,7 +212,7 @@ public class Adapter {
 	/*
 	 * Displays the status of the network
 	 */
-	public void status() {
+	public static void status() {
 		if(client != null) {
 			Window.appendColoredText("[client connected to server]", Color.CYAN);
 		}
@@ -265,11 +230,48 @@ public class Adapter {
 		}
 	}
 	
-	private void checkNetwork() throws AlreadyRunningNetworkException {
+	private static void checkNetwork() throws AlreadyRunningNetworkException {
 		if(server != null || client != null) {
 			SoundPlayer.play("error");
 			Window.appendColoredText("[network already running]", Color.RED);
 			throw new AlreadyRunningNetworkException("You are already running a network!");
+		}
+	}
+	
+	/*
+	 * Close down connections
+	 */
+	public static void close() {
+		if(client != null) {
+			client.sendPacket(new Packet02Disconnect("[client is disconnecting...]"));
+			
+			SoundPlayer.play("servoEject");
+			Action action = new Action() {
+				public void pre() {
+					SoundPlayer.play("tapeInsert");
+				}
+				public void execute() {
+					client.disconnect();
+				}
+			};
+			
+			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
+		}
+		else
+		if(server != null) {
+			server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
+			
+			SoundPlayer.play("servoEject");
+			Action action = new Action() {
+				public void pre() {
+					SoundPlayer.play("tapeInsert");
+				}
+				public void execute() {
+					server.close();
+				}
+			};
+			
+			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
 		}
 	}
 	

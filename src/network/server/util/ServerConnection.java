@@ -3,12 +3,9 @@ package network.server.util;
 import java.io.IOException;
 import java.net.Socket;
 
-import network.Adapter;
 import network.User;
 import network.packet.Packet;
 import network.server.Server;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 
 public class ServerConnection extends Thread {
 	
@@ -39,14 +36,6 @@ public class ServerConnection extends Thread {
 	}
 	
 	public void openConnection() {
-		Adapter adapter = null;
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
 		try {
 			serverSender = new ServerSender(clientSocket);
 		} catch (IOException e) {
@@ -54,7 +43,7 @@ public class ServerConnection extends Thread {
 		}
 		
 		try {
-			serverReceiver = new ServerReceiver(this, clientSocket, adapter);
+			serverReceiver = new ServerReceiver(this, clientSocket);
 		} catch (IOException e) {
 			System.err.println("server receiver unable to initialize");
 		}

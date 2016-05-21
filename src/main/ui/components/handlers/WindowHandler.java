@@ -4,6 +4,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import main.ui.Window;
+import network.Adapter;
 
 /*
  * Class handles what happens on window events
@@ -20,7 +21,7 @@ public class WindowHandler implements WindowListener {
 	 * closes connections when window is closing
 	 */
 	public void windowClosing(WindowEvent e) {
-		Window.adapter.close();
+		Adapter.close();
 	}
 
 	@Override

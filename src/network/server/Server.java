@@ -17,7 +17,6 @@ import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
 import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Formatter;
 import util.out.Logger;
 
@@ -31,19 +30,10 @@ public class Server extends Thread {
 	private Socket clientSocket;		//socket the client connects from
 	private ServerSocket serverSocket;	//socket the client connects to
 	
-	private Logger logger;
-	
 	private ArrayList<ServerConnection> serverConnections;
 	
 	public Server(int portNumber) {
 		this.portNumber = portNumber;
-		
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	@Override
@@ -56,24 +46,16 @@ public class Server extends Thread {
 		
 		serverConnections = new ArrayList<ServerConnection>();
 		
-		Adapter adapter = null;
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
 		String error = null;
 		try {
 			serverSocket = new ServerSocket(portNumber);
-			logger.appendText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
+			Logger.appendText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
 					":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		} catch (IOException e) {
 			error = "[server unable to initialize]";
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyServer();
+			Logger.appendText(error, Color.RED);
+			Adapter.destroyServer();
 		}
 		
 		new Thread("ServerThread-ServerListenerThread") {
@@ -103,10 +85,9 @@ public class Server extends Thread {
 			System.err.println("error closing server socket");
 		}
 		
-		System.err.println("server closed");
-		logger.appendText("[server closed]", Color.GRAY);
+		Logger.appendText("[server closed]", Color.GRAY);
 		
-		adapter.destroyServer();
+		Adapter.destroyServer();
 	}
 	
 	private void openConnection() {
@@ -126,7 +107,7 @@ public class Server extends Thread {
 				localhostConnections--;
 			
 			serverConnections.remove(index);
-			logger.appendText("[client disconnected]", Color.GRAY);
+			Logger.appendText("[client disconnected]", Color.GRAY);
 			
 			NotificationUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
 			
@@ -163,11 +144,11 @@ public class Server extends Thread {
 		User user = getUserAtPacket(packet).getUser();
 		
 		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
-		System.out.println("USER IS AT: "+user.getHostAddress());
-		System.out.println("HOST ADDRESS: "+hostAddress);
+		System.out.println("\tUSER IS AT: "+user.getHostAddress());
+		System.out.println("\tHOST ADDRESS: "+hostAddress);
 		
 		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("CONNECTION @ "+sConnection.getConnectedAddress());
+			System.out.println("\t\tCONNECTION @ "+sConnection.getConnectedAddress());
 			if(!sConnection.getConnectedAddress().equals(hostAddress)) {
 				Formatter.formatUsername(packet, user.getUsername());
 				sConnection.sendPacket(packet);
@@ -178,13 +159,14 @@ public class Server extends Thread {
 	}
 	
 	/*
-	 * Registers a user provided they're not banned, their username isn't taken, and they're not already connected
+	 * Attempts to register a user provided they're not banned, 
+	 * their username isn't taken, and they're not already connected
 	 */
 	public void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
 		
-		logger.appendText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
+		Logger.appendText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
 				
 		if(checkBanList(hostAddress)) {
 			disconnectUser(hostAddress, "[you have been banned]");
@@ -211,8 +193,8 @@ public class Server extends Thread {
 		ServerConnection userConnection = null;
 		
 		for(ServerConnection sConnection : serverConnections) {
-			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(hostAddress)) {
-				logger.appendText("[adding user: "+username+"]", Color.GREEN);
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
+				Logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
 				userConnection = sConnection;
 				break;
@@ -220,10 +202,13 @@ public class Server extends Thread {
 		}
 		
 		for(ServerConnection sConnection : serverConnections)
-			if(userConnection != null && !sConnection.equals(userConnection)) {
-				sConnection.sendPacket(new Packet03Message("["+userConnection.getUser().getUsername()+" has connected]"));
+			if(userConnection != null && !sConnection.equals(userConnection))
 				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
-			}
+		
+		
+		Packet03Message connected = new Packet03Message("["+userConnection.getUser().getUsername()+" has connected]");
+		Formatter.construct(connected);
+		sendPacketToAllOtherClients(connected, userConnection.getConnectedAddress());
 	}
 	
 	/*
@@ -231,8 +216,7 @@ public class Server extends Thread {
 	 */
 	private void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
-			if(sConnection.getConnectedAddress().equals(hostAddress) || 
-					(isLocalHost(hostAddress) && isLocalHost(sConnection.getConnectedAddress()))) {
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
 				sConnection.sendPacket(new Packet02Disconnect(message));
 				sConnection.close();
 				break;
@@ -245,7 +229,7 @@ public class Server extends Thread {
 	private boolean checkBanList(String hostAddress) {
 		for(String address : Resources.BANLIST)
 			if(address.equals(hostAddress)) {
-				logger.appendText("user at ("+address+") is banned", Color.RED);
+				Logger.appendText("[user at ("+address+") is banned]", Color.RED);
 				return true;
 			}
 		
@@ -257,7 +241,7 @@ public class Server extends Thread {
 	 */
 	private boolean checkUsername(String username) {
 		if(usernameTaken(username)) {
-			logger.appendText("username ("+username+") already taken", Color.RED);
+			Logger.appendText("[username ("+username+") already taken]", Color.RED);
 			return true;
 		}
 		
@@ -269,25 +253,13 @@ public class Server extends Thread {
 	 */
 	private boolean checkConnected(String hostAddress) {
 		if(alreadyConnected(hostAddress)) {
-			logger.appendText("user at "+hostAddress+" already connected", Color.RED);
+			Logger.appendText("[user at ("+hostAddress+") already connected]", Color.RED);
 			return true;
 		}
 		
 		return false;
 	}
 	
-	/*
-	 * Checks to see if hostAddress matches the localhost
-	 */
-	private boolean isLocalHost(String hostAddress) {
-		try {
-			return (hostAddress.equals(InetAddress.getLocalHost().getHostAddress()) || hostAddress.equals("127.0.0.1"));
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		
-		return false;
-	}
 	
 	/*
 	 * Checks connected clients to see if connection request is already connected.
@@ -342,6 +314,20 @@ public class Server extends Thread {
 		}
 		
 		return null;
+	}
+	
+	/*
+	 * Checks to see if hostAddress matches the localhost
+	 */
+	private boolean isLocalHost(String hostAddress) {
+		try {
+			return (hostAddress.equals(InetAddress.getLocalHost().getHostAddress()) 
+					|| hostAddress.equals("127.0.0.1"));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	/*

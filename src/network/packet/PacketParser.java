@@ -4,8 +4,6 @@ import network.client.Client;
 import network.packet.types.Packet01Login;
 import network.server.Server;
 import network.util.NetworkTypes;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Formatter;
 import util.out.Logger;
 
@@ -14,17 +12,11 @@ import util.out.Logger;
  */
 public class PacketParser {
 	
-	private Logger logger;
 	private Server server;
 	private Client client;
 	
 	public PacketParser() {
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	
 	}
 	
 	public void setServer(Server server) {
@@ -69,7 +61,7 @@ public class PacketParser {
 			}
 		}
 
-		logger.appendPacket(packet);
+		Logger.appendPacket(packet);
 	}
 	
 	/*
@@ -97,7 +89,7 @@ public class PacketParser {
 			}
 		}
 		
-		logger.appendPacket(packet);
+		Logger.appendPacket(packet);
 	}
 
 }

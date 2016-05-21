@@ -12,17 +12,15 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
+import main.ui.Window;
+
 public class SplitPaneUI extends JSplitPane {
 	private static final long serialVersionUID = 1L;
 	
 	private int dividerDragSize = 10;
     private int dividerDragOffset = 4;
     
-    private DisplayUI display;
-
-    public SplitPaneUI(DisplayUI display) {
-    	this.display = display;
-    	
+    public SplitPaneUI() {
         setDividerSize(dividerDragSize);
         setContinuousLayout(true);
     }
@@ -70,13 +68,11 @@ public class SplitPaneUI extends JSplitPane {
 				public void mouseReleased(MouseEvent e) {}
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					if(display != null)
-						display.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					Window.notes.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 				}
 				@Override
 				public void mouseExited(MouseEvent e) {
-					if(display != null)
-						display.setCursor(Cursor.getDefaultCursor());
+					Window.notes.setCursor(Cursor.getDefaultCursor());
 				}
             });
         }

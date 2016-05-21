@@ -2,8 +2,6 @@ package main.ui.components.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -36,11 +34,7 @@ import main.ui.components.scrollbars.ScrollBarUI_Vertical;
 import sound.SoundPlayer;
 import util.Resources;
 
-public class DisplayUI extends Window {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static DisplayUI display;
+public class DisplayUI {
 	
 	private static JTextArea terminalHead;
 	private static JSplitPane splitPane;
@@ -48,11 +42,9 @@ public class DisplayUI extends Window {
 	
 	private static int lines;
 	
-	private DisplayUI() {
-		display = this;
-	}
+	private DisplayUI() {}
 	
-	public static void boot() {
+	public static void initialize() {
 		terminalHead.setText(
 				"BUILD "+Resources.VERSION+"\n"
 				+ System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
@@ -65,15 +57,11 @@ public class DisplayUI extends Window {
 		splitPane.setEnabled(true);
 	}
 	
-	public static PanelBackground getTerminalPanel() {
-		return (PanelBackground)terminalPanel;
-	}
-
-	public static Component createTextPane() {
+	public static JPanel createDisplay() {
 		Window.doc = new DefaultStyledDocument();
-		Window.terminal = new JTextPane(doc);
+		Window.terminal = new JTextPane(Window.doc);
 		Window.context = new StyleContext();
-		Window.style = context.addStyle("TextGame", null);
+		Window.style = Window.context.addStyle("TextGame", null);
 		
 		MutableAttributeSet set = new SimpleAttributeSet();
 		StyleConstants.setLineSpacing(set, .2f);
@@ -104,7 +92,7 @@ public class DisplayUI extends Window {
 		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
 		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "COMMLINK", 
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_RED);
-		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, terminal.getBorder());
+		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, Window.terminal.getBorder());
 
 		terminalPanel = new PanelBackground(Resources.terminalBG);
 		terminalPanel.setOpaque(false);
@@ -172,7 +160,7 @@ public class DisplayUI extends Window {
 		
 		rightComponent.add(scrollPane_NOTES, BorderLayout.CENTER);
 		
-		splitPane = new SplitPaneUI(display);
+		splitPane = new SplitPaneUI();
 		splitPane.setLeftComponent(terminalPanel);
 		splitPane.setRightComponent(rightComponent);
 		splitPane.setBorder(compoundBorder);
@@ -184,7 +172,7 @@ public class DisplayUI extends Window {
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(splitPane, BorderLayout.CENTER);
 		mainPanel.setOpaque(false);
-		mainPanel.add(NotificationUI.getNotificationPane(), BorderLayout.EAST);
+		mainPanel.add(NotificationUI.createNotificationPane(), BorderLayout.EAST);
 		
 		SoundPlayer.play("computerStartup");
 		SoundPlayer.loop("computerHum");
@@ -220,16 +208,12 @@ public class DisplayUI extends Window {
 		}
 	}
 	
-	public static void setCursor(int cursorType) {
-		Window.notes.setCursor(Cursor.getPredefinedCursor(cursorType));
-	}
-	
 	/*
 	 * Inserts text into the styled doc
 	 */
 	public static void insertTextToDoc(String str) {
 		try {
-			Window.doc.insertString(Window.doc.getLength(), str, style);
+			Window.doc.insertString(Window.doc.getLength(), str, Window.style);
 			
 			if(str.contains("\n"))
 				lines++;

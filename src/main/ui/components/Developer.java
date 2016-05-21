@@ -2,10 +2,12 @@ package main.ui.components;
 
 import java.awt.Color;
 
+import main.Main;
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationUI;
+import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
 import util.Action;
@@ -31,7 +33,7 @@ public class Developer {
 				if(s.contains("p:"))
 					port = s.substring(s.indexOf(":")+1);
 			
-			Window.adapter.createServer(Integer.parseInt(port));
+			Adapter.createServer(Integer.parseInt(port));
 			Window.getFrame().setTitle(Resources.VERSION+" | running server");
 		}
 		else
@@ -47,7 +49,7 @@ public class Developer {
 				if(s.contains("p:"))
 					port = s.substring(s.indexOf(":")+1);
 						
-			Window.adapter.createClient(address, Integer.parseInt(port));
+			Adapter.createClient(address, Integer.parseInt(port));
 			Window.getFrame().setTitle(Resources.VERSION+" | running client");
 		}
 		else
@@ -58,7 +60,7 @@ public class Developer {
 				if(s.contains("d:"))
 					display = s.substring(s.indexOf(":")+1);
 			
-			Window.adapter.block(Boolean.parseBoolean(display));
+			Adapter.block(Boolean.parseBoolean(display));
 		}
 		else
 		if(args[0].equals("clear")) {
@@ -99,16 +101,16 @@ public class Developer {
 		}
 		else
 		if(args[0].equals("status")) {
-			Window.adapter.status();
+			Adapter.status();
 		}
 		else
 		if(args[0].equals("logout")) {
-			Window.adapter.close();
+			Adapter.close();
 			Window.getFrame().setTitle(Resources.VERSION);
 		}
 		else
 		if(args[0].equals("notes")) {
-			Window.adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
+			Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
 			Window.appendColoredText("[sent notes]", Color.GRAY);
 		}
 		else
@@ -148,6 +150,11 @@ public class Developer {
 			NotificationUI.queueNotification("RAVE LEFT", 8300, action, false);
 			Window.appendColoredText("\\o\\", Color.CYAN);
 			Window.appendColoredText("\\o/", Color.CYAN);
+		}
+		else
+		if(args[0].equals("restart") && dev) {
+			Window.getFrame().dispose();
+			Main.restart();
 		}
 		else {
 			Window.appendColoredText("[unrecognized command: "+str+"]", Color.RED);

@@ -6,11 +6,14 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import main.misc.Game;
+import network.Adapter;
 
 /*
  * Main method creates a game and plays it
  */
 public class Main {
+	
+	private Main() {}
 	
 	public static void main(String [] args) {
 		try {
@@ -33,8 +36,17 @@ public class Main {
 		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
 		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
 		
-		Game g = new Game();
-		g.play();
+		start();
+	}
+	
+	public static void restart() {
+		Adapter.close();
+		start();
+	}
+	
+	private static void start() {
+		Game.init();
+		Game.play();
 	}
 	
 }

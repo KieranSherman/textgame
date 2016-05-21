@@ -14,11 +14,8 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
-import network.Adapter;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Colorer;
 import util.out.Colorer.ColorRules;
-import util.out.Logger;
 
 /*
  * Class holds resources used throughout classes
@@ -36,10 +33,6 @@ public class Resources {
 	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
 	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
 	
-	private static Colorer colorer;					//Colorer object to color user input
-	private static Logger logger;					//Logger to append text to user output window
-	private static Adapter adapter;					//Adapter to bridge between network and UI
-	
 	private static String parseDelimiter = "\\s+"; 	//delimiter used to split text in files
 	public final static String VERSION;
 	
@@ -51,10 +44,6 @@ public class Resources {
 	private Resources() {}							//prevent instantiation of Resources object
 	
 	static {
-		colorer = new Colorer();
-		logger = new Logger();
-		adapter = new Adapter();
-		
 		loadActionWords(DIRECTORY+"src/files/Actions.txt");
 		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
 		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/command.gif");
@@ -113,7 +102,7 @@ public class Resources {
 	 */
 	private static void loadWords(String filePath, ColorRules cr) {
 		for(String word : parseText(filePath))
-			colorer.addWord(word, cr);
+			Colorer.addWord(word, cr);
 	}
 	
 	/*
@@ -180,25 +169,4 @@ public class Resources {
 		return text.split("\n");
 	}
 	
-	/*
-	 * Returns the colorer
-	 */
-	public static Colorer getColorer() throws ResourcesNotInitializedException {
-		return colorer;
-	}
-	
-	/*
-	 * Returns the logger
-	 */
-	public static Logger getLogger() throws ResourcesNotInitializedException {
-		return logger;
-	}
-	
-	/*
-	 * Returns the adapter
-	 */
-	public static Adapter getAdapter() throws ResourcesNotInitializedException {
-		return adapter;
-	}
-
 }

@@ -9,8 +9,6 @@ import network.client.util.ClientReceiver;
 import network.client.util.ClientSender;
 import network.packet.Packet;
 import sound.SoundPlayer;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
 
 /*
@@ -58,22 +56,6 @@ public class Client extends Thread {
 	public void run() {
 		super.setName("ClientThread-Main");
 		
-		Adapter adapter = null;
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
-		Logger logger = null;
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
 		String error = null;
 		try {
 			socket = new Socket(hostName, portNumber);
@@ -81,8 +63,8 @@ public class Client extends Thread {
 			error = "[client unable to connect]";
 			System.err.println(error);
 			SoundPlayer.play("error");
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			Logger.appendText(error, Color.RED);
+			Adapter.destroyClient();
 		}
 				
 		try {
@@ -90,17 +72,17 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			error = "[client sender unable to initialize]";
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			Logger.appendText(error, Color.RED);
+			Adapter.destroyClient();
 		}
 		
 		try {
-			clientReceiver = new ClientReceiver(socket, adapter);
+			clientReceiver = new ClientReceiver(socket);
 		} catch (IOException e) {
 			error = "[client receiver unable to initialize]";
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			Logger.appendText(error, Color.RED);
+			Adapter.destroyClient();
 		}
 		
 		Thread cReceiver_T = new Thread(clientReceiver);
@@ -121,10 +103,9 @@ public class Client extends Thread {
 			System.err.println("error closing client socket");
 		}
 		
-		System.err.println("client disconnected");
-		logger.appendText("[you have been disconnected]", Color.GRAY);
+		Logger.appendText("[you have been disconnected]", Color.GRAY);
 		
-		adapter.destroyClient();
+		Adapter.destroyClient();
 	}
 
 	public void sendPacket(Packet packet) {

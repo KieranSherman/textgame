@@ -29,7 +29,7 @@ public class Formatter {
 	}
 	
 	private static String getFormat(PacketTypes packetType) {
-		return "[PACKET->"+packetType.name()+"] ";
+		return "[PACKET-->"+packetType.name()+"] ";
 	}
 	
 }
