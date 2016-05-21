@@ -71,15 +71,7 @@ public class Window {
 					}
 					public void post() {
 						welcome.execute();
-						
-						NotificationUI.queueNotification("LOGIN FINISHING", 1000, null, false);
-						NotificationUI.queueNotification("LOADING RESOURCES", 800, null, false);
-						NotificationUI.queueNotification("LOADING TEXTURES", 900, null, false);
-						NotificationUI.queueNotification("LOADING AMBIENCE", 700, null, false);
-						NotificationUI.queueNotification("GENERATING CHEESE", 800, null, false);
-						NotificationUI.queueNotification("AQUIRING GPS", 800, null, false);
-						NotificationUI.queueNotification("LOSING SANITY", 900, null, false);
-						NotificationUI.queueNotification("EATING PIE", 700, null, false);
+						NotificationUI.queueNotification("LOGIN FINISHING", 500, null, false);
 					}
 				};
 				
@@ -114,6 +106,11 @@ public class Window {
 				windowFrame.setLocationByPlatform(true);
 				windowFrame.setLocationRelativeTo(null);
 				windowFrame.setAlwaysOnTop(true);
+				
+				SoundPlayer.play("computerStartup");
+				SoundPlayer.loop("computerHum");
+				SoundPlayer.loop("computerHardDrive");
+				SoundPlayer.loop("clock");
 			}
 		});
 	}

@@ -2,6 +2,7 @@ package main.ui.components.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,15 +12,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -31,14 +29,12 @@ import main.ui.components.backgrounds.PanelBackground;
 import main.ui.components.notifications.NotificationUI;
 import main.ui.components.scrollbars.ScrollBarUI_Horizontal;
 import main.ui.components.scrollbars.ScrollBarUI_Vertical;
-import sound.SoundPlayer;
 import util.Resources;
 
 public class DisplayUI {
 	
 	private static JTextArea terminalHead;
 	private static JSplitPane splitPane;
-	private static JPanel terminalPanel;
 	
 	private static int lines;
 	
@@ -53,24 +49,42 @@ public class DisplayUI {
 				+ "\t             -TERMINAL 1-");
 		terminalHead.setForeground(new Color(102, 186, 49, 150));
 		
-		splitPane.setDividerLocation(splitPane.getWidth()-12);
+		splitPane.setDividerLocation(splitPane.getWidth()-150);
 		splitPane.setEnabled(true);
 	}
 	
 	public static JPanel createDisplay() {
-		Window.doc = new DefaultStyledDocument();
-		Window.terminal = new JTextPane(Window.doc);
-		Window.context = new StyleContext();
-		Window.style = Window.context.addStyle("TextGame", null);
+		splitPane = new SplitPaneUI();
 		
+		splitPane.setLeftComponent(getTerminalPanel());
+		splitPane.setRightComponent(getNotesPanel());
+		splitPane.setBorder(Resources.getBorder("COMMLINK", Resources.DARK_RED));
+		
+		splitPane.setDividerLocation(Resources.WIDTH);
+		splitPane.setBackground(new Color(15, 15, 15));
+		splitPane.setEnabled(false);
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel.setOpaque(false);
+		mainPanel.add(splitPane, BorderLayout.CENTER);
+		mainPanel.add(NotificationUI.createNotificationDisplay(), BorderLayout.EAST);
+		
+		return mainPanel;
+	}
+	
+	private static JPanel getTerminalPanel() {
 		MutableAttributeSet set = new SimpleAttributeSet();
 		StyleConstants.setLineSpacing(set, .2f);
+		
+		Window.doc = new DefaultStyledDocument();
+		Window.context = new StyleContext();
+		Window.style = Window.context.addStyle("TextGame", null);
 
+		Window.terminal = new JTextPane(Window.doc);
 		Window.terminal.setEditable(false);
 		Window.terminal.setFont(Resources.DOS.deriveFont(13f));
 		Window.terminal.setMargin(new Insets(30, 60, 0, 10));
 		Window.terminal.setOpaque(false);
-		Window.terminal.setSelectionColor(new Color(0,0,0,0));
 		Window.terminal.setParagraphAttributes(set, false);
 		Window.terminal.addMouseListener(new MouseListener() {
 			@Override
@@ -89,15 +103,6 @@ public class DisplayUI {
 		});
 		Window.terminal.setHighlighter(null);
 		
-		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
-		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "COMMLINK", 
-				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_RED);
-		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, Window.terminal.getBorder());
-
-		terminalPanel = new PanelBackground(Resources.terminalBG);
-		terminalPanel.setOpaque(false);
-		terminalPanel.setLayout(new BorderLayout());
-		
 		terminalHead = new JTextArea(
 				System.getProperty("user.home").toUpperCase()+": *ACCESS DENIED*\n\n");
 		terminalHead.setFont(Resources.DOS.deriveFont(13f));
@@ -106,21 +111,18 @@ public class DisplayUI {
 		terminalHead.setOpaque(false);
 		terminalHead.setEditable(false);
 		terminalHead.setHighlighter(null);
+
+		JPanel leftPanel = new PanelBackground(Resources.terminalBG);
+		leftPanel.setOpaque(false);
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
+		leftPanel.add(terminalHead, BorderLayout.NORTH);
+		leftPanel.add(Window.terminal, BorderLayout.CENTER);
 		
-		terminalPanel.add(terminalHead, BorderLayout.NORTH);
-		terminalPanel.add(Window.terminal, BorderLayout.CENTER);
-		terminalPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
-		
-		JScrollPane scrollPane_COMMLINK = new JScrollPane(terminalPanel);
-		scrollPane_COMMLINK.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane_COMMLINK.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_COMMLINK.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
-		scrollPane_COMMLINK.setBorder(null);
-		
-		JPanel notesPanel = new JPanel();
-		notesPanel.setOpaque(false);
-		notesPanel.setLayout(new BorderLayout());
-		
+		return leftPanel;
+	}
+	
+	private static JPanel getNotesPanel() {
 		Window.notes = new JTextPane();
 		Window.notes.setOpaque(false);
 		Window.notes.setLayout(new BorderLayout());
@@ -130,7 +132,6 @@ public class DisplayUI {
 		Window.notes.setSelectionColor(Color.GRAY);
 		Window.notes.setBorder(new EmptyBorder(0, 0, 0, 20));
 		Window.notes.setText("[ ` ] { HELP }\n\n");
-		notesPanel.add(Window.notes, BorderLayout.CENTER);
 		
 		JTextArea noteHead = new JTextArea(
 				  "KLETUS INDUSTRIES UNIFIED NOTEPAD SYSTEM\n"
@@ -142,44 +143,31 @@ public class DisplayUI {
 		noteHead.setMargin(new Insets(20, 30, 40, 0));
 		noteHead.setEditable(false);
 		noteHead.setHighlighter(null);
-		notesPanel.add(noteHead, BorderLayout.NORTH);
 		
-		JPanel rightComponent = new PanelBackground(Resources.notesBG);
-		rightComponent.setLayout(new BorderLayout());
+		JPanel notesPanel = new JPanel();
+		notesPanel.setOpaque(false);
+		notesPanel.setLayout(new BorderLayout());
+		notesPanel.add(Window.notes, BorderLayout.CENTER);
+		notesPanel.add(noteHead, BorderLayout.NORTH);
 		
 		JScrollPane scrollPane_NOTES = new JScrollPane(notesPanel);
 		scrollPane_NOTES.setOpaque(false);
 		scrollPane_NOTES.getViewport().setOpaque(false);
 		scrollPane_NOTES.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_NOTES.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane_NOTES.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
 		scrollPane_NOTES.getVerticalScrollBar().setUI(new ScrollBarUI_Vertical());
+		scrollPane_NOTES.getHorizontalScrollBar().setPreferredSize(new Dimension(Integer.MAX_VALUE, 8));
 		scrollPane_NOTES.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
 		scrollPane_NOTES.getHorizontalScrollBar().setOpaque(false);
 		scrollPane_NOTES.getVerticalScrollBar().setOpaque(false);
 		scrollPane_NOTES.setBorder(null);
 		
-		rightComponent.add(scrollPane_NOTES, BorderLayout.CENTER);
+		JPanel rightPanel = new PanelBackground(Resources.notesBG);
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.add(scrollPane_NOTES, BorderLayout.CENTER);
 		
-		splitPane = new SplitPaneUI();
-		splitPane.setLeftComponent(terminalPanel);
-		splitPane.setRightComponent(rightComponent);
-		splitPane.setBorder(compoundBorder);
-		splitPane.setDividerLocation(Resources.WIDTH);
-		splitPane.setEnabled(false);
-		splitPane.setBackground(new Color(15, 15, 15));
-		
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(splitPane, BorderLayout.CENTER);
-		mainPanel.setOpaque(false);
-		mainPanel.add(NotificationUI.createNotificationPane(), BorderLayout.EAST);
-		
-		SoundPlayer.play("computerStartup");
-		SoundPlayer.loop("computerHum");
-		SoundPlayer.loop("computerHardDrive");
-		SoundPlayer.loop("clock");
-		
-		return mainPanel;
+		return rightPanel;
 	}
 	
 	public static void loadNotesHelp() {
@@ -208,9 +196,6 @@ public class DisplayUI {
 		}
 	}
 	
-	/*
-	 * Inserts text into the styled doc
-	 */
 	public static void insertTextToDoc(String str) {
 		try {
 			Window.doc.insertString(Window.doc.getLength(), str, Window.style);

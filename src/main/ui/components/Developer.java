@@ -129,7 +129,7 @@ public class Developer {
 					SoundPlayer.play("error");
 				}
 				else {
-					Window.appendColoredText("[developer commands enabled]", Color.GREEN);
+					Window.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
 					dev = true;
 				}
 			}

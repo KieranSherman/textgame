@@ -11,8 +11,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import util.out.Colorer;
 import util.out.Colorer.ColorRules;
@@ -37,6 +41,7 @@ public class Resources {
 	public final static String VERSION;
 	
 	public final static String[] BANLIST;
+	public static ArrayList<String> tempBanList;
 	
 	public static final int RENDER_SPEED = 80;
 	public static Image commandBG, terminalBG, devterminalBG, notesBG;
@@ -53,6 +58,7 @@ public class Resources {
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
 		BANLIST = parseText(DIRECTORY+"src/files/reference/banlist.txt");
+		tempBanList = new ArrayList<String>();
 	}
 	
 	public static void installer() {
@@ -167,6 +173,17 @@ public class Resources {
 		}
 		
 		return text.split("\n");
+	}
+	
+	public static Border getBorder(String title, Color titleColor) {
+		Border linedBorder, titledBorder, compoundBorder;
+		
+		linedBorder = BorderFactory.createLineBorder(Color.WHITE);
+		titledBorder = BorderFactory.createTitledBorder(linedBorder, title, 
+				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), titleColor);
+		compoundBorder = BorderFactory.createCompoundBorder(titledBorder, null);
+		
+		return compoundBorder;
 	}
 	
 }

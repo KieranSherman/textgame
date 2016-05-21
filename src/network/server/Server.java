@@ -1,6 +1,9 @@
 package network.server;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -8,7 +11,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import main.ui.components.misc.PopupUI;
 import main.ui.components.notifications.NotificationUI;
+import main.ui.components.status.StatusUI;
 import network.Adapter;
 import network.User;
 import network.packet.Packet;
@@ -16,6 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
+import util.Action;
 import util.Resources;
 import util.out.Formatter;
 import util.out.Logger;
@@ -30,7 +36,7 @@ public class Server extends Thread {
 	private Socket clientSocket;		//socket the client connects from
 	private ServerSocket serverSocket;	//socket the client connects to
 	
-	private ArrayList<ServerConnection> serverConnections;
+	private volatile ArrayList<ServerConnection> serverConnections;
 	
 	public Server(int portNumber) {
 		this.portNumber = portNumber;
@@ -56,6 +62,7 @@ public class Server extends Thread {
 			System.err.println(error);
 			Logger.appendText(error, Color.RED);
 			Adapter.destroyServer();
+			return;
 		}
 		
 		new Thread("ServerThread-ServerListenerThread") {
@@ -95,8 +102,6 @@ public class Server extends Thread {
 		new Thread(serverConnection).start();
 		
 		serverConnections.add(0, serverConnection);
-
-		NotificationUI.queueNotification("CLIENT CONNECTED", 5000, null, true);
 	}
 	
 	public void removeConnection(ServerConnection serverConnection) {
@@ -107,9 +112,14 @@ public class Server extends Thread {
 				localhostConnections--;
 			
 			serverConnections.remove(index);
-			Logger.appendText("[client disconnected]", Color.GRAY);
 			
-			NotificationUI.queueNotification("CLIENT DISCONNECTED", 5000, null, true);
+			String username = "client";
+			if(serverConnection.getUser() != null)
+				username = serverConnection.getUser().getUsername();
+			
+			Logger.appendText("["+username+" disconnected]", Color.GRAY);
+			NotificationUI.queueNotification(username+" DISCONNECTED", 1500, null, true);
+			StatusUI.removeStatus(username);
 			
 			System.out.println("*REMOVED CONNECTION @ "+serverConnection.getConnectedAddress()+"*");
 		}
@@ -194,9 +204,10 @@ public class Server extends Thread {
 		
 		for(ServerConnection sConnection : serverConnections) {
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
+				userConnection = sConnection;
+				
 				Logger.appendText("[adding user: "+username+"]", Color.GREEN);
 				sConnection.setUser(new User(hostAddress, username));
-				userConnection = sConnection;
 				break;
 			}
 		}
@@ -206,9 +217,34 @@ public class Server extends Thread {
 				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
 		
 		
-		Packet03Message connected = new Packet03Message("["+userConnection.getUser().getUsername()+" has connected]");
+		Packet03Message connected = new Packet03Message("["+username+" has connected]");
+		
 		Formatter.construct(connected);
 		sendPacketToAllOtherClients(connected, userConnection.getConnectedAddress());
+		
+		NotificationUI.queueNotification(username+" CONNECTED", 1500, null, true);
+		
+		Action kick = new Action() {
+			@Override
+			public void execute() {
+				PopupUI.promptChoice(username, new String[] {"BAN", "KICK", "CANCEL"});
+				String choice = PopupUI.getData();
+				
+				if(choice.equalsIgnoreCase("cancel"))
+					return;
+				
+				if(choice.equalsIgnoreCase("ban"))
+					addToBanList(hostAddress);
+				
+				disconnectUser(hostAddress, null);
+			}
+			
+			public String toString() {
+				return username;
+			}
+		};
+		
+		StatusUI.addStatus(kick);
 	}
 	
 	/*
@@ -228,6 +264,12 @@ public class Server extends Thread {
 	 */
 	private boolean checkBanList(String hostAddress) {
 		for(String address : Resources.BANLIST)
+			if(address.equals(hostAddress)) {
+				Logger.appendText("[user at ("+address+") is banned]", Color.RED);
+				return true;
+			}
+		
+		for(String address : Resources.tempBanList)
 			if(address.equals(hostAddress)) {
 				Logger.appendText("[user at ("+address+") is banned]", Color.RED);
 				return true;
@@ -328,6 +370,26 @@ public class Server extends Thread {
 		}
 		
 		return false;
+	}
+	
+	private void addToBanList(String hostAddress) {
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(new File("src/files/reference/banlist.txt"), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		BufferedWriter bw = new BufferedWriter(fw);
+		try {
+			bw.write(hostAddress+"\n");
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Resources.tempBanList.add(hostAddress);
 	}
 	
 	/*

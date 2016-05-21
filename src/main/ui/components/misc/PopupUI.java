@@ -2,6 +2,7 @@ package main.ui.components.misc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -152,6 +153,60 @@ public class PopupUI {
 		panel.setLayout(new BorderLayout());
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(inputPanel, BorderLayout.CENTER);
+	    
+	    dialog.add(panel, BorderLayout.CENTER);
+	    dialog.getRootPane().setOpaque(false);
+	    dialog.setVisible(true);
+	}
+	
+	public static void promptChoice(String prompt, String[] choices) {
+		SoundPlayer.play("computerBeep2");
+
+		JDialog dialog = new JDialog(frame, "child", true);
+		dialog.setUndecorated(true);
+		dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		dialog.setLayout(new BorderLayout());
+		dialog.setSize(Resources.WIDTH/5, Resources.HEIGHT/8);
+		dialog.setLocationRelativeTo(frame);
+		dialog.setOpacity(.9f);
+		
+	    JLabel promptLabel = new JLabel(prompt);
+	    promptLabel.setOpaque(false);
+	    promptLabel.setBorder(new EmptyBorder(15, 0, 15, 0));
+	    promptLabel.setForeground(Color.WHITE);
+	    promptLabel.setHorizontalAlignment(JLabel.CENTER);
+	    promptLabel.setVerticalAlignment(JLabel.CENTER);
+	    promptLabel.setFont(Resources.DOS.deriveFont(15f));
+	    
+	    JButton[] buttons = new JButton[choices.length];
+		for(int i = 0; i < buttons.length; i++) {
+			buttons[i] = new JButton(choices[i]);
+			buttons[i].setFont(Resources.DOS.deriveFont(16f));
+			buttons[i].setForeground(Color.WHITE);
+			buttons[i].setBackground(Color.BLACK);
+			buttons[i].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
+			buttons[i].setFocusable(false);
+			
+			String choice = choices[i];
+			buttons[i].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dialog.dispose();
+					data = choice;
+				}
+			});
+		}
+	    
+	    JPanel buttonPanel = new JPanel(new GridLayout(1, choices.length, 0, 0));
+	    buttonPanel.setBackground(Color.BLACK);
+	    buttonPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE));
+	    for(int i = 0; i < buttons.length; i++)
+	    	buttonPanel.add(buttons[i]);
+	   
+	    JPanel panel = new PanelBackground(Resources.commandBG);
+		panel.setLayout(new BorderLayout());
+		panel.add(promptLabel, BorderLayout.NORTH);
+		panel.add(buttonPanel, BorderLayout.CENTER);
 	    
 	    dialog.add(panel, BorderLayout.CENTER);
 	    dialog.getRootPane().setOpaque(false);

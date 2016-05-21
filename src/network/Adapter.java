@@ -129,6 +129,9 @@ public class Adapter {
 			public void execute() {
 				new Thread(server).start();
 			}
+			public void post() {
+				NotificationUI.createStatusDisplay();
+			}
 		};
 		
 		NotificationUI.queueNotification("SERVER STARTUP", 1100, action, true);
@@ -140,6 +143,7 @@ public class Adapter {
 	public static void destroyServer() {
 		server = null;
 		Window.getFrame().setTitle(Resources.VERSION);
+		NotificationUI.removeStatusDisplay();
 	}
 	
 	/*
@@ -268,6 +272,9 @@ public class Adapter {
 				}
 				public void execute() {
 					server.close();
+				}
+				public void post() {
+					NotificationUI.removeStatusDisplay();
 				}
 			};
 			

@@ -11,38 +11,61 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextPane;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import main.ui.components.backgrounds.PanelBackground;
+import main.ui.components.status.StatusUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 
 public class NotificationUI {
 	
-	private static JPanel notifications;
-	private static ArrayList<Notification> notificationQueue = new ArrayList<Notification>();
-	private static int notificationSize = 0;
-	private static int notificationCapacity = 10;
+	private volatile static JPanel notifications, mainPanel;
+	private volatile static ArrayList<Notification> notificationQueue;
+	private volatile static int notificationSize, notificationCapacity;
+	
+	static {
+		notificationQueue = new ArrayList<Notification>();
+		notificationSize = 0;
+		notificationCapacity = 10;
+	}
 	
 	private NotificationUI() {}
 	
-	public static JPanel createNotificationPane() {
-		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
-		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "TODO", 
-				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), new Color(40, 190, 230, 180));
-		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, notifications.getBorder());
-		
-		notifications = new PanelBackground(Resources.notesBG);
-		notifications.setLayout(new GridLayout(notificationCapacity, 1, 0, 8));
+	public static JPanel createNotificationDisplay() {
+		notifications = new JPanel(new GridLayout(notificationCapacity, 1, 0, 8));
+		notifications.setOpaque(false);
 		notifications.setPreferredSize(new Dimension(200, Resources.HEIGHT));
-		notifications.setBorder(compoundBorder);
+		notifications.setBorder(Resources.getBorder("TODO", new Color(40, 190, 230, 180)));
 		
-		return notifications;
+		mainPanel = new PanelBackground(Resources.notesBG);
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(notifications, BorderLayout.CENTER);
+		
+		return mainPanel;
+	}
+	
+	public static void createStatusDisplay() {
+		if(mainPanel.getComponentCount() > 1)
+			return;
+		
+		((GridLayout)notifications.getLayout()).setRows((notificationCapacity = 6));
+		
+		mainPanel.add(StatusUI.createStatusPane(), BorderLayout.SOUTH);
+		mainPanel.revalidate();
+	}
+	
+	public static void removeStatusDisplay() {
+		if(mainPanel.getComponentCount() < 2)
+			return;
+		
+		((GridLayout)notifications.getLayout()).setRows((notificationCapacity = 10));
+		
+		mainPanel.remove(1);
+		mainPanel.revalidate();
 	}
 	
 	public static void queueNotification(Object obj, int disposeTime, Action action, boolean playSound) {

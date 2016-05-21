@@ -13,15 +13,18 @@ public class Logger {
 	private Logger() {}
 	
 	public static void appendPacket(Packet packet) {
-		Window.appendPacket(packet);
+		if(packet.getData() != null)
+			Window.appendPacket(packet);
 	}
 	
 	public static void appendText(String str) {
-		Window.appendText(str);
+		if(str != null)
+			Window.appendText(str);
 	}
 	
 	public static void appendText(String str, Color color) {
-		Window.appendColoredText(str, color);
+		if(str != null)
+			Window.appendColoredText(str, color);
 	}
 	
 }
