@@ -1,5 +1,5 @@
 local_host_maximum
-same_client_maximmum
+same_client_maximum
 client_connection_maximum
 play_remix
 display_notification

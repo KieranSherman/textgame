@@ -1,8 +1,7 @@
-package main.ui.components;
+package main.ui;
 
 import java.awt.Color;
 
-import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
@@ -126,7 +125,7 @@ public class Developer {
 			if(args.length == 2)
 				sameClientMaximum = Integer.parseInt(args[1]);
 		
-			ServerModifier.setLocalHostMaximum(sameClientMaximum);
+			ServerModifier.setSameClientMaximum(sameClientMaximum);
 			Logger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.DARK_GREEN);
 		}
 		else

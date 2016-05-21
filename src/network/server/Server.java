@@ -395,7 +395,7 @@ public class Server {
 	private static void addToBanList(String hostAddress) {
 		FileWriter fw = null;
 		try {
-			fw = new FileWriter(new File("src/files/reference/banlist.txt"), true);
+			fw = new FileWriter(new File("src/files/reference/lists/banlist.txt"), true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

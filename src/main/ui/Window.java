@@ -16,7 +16,6 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 
-import main.ui.components.Developer;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.handlers.WindowHandler;

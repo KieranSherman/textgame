@@ -18,8 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import main.ui.Developer;
 import main.ui.Window;
-import main.ui.components.Developer;
 import main.ui.components.display.background.PanelBackground;
 import main.ui.components.input.AutoComplete;
 import sound.SoundPlayer;
