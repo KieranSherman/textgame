@@ -25,10 +25,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.ui.Window;
-import main.ui.components.backgrounds.PanelBackground;
-import main.ui.components.notifications.NotificationUI;
-import main.ui.components.scrollbars.ScrollBarUI_Horizontal;
-import main.ui.components.scrollbars.ScrollBarUI_Vertical;
+import main.ui.components.display.background.PanelBackground;
+import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.display.scrollbars.ScrollBarUI_Horizontal;
+import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import util.Resources;
 
 public class DisplayUI {

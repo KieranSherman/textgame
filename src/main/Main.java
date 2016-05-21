@@ -33,8 +33,8 @@ public class Main {
 		UIManager.put("ProgressBar.selectionBackground", Color.BLACK);
 		UIManager.put("ProgressBar.selectionForeground", Color.WHITE);
 		
-		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
-		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
+		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Vertical");
+		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Horizontal");
 		
 		start(args);
 	}

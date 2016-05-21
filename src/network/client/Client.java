@@ -107,6 +107,8 @@ public class Client {
 			System.err.println("error closing client socket");
 		}
 		
+		clientThread = null;
+		
 		Logger.appendColoredText("[you have been disconnected]", Color.GRAY);
 	}
 	

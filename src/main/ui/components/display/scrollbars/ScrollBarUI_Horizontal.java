@@ -1,4 +1,4 @@
-package main.ui.components.scrollbars;
+package main.ui.components.display.scrollbars;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,7 +12,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 /*
  * Class sets the UI for a scroll bar
  */
-public class ScrollBarUI_Vertical extends BasicScrollBarUI {
+public class ScrollBarUI_Horizontal extends BasicScrollBarUI {
 	
 	protected JButton createZeroButton() {
 	    JButton button = new JButton("zero button");
@@ -43,5 +43,6 @@ public class ScrollBarUI_Vertical extends BasicScrollBarUI {
     	g.setColor(new Color(255, 255, 255, 205));
         g.fillRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height);
     }
+    
     
 }

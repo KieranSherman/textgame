@@ -1,4 +1,4 @@
-package main.ui.components.status.renderer;
+package main.ui.components.display.status.renderer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

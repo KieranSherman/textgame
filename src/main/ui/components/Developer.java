@@ -4,8 +4,8 @@ import java.awt.Color;
 
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
-import main.ui.components.misc.PopupUI;
-import main.ui.components.notifications.NotificationUI;
+import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
 import network.server.ServerModifier;

@@ -1,4 +1,4 @@
-package main.ui.components.notifications;
+package main.ui.components.display.notification;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,8 +15,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import main.ui.components.backgrounds.PanelBackground;
-import main.ui.components.status.StatusUI;
+import main.ui.components.display.background.PanelBackground;
+import main.ui.components.display.status.StatusUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;

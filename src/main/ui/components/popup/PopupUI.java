@@ -1,4 +1,4 @@
-package main.ui.components.misc;
+package main.ui.components.popup;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import main.ui.Window;
-import main.ui.components.backgrounds.PanelBackground;
+import main.ui.components.display.background.PanelBackground;
 import sound.SoundPlayer;
 import util.Resources;
 

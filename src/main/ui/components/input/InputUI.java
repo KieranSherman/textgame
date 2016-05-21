@@ -19,7 +19,7 @@ import javax.swing.border.TitledBorder;
 
 import main.ui.Window;
 import main.ui.components.Developer;
-import main.ui.components.misc.PopupUI;
+import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;

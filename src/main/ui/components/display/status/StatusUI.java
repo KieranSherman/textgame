@@ -1,4 +1,4 @@
-package main.ui.components.status;
+package main.ui.components.display.status;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,8 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import main.ui.components.scrollbars.ScrollBarUI_Vertical;
-import main.ui.components.status.renderer.MyCellRenderer;
+import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
+import main.ui.components.display.status.renderer.MyCellRenderer;
 import util.Action;
 import util.Resources;
 

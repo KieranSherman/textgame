@@ -15,10 +15,10 @@ import javax.swing.text.StyleContext;
 
 import main.ui.components.Developer;
 import main.ui.components.display.DisplayUI;
+import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.handlers.WindowHandler;
 import main.ui.components.input.InputUI;
-import main.ui.components.misc.PopupUI;
-import main.ui.components.notifications.NotificationUI;
+import main.ui.components.popup.PopupUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
@@ -80,7 +80,7 @@ public class Window {
 
 	
 	/*
-	 * Initializes all components of the Window
+	 * Initializes all components of the window
 	 */
 	private static void createWindow() {
 		EventQueue.invokeLater(new Runnable() {

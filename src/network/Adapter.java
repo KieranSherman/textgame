@@ -6,8 +6,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import main.ui.Window;
-import main.ui.components.misc.PopupUI;
-import main.ui.components.notifications.NotificationUI;
+import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.popup.PopupUI;
 import network.client.Client;
 import network.packet.Packet;
 import network.packet.PacketParser;
@@ -253,8 +253,8 @@ public class Adapter {
 			NotificationUI.queueNotification("CLIENT DISCONNECTING", 600, action, true);
 		}
 		else
-		if (Server.isRunning()) {
-			Server.sendPacketToAllClients(new Packet02Disconnect("[Server is closing...]"));
+		if(Server.isRunning()) {
+			Server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
 			Action action = new Action() {
@@ -269,7 +269,7 @@ public class Adapter {
 				}
 			};
 			
-			NotificationUI.queueNotification("Server CLOSING", 600, action, true);
+			NotificationUI.queueNotification("SERVER CLOSING", 600, action, true);
 		}
 	}
 	

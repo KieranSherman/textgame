@@ -11,9 +11,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import main.ui.components.misc.PopupUI;
-import main.ui.components.notifications.NotificationUI;
-import main.ui.components.status.StatusUI;
+import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.display.status.StatusUI;
+import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.User;
 import network.packet.Packet;
@@ -405,6 +405,8 @@ public class Server {
 		} catch (IOException e) {
 			System.err.println("error closing server socket");
 		}
+		
+		serverThread = null;
 		
 		Logger.appendColoredText("[server closed]", Color.GRAY);
 	}
