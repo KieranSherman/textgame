@@ -31,6 +31,17 @@ import main.ui.components.display.scrollbars.ScrollBarUI_Horizontal;
 import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import util.Resources;
 
+/**
+ * This class consists exclusively of static methods that affect the display.
+ * 
+ * @author kieransherman
+ * @see #initialize()
+ * @see #createDisplay()
+ * @see	#loadNotesHelp()
+ * @see #insertTextToDoc(String)
+ * @see #clear()
+ *
+ */
 public class DisplayUI {
 	
 	private static JTextArea terminalHead;
@@ -38,8 +49,12 @@ public class DisplayUI {
 	
 	private static int lines;
 	
+	// Prevent object instantiation
 	private DisplayUI() {}
 	
+	/**
+	 * Enables the split pane, and sets the terminal panel's header.
+	 */
 	public static void initialize() {
 		terminalHead.setText(
 				"BUILD "+Resources.VERSION+"\n"
@@ -53,6 +68,11 @@ public class DisplayUI {
 		splitPane.setEnabled(true);
 	}
 	
+	/**
+	 * Creates and returns the {@link JPanel} display.
+	 * 
+	 * @return the display.
+	 */
 	public static JPanel createDisplay() {
 		splitPane = new SplitPaneUI();
 		
@@ -67,11 +87,14 @@ public class DisplayUI {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.setOpaque(false);
 		mainPanel.add(splitPane, BorderLayout.CENTER);
-		mainPanel.add(NotificationUI.createNotificationDisplay(), BorderLayout.EAST);
+		NotificationUI.createNotificationDisplay(mainPanel, BorderLayout.EAST);
 		
 		return mainPanel;
 	}
 	
+	/**
+	 * Creates and returns the terminal panel.
+	 */
 	private static JPanel getTerminalPanel() {
 		MutableAttributeSet set = new SimpleAttributeSet();
 		StyleConstants.setLineSpacing(set, .2f);
@@ -122,6 +145,9 @@ public class DisplayUI {
 		return leftPanel;
 	}
 	
+	/**
+	 * Creates and returns the notes panel.
+	 */
 	private static JPanel getNotesPanel() {
 		Window.notes = new JTextPane();
 		Window.notes.setOpaque(false);
@@ -170,6 +196,9 @@ public class DisplayUI {
 		return rightPanel;
 	}
 	
+	/**
+	 * Load help into the notes panel.
+	 */
 	public static void loadNotesHelp() {
 		FileReader fr = null;
 		try {
@@ -196,14 +225,23 @@ public class DisplayUI {
 		}
 	}
 	
+	/**
+	 * Inserts a {@code String} into the terminal textpane.
+	 * 
+	 * @param str the {@code String} to insert.
+	 */
 	public static void insertTextToDoc(String str) {
 		try {
 			Window.doc.insertString(Window.doc.getLength(), str, Window.style);
 			
-			if(str.contains("\n"))
-				lines++;
+			int lineCount = 0;
+			for(int i = 0; i < str.length(); i++)
+				if(str.charAt(i) == '\n')
+					lineCount++;
 			
-			if(lines > 34) {
+			lines += lineCount;
+			
+			while(lines > 34) {
 				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
 				lines--;
 			}
@@ -214,6 +252,9 @@ public class DisplayUI {
 		}
 	}
 	
+	/**
+	 * Clears the terminal textpane.
+	 */
 	public static void clear() {
 		lines = 0;
 		Window.terminal.setText("");

@@ -9,8 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
-/*
- * Class sets the UI for a scroll bar
+/**
+ * Class extends {@link BasicScrollBarUI} to modify a vertical scrollbar.
+ * 
+ * @author kieransherman
  */
 public class ScrollBarUI_Vertical extends BasicScrollBarUI {
 	

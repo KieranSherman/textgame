@@ -1,7 +1,8 @@
-package main.ui;
+package main.misc;
 
 import java.awt.Color;
 
+import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
@@ -11,14 +12,28 @@ import network.server.ServerModifier;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
+/**
+ * This class consists exclusively of static methods that handle commands.
+ * 
+ * @author kieransherman
+ * @see #parseCommand(String)
+ *
+ */
 public class Developer {
 	
 	private static boolean developerMode = false;
 	
+	// Prevent object instantiation
 	private Developer() {}
 	
+	/**
+	 * Determines if {@code str} is a command.  If so, the appropriate command is executed.
+	 * Otherwise, an error is displayed.
+	 * 
+	 * @param str the command.
+	 */
 	public static void parseCommand(String str) {
 		if(str == null)
 			return;
@@ -27,13 +42,17 @@ public class Developer {
 		String [] args = str.split("\\s+");
 		
 		if(!Developer.userCommand(args) && !Developer.developerCommand(args)) {
-			Logger.appendColoredText("[unrecognized command]", Color.RED);
+			DefaultLogger.appendColoredText("[unrecognized command]", Color.RED);
 			SoundPlayer.play("error");
 		}
 
 	}
 	
-	public static boolean userCommand(String[] args) {
+
+	/**
+	 * Returns whether or not the String[] is a user command.
+	 */
+	private static boolean userCommand(String[] args) {
 		if(args[0].equals("server")) {
 			String port = "9999";
 			
@@ -76,7 +95,7 @@ public class Developer {
 		else
 		if(args[0].equals("notes")) {
 			Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
-			Logger.appendColoredText("[sent notes]", Color.GRAY);
+			DefaultLogger.appendColoredText("[sent notes]", Color.GRAY);
 		}
 		else
 		if(args[0].equals("help")) {
@@ -92,9 +111,9 @@ public class Developer {
 			developerMode = Boolean.parseBoolean(devMode);
 			
 			if(developerMode)
-				Logger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
 			else
-				Logger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
 			
 			return true;
 		}
@@ -105,7 +124,10 @@ public class Developer {
 		return true;
 	}
 	
-	public static boolean developerCommand(String[] args) {
+	/**
+	 * Returns whether or not the String[] is a developer command. 
+	 */
+	private static boolean developerCommand(String[] args) {
 		if(!developerMode)
 			return false;
 		
@@ -116,7 +138,7 @@ public class Developer {
 				localHostMaximum = Integer.parseInt(args[1]);
 		
 			ServerModifier.setLocalHostMaximum(localHostMaximum);
-			Logger.appendColoredText("[local_host_maximum set to "+localHostMaximum+"]", Resources.DARK_GREEN);
+			DefaultLogger.appendColoredText("[local_host_maximum set to "+localHostMaximum+"]", Resources.DARK_GREEN);
 		}
 		else
 		if(args[0].equals("same_client_maximum")) {
@@ -126,7 +148,7 @@ public class Developer {
 				sameClientMaximum = Integer.parseInt(args[1]);
 		
 			ServerModifier.setSameClientMaximum(sameClientMaximum);
-			Logger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.DARK_GREEN);
+			DefaultLogger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.DARK_GREEN);
 		}
 		else
 		if(args[0].equals("client_connection_maximum")) {
@@ -136,7 +158,7 @@ public class Developer {
 				clientConnectionMaximum = Integer.parseInt(args[1]);
 		
 			ServerModifier.setClientConnectionMaximum(clientConnectionMaximum);
-			Logger.appendColoredText("[client_connection_maximum set to "+clientConnectionMaximum+"]", Resources.DARK_GREEN);
+			DefaultLogger.appendColoredText("[client_connection_maximum set to "+clientConnectionMaximum+"]", Resources.DARK_GREEN);
 		}
 		else
 		if(args[0].equals("play_remix")) {
@@ -146,14 +168,14 @@ public class Developer {
 				@Override
 				public void execute() {
 					NotificationUI.queueNotification("RAVE RIGHT", 11000, null, false);
-					Logger.appendColoredText("/o/", Color.CYAN);
-					Logger.appendColoredText("\\o/", Color.CYAN);
+					DefaultLogger.appendColoredText("/o/", Color.CYAN);
+					DefaultLogger.appendColoredText("\\o/", Color.CYAN);
 				}
 			};
 			
 			NotificationUI.queueNotification("RAVE LEFT", 8300, action, false);
-			Logger.appendColoredText("\\o\\", Color.CYAN);
-			Logger.appendColoredText("\\o/", Color.CYAN);
+			DefaultLogger.appendColoredText("\\o\\", Color.CYAN);
+			DefaultLogger.appendColoredText("\\o/", Color.CYAN);
 		}
 		else
 		if(args[0].equals("display_popup")) {
@@ -197,6 +219,36 @@ public class Developer {
 			
 			Adapter.block(Boolean.parseBoolean(display));
 		}
+		else
+		if(args[0].equals("remove_upnp_map_at_port")) {
+			int port = 9999;
+			
+			if(args.length == 2)
+				port = Integer.parseInt(args[1]);
+			
+			ServerModifier.removeUPnPMapAtPort(port);
+			DefaultLogger.appendColoredText("[removed UPnP map at "+port+"]", Color.RED);
+		}
+		else
+		if(args[0].equals("add_upnp_map_at_port")) {
+			int port = 9999;
+			
+			if(args.length == 2)
+				port = Integer.parseInt(args[1]);
+			
+			ServerModifier.addUPnPMapAtPort(port);
+			DefaultLogger.appendColoredText("[added UPnP map at "+port+"]", Resources.DARK_GREEN);
+		}
+		else
+		if(args[0].equals("set_upnp_remap")) {
+			String remap = "false";
+			
+			if(args.length == 2)
+				remap = args[1];
+			
+			ServerModifier.setUPnPRemap(Boolean.parseBoolean(remap));
+			DefaultLogger.appendColoredText("[set UPnP remap to "+remap+"]", Resources.DARK_GREEN);
+		}
 		else {
 			return false;
 		}
@@ -204,6 +256,11 @@ public class Developer {
 		return true;
 	}
 	
+	/**
+	 * Returns whether or not developer mode is enabled.
+	 * 
+	 * @return the status of the developer mode.
+	 */
 	public static boolean isDeveloperModeEnabled() {
 		return developerMode;
 	}

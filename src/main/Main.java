@@ -9,7 +9,7 @@ import main.misc.Game;
 import network.Adapter;
 
 /*
- * Main method creates a game and plays it
+ * Main method creates a game and plays it.
  */
 public class Main {
 	
@@ -36,7 +36,7 @@ public class Main {
 		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Vertical");
 		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Horizontal");
 		
-		start(args);
+		start(args);		
 	}
 	
 	public static void restart(String[] args) {

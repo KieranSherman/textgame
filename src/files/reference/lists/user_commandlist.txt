@@ -5,3 +5,5 @@ clear
 status
 logout
 help
+true
+false

@@ -18,20 +18,37 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import main.ui.Developer;
+import main.misc.Developer;
 import main.ui.Window;
-import main.ui.components.display.background.PanelBackground;
 import main.ui.components.input.AutoComplete;
 import sound.SoundPlayer;
 import util.Resources;
 
+/**
+ * This class consists exclusively of static methods that display various types of popups.
+ * 
+ * @author kieransherman
+ * @see #displayMessage(String)
+ * @see #promptInput(String, boolean)
+ * @see #promptChoice(String, String[])
+ * @see #getData()
+ *
+ */
 public class PopupUI {
 	
+	// Prevent object instantiation
 	private PopupUI() {}
 	
 	private static String data;
 	private static JFrame frame = Window.getFrame();
+	private static Color panelBG = new Color(10, 10, 10);
+	private static Color panelFG = new Color(220, 200, 220);
 	
+	/**
+	 * Displays a message.
+	 * 
+	 * @param message the message to display.
+	 */
 	public static void displayMessage(String message) {
 		JDialog dialog = new JDialog(frame, "child", true);
 		
@@ -71,12 +88,13 @@ public class PopupUI {
 	    });
 	    
 	    JLabel label = new JLabel(message);
-	    label.setForeground(Color.WHITE);
+	    label.setForeground(panelFG);
 	    label.setHorizontalAlignment(JLabel.CENTER);
 	    label.setVerticalAlignment(JLabel.CENTER);
 	    label.setFont(Resources.DOS.deriveFont(15f));
 	    
-	    JPanel panel = new PanelBackground(Resources.commandBG);
+	    JPanel panel = new JPanel();
+	    panel.setBackground(panelBG);
 		panel.setLayout(new BorderLayout());
 		panel.add(label, BorderLayout.CENTER);
 		panel.add(button, BorderLayout.SOUTH);
@@ -86,6 +104,12 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Promts user for input.  Response stored in data accessed by {@link #getData()}.
+	 * 
+	 * @param prompt the prompt.
+	 * @param useAutoComplete whether or not to use autocomplete.
+	 */
 	public static void promptInput(String prompt, boolean useAutoComplete) {
 	    SoundPlayer.play("computerBeep2");
 
@@ -101,7 +125,7 @@ public class PopupUI {
 	    JLabel label = new JLabel(prompt);
 	    label.setOpaque(false);
 	    label.setBorder(new EmptyBorder(20, 0, 20, 0));
-	    label.setForeground(Color.WHITE);
+	    label.setForeground(panelFG);
 	    label.setHorizontalAlignment(JLabel.CENTER);
 	    label.setVerticalAlignment(JLabel.CENTER);
 	    label.setFont(Resources.DOS.deriveFont(15f));
@@ -168,7 +192,8 @@ public class PopupUI {
 	    in.setVerticalAlignment(JLabel.CENTER);
 	    inputPanel.add(in, BorderLayout.WEST);
 	   
-	    JPanel panel = new PanelBackground(Resources.commandBG);
+	    JPanel panel = new JPanel();
+	    panel.setBackground(panelBG);
 		panel.setLayout(new BorderLayout());
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(inputPanel, BorderLayout.CENTER);
@@ -178,6 +203,12 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Prompts user to make a choice.
+	 * 
+	 * @param prompt the prompt.
+	 * @param choices the array of choices.
+	 */
 	public static void promptChoice(String prompt, String[] choices) {
 		SoundPlayer.play("computerBeep2");
 
@@ -192,7 +223,7 @@ public class PopupUI {
 	    JLabel promptLabel = new JLabel(prompt);
 	    promptLabel.setOpaque(false);
 	    promptLabel.setBorder(new EmptyBorder(15, 0, 15, 0));
-	    promptLabel.setForeground(Color.WHITE);
+	    promptLabel.setForeground(panelFG);
 	    promptLabel.setHorizontalAlignment(JLabel.CENTER);
 	    promptLabel.setVerticalAlignment(JLabel.CENTER);
 	    promptLabel.setFont(Resources.DOS.deriveFont(15f));
@@ -222,7 +253,8 @@ public class PopupUI {
 	    for(int i = 0; i < buttons.length; i++)
 	    	buttonPanel.add(buttons[i]);
 	   
-	    JPanel panel = new PanelBackground(Resources.commandBG);
+	    JPanel panel = new JPanel();
+	    panel.setBackground(panelBG);
 		panel.setLayout(new BorderLayout());
 		panel.add(promptLabel, BorderLayout.NORTH);
 		panel.add(buttonPanel, BorderLayout.CENTER);
@@ -232,6 +264,11 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Returns the data, set by the most recent prompt.
+	 * 
+	 * @return the most recent data.
+	 */
 	public static String getData() {
 		return data;
 	}

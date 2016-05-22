@@ -8,10 +8,23 @@ import java.net.Socket;
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
 
+/**
+ * Class sends packets over a socket.
+ * 
+ * @author kieransherman
+ * 
+ */
 public class ClientSender {
 	
 	private ObjectOutputStream sOutput;
 	
+	/**
+	 * Creates a new object to send packets with.
+	 * 
+	 * @param socket the socket to send over.
+	 * @param username the username.
+	 * @throws IOException the socket is closed.
+	 */
 	public ClientSender(Socket socket, String username) throws IOException {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
@@ -19,8 +32,10 @@ public class ClientSender {
 		sendPacket(new Packet01Login("[client has connected from "+InetAddress.getLocalHost().getHostAddress()+"]", username));
 	}
 	
-	/*
-	 * sends a packet over the output stream
+	/**
+	 * Sends a packet over the socket output stream.
+	 * 
+	 * @param packet the packet to send.
 	 */
 	public void sendPacket(Packet packet) {
 		if(packet == null) {
@@ -49,9 +64,9 @@ public class ClientSender {
 			System.err.println("error flushing stream");
 		}
 	}
-	
+
 	/*
-	 * closes the output stream
+	 * Closes the socket output stream.
 	 */
 	public void close() {
 		if(sOutput != null) {

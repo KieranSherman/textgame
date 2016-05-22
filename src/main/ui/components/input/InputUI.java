@@ -20,12 +20,18 @@ import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
 import util.Resources;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 public class InputUI {
 	
+	// Prevent object instantiation
 	private InputUI() {}
 	
+	/**
+	 * Creates and returns the {@link JPanel} input panel containing a {@link JTextField}.
+	 * 
+	 * @return the input's JPanel
+	 */
 	public static JPanel createInput() {
 		JPanel inputPanel = new JPanel();
 		inputPanel.setLayout(new BorderLayout());
@@ -57,7 +63,7 @@ public class InputUI {
 			public void actionPerformed(ActionEvent e) {
 				String str = Window.input.getText();
 
-				Logger.appendText("> "+str);
+				DefaultLogger.appendText("> "+str);
 				Window.input.setText("");
 				
 				if(str != null && !str.equals(""))

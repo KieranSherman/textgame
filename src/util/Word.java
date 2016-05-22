@@ -4,8 +4,11 @@ import java.awt.Color;
 
 import util.out.Colorer.ColorRules;
 
-/*
- * Class models a word, which can be assigned a color
+/**
+ * Class models a word.
+ * 
+ * @author kieransherman
+ *
  */
 public class Word {
 	
@@ -17,29 +20,39 @@ public class Word {
 		this.cr = cr;
 	}
 	
-	/*
-	 * return the word
+	/**
+	 * Returns the word as a {@code String}.
+	 * 
+	 * @return the word {@code String}.
 	 */
 	public String getWord() {
 		return word;
 	}
 	
-	/*
-	 * returns whether two word object are equivalent
+	/**
+	 * Returns whether a word equals a {@code String}.
+	 * 
+	 * @param str the {@code String} to test.
+	 * @return whether the word and {@code String} are the same.
 	 */
 	public boolean equals(String str) {
 		return word.equalsIgnoreCase(str);
 	}
 	
-	/*
-	 * returns the color rule
+	
+	/**
+	 * Returns the word's coloring rule.
+	 * 
+	 * @return the color rule.
 	 */
 	public ColorRules getColorRule() {
 		return cr;
 	}
 	
-	/*
-	 * returns the color of the word
+	/**
+	 * Return the word's color.
+	 * 
+	 * @return the color.
 	 */
 	public Color getColor() {
 		return cr.getColor();

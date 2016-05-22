@@ -4,16 +4,23 @@ import java.util.ArrayList;
 
 import util.Resources;
 
+/**
+ * Class consists exclusively of static methods that modfiy sound operations.
+ * 
+ * @author kieransherman
+ */
 public class SoundPlayer {
 	
 	protected static ArrayList<Sound> allSounds;
 	
+	// Prevent object instantiation
 	private SoundPlayer() {}
 	
 	static {
 		allSounds = new ArrayList<Sound>();
 		
-		String [] soundData = Resources.readText(Resources.DIRECTORY+"src/files/reference/sound.txt");
+		String [] soundData = Resources.parseText(Resources.DIRECTORY+"src/files/reference/sound.txt", "\n");
+		
 		String [] data;
 		String name, filePath, gain;
 		Sound sound;
@@ -37,6 +44,11 @@ public class SoundPlayer {
 		}
 	}
 	
+	/**
+	 * Play the sound registered with the sound's name.
+	 * 
+	 * @param soundName the sound name.
+	 */
 	public static void play(String soundName) {
 		int index = getIndex(soundName);
 		
@@ -44,6 +56,11 @@ public class SoundPlayer {
 			allSounds.get(index).play();
 	}
 	
+	/**
+	 * Loop the sound registered with the sound's name.
+	 * 
+	 * @param soundName the sound name.
+	 */
 	public static void loop(String soundName) {
 		int index = getIndex(soundName);
 		
@@ -51,6 +68,9 @@ public class SoundPlayer {
 			allSounds.get(index).loop();
 	}
 	
+	/**
+	 * Return the index of a sound if registered.
+	 */
 	private static int getIndex(String soundName) {
 		for(int i = 0; i < allSounds.size(); i++)
 			if(allSounds.get(i).getName().equals(soundName))
