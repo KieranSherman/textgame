@@ -6,11 +6,14 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import main.misc.Game;
+import network.Adapter;
 
 /*
  * Main method creates a game and plays it
  */
 public class Main {
+	
+	private Main() {}
 	
 	public static void main(String [] args) {
 		try {
@@ -30,11 +33,20 @@ public class Main {
 		UIManager.put("ProgressBar.selectionBackground", Color.BLACK);
 		UIManager.put("ProgressBar.selectionForeground", Color.WHITE);
 		
-		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Vertical");
-		UIManager.put("ScrollBarUI", "main.ui.components.scrollbars.ScrollBarUI_Horizontal");
+		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Vertical");
+		UIManager.put("ScrollBarUI", "main.ui.components.display.scrollbars.ScrollBarUI_Horizontal");
 		
-		Game g = new Game();
-		g.play();
+		start(args);
+	}
+	
+	public static void restart(String[] args) {
+		Adapter.close();
+		start(args);
+	}
+	
+	private static void start(String[] args) {
+		Game.init(args);
+		Game.play();
 	}
 	
 }

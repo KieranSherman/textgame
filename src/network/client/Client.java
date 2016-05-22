@@ -9,133 +9,122 @@ import network.client.util.ClientReceiver;
 import network.client.util.ClientSender;
 import network.packet.Packet;
 import sound.SoundPlayer;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Logger;
 
 /*
  * Class models a threadable client in a network
  */
-public class Client extends Thread {
+public class Client {
 	
-	private String username;
-	private String hostName;			//ip address
-	private int portNumber;				//port number
+	private static String username;
+	private static String hostAddress;
+	private static int portNumber;
+	private static boolean initialized;
 	
-	private Socket socket;				//TCP socket	
+	private static Socket clientSocket;
 	
-	private ClientReceiver clientReceiver;
-	private ClientSender clientSender;
+	private static ClientReceiver clientReceiver;
+	private static ClientSender clientSender;
 	
-	public Client() {
-		this.hostName = "localhost";
-		this.portNumber = 9999;
+	private static Thread clientThread;
+	
+	private Client() {}
+
+	public static void initialize(String hostAddress, int portNumber) {
+		Client.hostAddress = hostAddress;
+		Client.portNumber = portNumber;
+		Client.initialized = true;
 	}
 	
-	public Client(String hostName) {
-		this();
-		this.hostName = hostName;
+	public static void setUsername(String username) {
+		Client.username = username;
 	}
 	
-	public Client(String hostName, int portNumber) {
-		this(hostName);
-		this.portNumber = portNumber;
-	}
-	
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
-	public String getUsername() {
+	public static String getUsername() {
 		return username;
 	}
 	
-	@Override
+	public static void startClient() {
+		clientThread = new Thread("ClientThread-Main") {
+			public void run() {
+				Client.run();
+			}
+		};
+		
+		clientThread.start();
+	}
+	
 	/*
 	 * connects to server on hostName, portNumber; opens the input/output streams;
 	 * sends a confirmation login packet; receives and parses packets 
 	 */
-	public void run() {
-		Adapter adapter = null;
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
-		Logger logger = null;
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
+	private static void run() {
 		String error = null;
 		try {
-			socket = new Socket(hostName, portNumber);
+			clientSocket = new Socket(hostAddress, portNumber);
 		} catch (IOException e) {
 			error = "[client unable to connect]";
-			SoundPlayer.play("error");
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			SoundPlayer.play("error");
+			Logger.appendColoredText(error, Color.RED);
+			Adapter.destroyClient();
+			return;
 		}
 				
 		try {
-			clientSender = new ClientSender(socket, username);
+			clientSender = new ClientSender(clientSocket, username);
 		} catch (IOException e) {
 			error = "[client sender unable to initialize]";
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			Logger.appendColoredText(error, Color.RED);
+			Adapter.destroyClient();
+			return;
 		}
 		
 		try {
-			clientReceiver = new ClientReceiver(socket, adapter);
+			clientReceiver = new ClientReceiver(clientSocket);
 		} catch (IOException e) {
 			error = "[client receiver unable to initialize]";
 			System.err.println(error);
-			logger.appendText(error, Color.RED);
-			adapter.destroyClient();
+			Logger.appendColoredText(error, Color.RED);
+			Adapter.destroyClient();
+			return;
 		}
 		
-		// start a new thread to receive and handle incoming packets
 		Thread cReceiver_T = new Thread(clientReceiver);
 		cReceiver_T.start();
-		
-		// wait until close call
-		synchronized(this) {
-			try {
-				this.wait();
-			} catch (InterruptedException e) {}
-		}
-			
-		clientSender.close();
-		clientReceiver.close();
-		
-		try {
-			socket.close();
-		} catch (IOException e) {
-			System.err.println("error closing client socket");
-		}
-		
-		System.err.println("client disconnected");
-		logger.appendText("[you have been disconnected]", Color.GRAY);
-		
-		adapter.destroyClient();
 	}
 
-	public void sendPacket(Packet packet) {
+	public static void sendPacket(Packet packet) {
 		if(clientSender != null)
 			clientSender.sendPacket(packet);
 	}
 	
-	public void disconnect() {
-		synchronized(this) {
-			this.notifyAll();
+	public static void disconnect() {
+		if(clientSender != null)
+			clientSender.close();
+		
+		if(clientReceiver != null)
+			clientReceiver.close();
+		
+		try {
+			if(clientSocket != null)
+				clientSocket.close();
+		} catch (IOException e) {
+			System.err.println("error closing client socket");
 		}
+		
+		clientThread = null;
+		
+		Logger.appendColoredText("[you have been disconnected]", Color.GRAY);
+	}
+	
+	public static boolean isInitialized() {
+		return Client.initialized;
+	}
+	
+	public static boolean isRunning() {
+		return clientThread != null;
 	}
 	
 }

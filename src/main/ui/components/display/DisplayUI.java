@@ -2,24 +2,22 @@ package main.ui.components.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -27,53 +25,66 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import main.ui.Window;
-import main.ui.components.backgrounds.PanelBackground;
-import main.ui.components.misc.SplitPaneUI;
-import main.ui.components.notifications.NotificationPaneUI;
-import main.ui.components.scrollbars.ScrollBarUI_Horizontal;
-import main.ui.components.scrollbars.ScrollBarUI_Vertical;
-import sound.SoundPlayer;
+import main.ui.components.display.background.PanelBackground;
+import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.display.scrollbars.ScrollBarUI_Horizontal;
+import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import util.Resources;
 
-public class DisplayUI extends Window {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static DisplayUI display;
+public class DisplayUI {
 	
 	private static JTextArea terminalHead;
 	private static JSplitPane splitPane;
 	
-	private DisplayUI() {
-		display = this;
-	}
+	private static int lines;
 	
-	public static void boot() {
+	private DisplayUI() {}
+	
+	public static void initialize() {
 		terminalHead.setText(
-				System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
+				"BUILD "+Resources.VERSION+"\n"
+				+ System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
 				+ "\tKLETUS INDUSTRIES UNIFIED OPERATING SYSTEM\n"
 				+ "\t  COPYRIGHT 3015-3067 KLETUS INDUSTRIES\n"
 				+ "\t             -TERMINAL 1-");
 		terminalHead.setForeground(new Color(102, 186, 49, 150));
 		
-		splitPane.setDividerLocation(Resources.WIDTH/2);
+		splitPane.setDividerLocation(splitPane.getWidth()-150);
 		splitPane.setEnabled(true);
 	}
-
-	public static Component createTextPane() {
-		Window.doc = new DefaultStyledDocument();
-		Window.terminal = new JTextPane(doc);
-		Window.context = new StyleContext();
-		Window.style = context.addStyle("TextGame", null);
+	
+	public static JPanel createDisplay() {
+		splitPane = new SplitPaneUI();
 		
+		splitPane.setLeftComponent(getTerminalPanel());
+		splitPane.setRightComponent(getNotesPanel());
+		splitPane.setBorder(Resources.getBorder("COMMLINK", Resources.DARK_RED));
+		
+		splitPane.setDividerLocation(Resources.WIDTH);
+		splitPane.setBackground(new Color(15, 15, 15));
+		splitPane.setEnabled(false);
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel.setOpaque(false);
+		mainPanel.add(splitPane, BorderLayout.CENTER);
+		mainPanel.add(NotificationUI.createNotificationDisplay(), BorderLayout.EAST);
+		
+		return mainPanel;
+	}
+	
+	private static JPanel getTerminalPanel() {
 		MutableAttributeSet set = new SimpleAttributeSet();
 		StyleConstants.setLineSpacing(set, .2f);
+		
+		Window.doc = new DefaultStyledDocument();
+		Window.context = new StyleContext();
+		Window.style = Window.context.addStyle("TextGame", null);
 
+		Window.terminal = new JTextPane(Window.doc);
 		Window.terminal.setEditable(false);
 		Window.terminal.setFont(Resources.DOS.deriveFont(13f));
 		Window.terminal.setMargin(new Insets(30, 60, 0, 10));
 		Window.terminal.setOpaque(false);
-		Window.terminal.setSelectionColor(new Color(0,0,0,0));
 		Window.terminal.setParagraphAttributes(set, false);
 		Window.terminal.addMouseListener(new MouseListener() {
 			@Override
@@ -92,15 +103,6 @@ public class DisplayUI extends Window {
 		});
 		Window.terminal.setHighlighter(null);
 		
-		Border linedBorder = BorderFactory.createLineBorder(Color.WHITE);
-		Border titledBorder = BorderFactory.createTitledBorder(linedBorder, "COMMLINK", 
-				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_RED);
-		Border compoundBorder = BorderFactory.createCompoundBorder(titledBorder, terminal.getBorder());
-
-		JPanel leftPanel = new PanelBackground(Resources.terminalBG);
-		leftPanel.setOpaque(false);
-		leftPanel.setLayout(new BorderLayout());
-		
 		terminalHead = new JTextArea(
 				System.getProperty("user.home").toUpperCase()+": *ACCESS DENIED*\n\n");
 		terminalHead.setFont(Resources.DOS.deriveFont(13f));
@@ -109,21 +111,18 @@ public class DisplayUI extends Window {
 		terminalHead.setOpaque(false);
 		terminalHead.setEditable(false);
 		terminalHead.setHighlighter(null);
-		
+
+		JPanel leftPanel = new PanelBackground(Resources.terminalBG);
+		leftPanel.setOpaque(false);
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 		leftPanel.add(terminalHead, BorderLayout.NORTH);
 		leftPanel.add(Window.terminal, BorderLayout.CENTER);
-		leftPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 		
-		JScrollPane scrollPane_COMMLINK = new JScrollPane(leftPanel);
-		scrollPane_COMMLINK.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane_COMMLINK.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_COMMLINK.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
-		scrollPane_COMMLINK.setBorder(null);
-		
-		JPanel notesPanel = new JPanel();
-		notesPanel.setOpaque(false);
-		notesPanel.setLayout(new BorderLayout());
-		
+		return leftPanel;
+	}
+	
+	private static JPanel getNotesPanel() {
 		Window.notes = new JTextPane();
 		Window.notes.setOpaque(false);
 		Window.notes.setLayout(new BorderLayout());
@@ -132,7 +131,7 @@ public class DisplayUI extends Window {
 		Window.notes.setCaretColor(Color.WHITE);
 		Window.notes.setSelectionColor(Color.GRAY);
 		Window.notes.setBorder(new EmptyBorder(0, 0, 0, 20));
-		notesPanel.add(Window.notes, BorderLayout.CENTER);
+		Window.notes.setText("[ ` ] { HELP }\n\n");
 		
 		JTextArea noteHead = new JTextArea(
 				  "KLETUS INDUSTRIES UNIFIED NOTEPAD SYSTEM\n"
@@ -144,78 +143,80 @@ public class DisplayUI extends Window {
 		noteHead.setMargin(new Insets(20, 30, 40, 0));
 		noteHead.setEditable(false);
 		noteHead.setHighlighter(null);
-		notesPanel.add(noteHead, BorderLayout.NORTH);
 		
-		JPanel rightComponent = new PanelBackground(Resources.notesBG);
-		rightComponent.setLayout(new BorderLayout());
+		JPanel notesPanel = new JPanel();
+		notesPanel.setOpaque(false);
+		notesPanel.setLayout(new BorderLayout());
+		notesPanel.add(Window.notes, BorderLayout.CENTER);
+		notesPanel.add(noteHead, BorderLayout.NORTH);
 		
 		JScrollPane scrollPane_NOTES = new JScrollPane(notesPanel);
 		scrollPane_NOTES.setOpaque(false);
 		scrollPane_NOTES.getViewport().setOpaque(false);
 		scrollPane_NOTES.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_NOTES.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane_NOTES.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
 		scrollPane_NOTES.getVerticalScrollBar().setUI(new ScrollBarUI_Vertical());
+		scrollPane_NOTES.getHorizontalScrollBar().setPreferredSize(new Dimension(Integer.MAX_VALUE, 8));
 		scrollPane_NOTES.getHorizontalScrollBar().setUI(new ScrollBarUI_Horizontal());
 		scrollPane_NOTES.getHorizontalScrollBar().setOpaque(false);
 		scrollPane_NOTES.getVerticalScrollBar().setOpaque(false);
 		scrollPane_NOTES.setBorder(null);
 		
-		rightComponent.add(scrollPane_NOTES, BorderLayout.CENTER);
+		JPanel rightPanel = new PanelBackground(Resources.notesBG);
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.add(scrollPane_NOTES, BorderLayout.CENTER);
 		
-		splitPane = new SplitPaneUI(display);
-		splitPane.setLeftComponent(leftPanel);
-		splitPane.setRightComponent(rightComponent);
-		splitPane.setBorder(compoundBorder);
-		splitPane.setDividerLocation(Resources.WIDTH);
-		splitPane.setEnabled(false);
-		splitPane.setBackground(new Color(15, 15, 15));
-		
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(splitPane, BorderLayout.CENTER);
-		mainPanel.setOpaque(false);
-		mainPanel.add(NotificationPaneUI.getNotificationPane(), BorderLayout.EAST);
-		
-		SoundPlayer.play("computerStartup");
-		SoundPlayer.loop("computerHum");
-		SoundPlayer.loop("computerHardDrive");
-		SoundPlayer.loop("clock");
-		
-		try {
-			loadNotesHelp();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		return mainPanel;
+		return rightPanel;
 	}
 	
-	private static void loadNotesHelp() throws Exception {
-		FileReader fr = new FileReader(new File("src/files/reference/notes-help.txt"));
+	public static void loadNotesHelp() {
+		FileReader fr = null;
+		try {
+			fr = new FileReader(new File(Resources.DIRECTORY+"src/files/reference/notes-help.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		BufferedReader br = new BufferedReader(fr);
 		
 		String line;
-		while((line = br.readLine()) != null)
-			Window.notes.setText(Window.notes.getText()+line+"\n");
+		try {
+			while((line = br.readLine()) != null)
+				Window.notes.setText(Window.notes.getText()+line+"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		br.close();
+		Window.notes.setCaretPosition(0);
+		
+		try {
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void setCursor(int cursorType) {
-		Window.notes.setCursor(Cursor.getPredefinedCursor(cursorType));
-	}
-	
-	/*
-	 * Inserts text into the styled doc
-	 */
 	public static void insertTextToDoc(String str) {
 		try {
-			Window.doc.insertString(Window.doc.getLength(), str, style);
+			Window.doc.insertString(Window.doc.getLength(), str, Window.style);
+			
+			if(str.contains("\n"))
+				lines++;
+			
+			if(lines > 34) {
+				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
+				lines--;
+			}
+			
 			Window.terminal.setCaretPosition(Window.doc.getLength());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public static void clear() {
+		lines = 0;
+		Window.terminal.setText("");
 	}
 	
 }

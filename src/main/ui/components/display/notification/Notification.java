@@ -1,4 +1,4 @@
-package main.ui.components.notifications;
+package main.ui.components.display.notification;
 
 import javax.swing.JPanel;
 

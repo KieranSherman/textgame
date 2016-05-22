@@ -1,26 +1,18 @@
-======================== LET'S BEGIN =========================
+============================ HELP ==============================================
 
-*** TO ENTER A DEV COMMAND, PRESS THE [ ` ] KEY ***	
+SERVER      ...     STARTS A SERVER
 
-SERVER		...		STARTS A SERVER
+CLIENT      ...     STARTS A CLIENT
 
-CLIENT		...		STARTS A CLIENT
+NOTES       ...     SENDS NOTES OVER NETWORK
 
-POPUP		...		DISPLAYS A POPUP WINDOW
+CLEAR       ...     CLEARS THE SCREEN
 
-NOTES		...		SENDS NOTES OVER NETWORK
+STATUS      ...     SHOWS STATUS OF NETWORK
 
-CLEAR		...		CLEARS THE SCREEN
+LOGOUT      ...     CLOSES CURRENT NETWORK
 
-STATUS		...		SHOWS STATUS OF NETWORK
-
-LOGOUT		...		CLOSES CURRENT NETWORK
-
-NOTIFY		...		DISPLAYS A NOTIFICATION
-
-BLOCK		...		BLOCK/UNBLOCKS PACKETS
-
-================================================================
+--------------------------------------------------------------------------------
 
 **CLIENT USAGE**
 a:[ADDRESS]
@@ -30,18 +22,55 @@ E.G: "client a:127.0.0.1 p:1234"
 
 DEFAULTS TO a:LOCALHOST AND p:9999 IF NOT ENTERED
 
-================================================================
+--------------------------------------------------------------------------------
 
 **SERVER USAGE**
 p:[PORT]
 
 E.G: "server p:1234"
 
-DEFAULTS TO p:1234 IF NOT ENTERED
+DEFAULTS TO p:9999 IF NOT ENTERED
 
-================================================================
+=================== DEVELOPER COMMANDS =========================================
 
-** NOTIFY USAGE **
+LOCAL_HOST_MAXIMUM             ...    CHANGE LOCAL HOST CONNECTION MAXIMUM
+
+SAME_CLIENT_MAXIMUM            ...    CHANGE SAME CLIENT CONNECTION MAXIMUM
+
+CLIENT_CONNECTION_MAXIMUM      ...    CHANGE MAXIMUM CLIENT CONNECTION
+
+PLAY_REMIX                     ...    JUST A LITTLE FUN
+
+DISPLAY_POPUP                  ...    DISPLAY A POPUP
+
+DISPLAY_NOTIFICATION           ...    DISPLAY A NOTIFICATION
+
+ADAPTER_BLOCK                  ...    BLOCK/UNBLOCK PACKETS
+
+--------------------------------------------------------------------------------
+
+** LOCAL_HOST_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "local_host_maximum 3"
+
+--------------------------------------------------------------------------------
+
+** SAME_CLIENT_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "same_client_maximum 3"
+
+--------------------------------------------------------------------------------
+
+** CLIENT_CONNECTION_MAXIMUM USAGE **
+[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+
+E.G: "client_connection_maximum 3"
+
+--------------------------------------------------------------------------------
+
+** DISPLAY_NOTIFICATION USAGE **
 m:[MESSAGE]
 t:[TIME] (IN MILLISECONDS) 
 r:[TRUE | FALSE] (RANDOM TIMES)
@@ -49,11 +78,11 @@ x[NUMBER] (NUMBER OF NOTIFICATIONS)
 
 E.G: "notify m:test t:5000 r:true x25"
 
-================================================================
+--------------------------------------------------------------------------------
 	
-** BLOCK USAGE **
-[true | false]
+** ADAPTER_BLOCK USAGE **
+[TRUE | FALSE]
 
-E.G: "block true"
+E.G: "adapter_block true"
 
-================================================================
+

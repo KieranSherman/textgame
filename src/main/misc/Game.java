@@ -7,17 +7,14 @@ import sound.SoundPlayer;
  * Class models a game
  */
 public class Game {
-		
-	@SuppressWarnings("unused")
-	private Window window;
 	
-	public Game() {
-		window = new Window();
+	private Game() {}
+	
+	public static void init(String[] args) {
+		Window.initialize(args);
 		SoundPlayer.loop("background1");
 	}
 	
-	public void play() {
-		
-	}
+	public static void play() {}
 
 }

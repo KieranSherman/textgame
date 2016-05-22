@@ -4,8 +4,6 @@ import network.client.Client;
 import network.packet.types.Packet01Login;
 import network.server.Server;
 import network.util.NetworkTypes;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 import util.out.Formatter;
 import util.out.Logger;
 
@@ -14,31 +12,12 @@ import util.out.Logger;
  */
 public class PacketParser {
 	
-	private Logger logger;
-	private Server server;
-	private Client client;
-	
-	public PacketParser() {
-		try {
-			logger = Resources.getLogger();
-		} catch (ResourcesNotInitializedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	public void setServer(Server server) {
-		this.server = server;
-	}
-	
-	public void setClient(Client client) {
-		this.client = client;
-	}
+	private PacketParser() {}
 	
 	/*
 	 * Parse a packet 
 	 */
-	public synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
+	public static synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(networkType == NetworkTypes.CLIENT)
 			parseServerPacket(packet);
 		else
@@ -49,14 +28,14 @@ public class PacketParser {
 	/*
 	 * Parse a packet received from the server (i.e client handles this packet)
 	 */
-	private synchronized void parseServerPacket(Packet packet) {
+	private static synchronized void parseServerPacket(Packet packet) {
 		switch(packet.getType()) {
 			case ACTION: {
 				
 				break;
 			}
 			case DISCONNECT: {
-				client.disconnect();
+				Client.disconnect();
 				break;
 			}
 			case LOGIN: {
@@ -69,18 +48,18 @@ public class PacketParser {
 			}
 		}
 
-		logger.appendPacket(packet);
+		Logger.appendPacket(packet);
 	}
 	
 	/*
 	 * Parse a packet received from the client (i.e server handles this packet)
 	 */
-	private synchronized void parseClientPacket(Packet packet) {
+	private static synchronized void parseClientPacket(Packet packet) {
 		Formatter.construct(packet);
 		
 		switch(packet.getType()) {
 			case ACTION: {
-				server.sendPacketToAllClients(packet);
+				Server.sendPacketToAllOtherClients(packet, packet.getHostAddress());
 				break;
 			}
 			case DISCONNECT: {
@@ -88,16 +67,16 @@ public class PacketParser {
 				break;
 			}
 			case LOGIN: {
-				server.registerUser((Packet01Login)packet);
+				Server.registerUser((Packet01Login)packet);
 				break;
 			}
 			case MESSAGE: {
-				server.sendPacketToAllClients(packet);
+				Server.sendPacketToAllOtherClients(packet, packet.getHostAddress());
 				break;
 			}
 		}
 		
-		logger.appendPacket(packet);
+		Logger.appendPacket(packet);
 	}
 
 }

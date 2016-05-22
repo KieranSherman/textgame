@@ -3,23 +3,18 @@ package network.server.util;
 import java.io.IOException;
 import java.net.Socket;
 
-import network.Adapter;
 import network.User;
 import network.packet.Packet;
 import network.server.Server;
-import util.Resources;
-import util.exceptions.ResourcesNotInitializedException;
 
 public class ServerConnection extends Thread {
 	
-	private Server server;
 	private Socket clientSocket;
 	private ServerSender serverSender;
 	private ServerReceiver serverReceiver;
 	private User user;
 	
-	public ServerConnection(Server server, Socket clientSocket) {
-		this.server = server;
+	public ServerConnection(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 	
@@ -33,18 +28,12 @@ public class ServerConnection extends Thread {
 	
 	@Override
 	public void run() {
+		super.setName("ServerThread-ServerConnectionThread_@"+clientSocket.getInetAddress().getHostAddress());
+		
 		openConnection();
 	}
 	
 	public void openConnection() {
-		Adapter adapter = null;
-		try {
-			adapter = Resources.getAdapter();
-		} catch (ResourcesNotInitializedException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-		
 		try {
 			serverSender = new ServerSender(clientSocket);
 		} catch (IOException e) {
@@ -52,7 +41,7 @@ public class ServerConnection extends Thread {
 		}
 		
 		try {
-			serverReceiver = new ServerReceiver(this, clientSocket, adapter);
+			serverReceiver = new ServerReceiver(this, clientSocket);
 		} catch (IOException e) {
 			System.err.println("server receiver unable to initialize");
 		}
@@ -67,15 +56,14 @@ public class ServerConnection extends Thread {
 			} catch (InterruptedException e) {}
 		}
 		
-		server.removeConnection(this);
+		Server.removeConnection(this);
 		
 		serverSender.close();
 		serverReceiver.close();
 	}
 	
 	public String getConnectedAddress() {
-		String address = clientSocket.getRemoteSocketAddress().toString();
-		return address.substring(address.indexOf('/')+1, address.indexOf(':'));
+		return clientSocket.getInetAddress().getHostAddress();
 	}
 	
 	public void close() {
