@@ -1,4 +1,4 @@
-package main.ui.components.backgrounds;
+package main.ui.components.display.background;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -12,13 +12,15 @@ public class PanelBackground extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private Image imageBackground;
+	private Thread displayThread;
+	private JPanel panel;
 	
 	public PanelBackground(Image imageBackground) {
 		this.imageBackground = imageBackground;
 		
-		JPanel panel = this;
+		panel = this;
 		
-		Thread displayThread = new Thread() {
+		displayThread = new Thread() {
 			public void run() {
 				while(true) {
 					panel.repaint();
@@ -35,9 +37,5 @@ public class PanelBackground extends JPanel {
 		
 		g.drawImage(imageBackground, 0, 0, Resources.WIDTH, Resources.HEIGHT, null);
 	}
-	
-	public void setImageBackground(Image imageBackground) {
-		this.imageBackground = imageBackground;
-	}
-	
+
 }

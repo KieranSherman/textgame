@@ -11,16 +11,14 @@ import util.Word;
  */
 public class Colorer {
 	
-	private ArrayList<Word> words;		//words
+	private static ArrayList<Word> words = new ArrayList<Word>();
 	
-	public Colorer() {
-		words = new ArrayList<Word>();
-	}
+	private Colorer() {}
 	
 	/*
 	 * Add a word to the list
 	 */
-	public void addWord(Word word) {
+	public static void addWord(Word word) {
 		if(word.getWord().startsWith(":") || word.getWord().equals(""))
 			return;
 		
@@ -30,7 +28,7 @@ public class Colorer {
 	/*
 	 * Add a word to the list with a specific ColorRule
 	 */
-	public void addWord(String word, ColorRules cr) {
+	public static void addWord(String word, ColorRules cr) {
 		if(word.startsWith(":") || word.equals(""))
 			return;
 		
@@ -40,7 +38,7 @@ public class Colorer {
 	/*
 	 * Return the color of the word
 	 */
-	public Color getColor(String str) {
+	public static Color getColor(String str) {
 		for(Word word : words)
 			if(word.equals(str))
 				return word.getColor();
@@ -48,7 +46,7 @@ public class Colorer {
 		return Color.WHITE;
 	}
 	
-	public Color getPacketColor(PacketTypes packetType) {
+	public static Color getPacketColor(PacketTypes packetType) {
 		switch(packetType) {
 			case ACTION: {
 				return Color.WHITE;
@@ -70,8 +68,8 @@ public class Colorer {
 	/*
 	 * Coloring rules for different types of words
 	 */
-	public enum ColorRules {
-		ACTION(Color.RED), PLACE(Color.GREEN);
+	public static enum ColorRules {
+		ACTION(Color.ORANGE), PLACE(Color.GREEN);
 		
 		private Color c;
 		
