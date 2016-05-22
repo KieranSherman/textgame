@@ -2,12 +2,11 @@ package network.server.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
+import network.upnp.UPnPGateway;
 
 public class ServerSender {
 	
@@ -21,11 +20,7 @@ public class ServerSender {
 	}
 	
 	private void init() {
-		try {
-			sendPacket(new Packet01Login("[you have connected to "+InetAddress.getLocalHost().getHostAddress()+"]", null));
-		} catch (UnknownHostException e) {
-			System.err.println("error sending login packet");
-		}
+		sendPacket(new Packet01Login("[you have connected to "+UPnPGateway.getMappedAddress()+"]", null));
 	}
 	
 	/*

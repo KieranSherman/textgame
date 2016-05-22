@@ -20,7 +20,7 @@ import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
 import util.Resources;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 public class InputUI {
 	
@@ -57,7 +57,7 @@ public class InputUI {
 			public void actionPerformed(ActionEvent e) {
 				String str = Window.input.getText();
 
-				Logger.appendText("> "+str);
+				DefaultLogger.appendText("> "+str);
 				Window.input.setText("");
 				
 				if(str != null && !str.equals(""))

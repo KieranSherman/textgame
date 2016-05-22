@@ -52,7 +52,7 @@ public class AutoComplete implements DocumentListener {
 			if(Character.isWhitespace(content.charAt(w)))
 				break;
 		
-		if(pos-w < 2)
+		if(pos-w < 1)
 			return;
 		
 		String prefix = content.substring(w+1).toLowerCase();

@@ -13,22 +13,29 @@ public class ServerConnection extends Thread {
 	private ServerSender serverSender;
 	private ServerReceiver serverReceiver;
 	private User user;
+	private String connectedAddress;
 	
 	public ServerConnection(Socket clientSocket) {
 		this.clientSocket = clientSocket;
-	}
-	
-	public void setUser(User user) {
-		this.user = user;
+		this.connectedAddress = clientSocket.getRemoteSocketAddress().toString();
 	}
 	
 	public User getUser() {
 		return user;
 	}
 	
+	public void setUser(User user) {
+		this.user = user;
+		this.connectedAddress = user.getHostAddress();
+	}
+	
+	public String getConnectedAddress() {
+		return connectedAddress;
+	}
+	
 	@Override
 	public void run() {
-		super.setName("ServerThread-ServerConnectionThread_@"+clientSocket.getInetAddress().getHostAddress());
+		super.setName("ServerThread-ServerConnectionThread_@"+clientSocket.getRemoteSocketAddress().toString());
 		
 		openConnection();
 	}
@@ -46,7 +53,6 @@ public class ServerConnection extends Thread {
 			System.err.println("server receiver unable to initialize");
 		}
 		
-		// start a new thread to receive and handle incoming packets
 		Thread sReceiver_T = new Thread(serverReceiver);
 		sReceiver_T.start();
 		
@@ -60,10 +66,6 @@ public class ServerConnection extends Thread {
 		
 		serverSender.close();
 		serverReceiver.close();
-	}
-	
-	public String getConnectedAddress() {
-		return clientSocket.getInetAddress().getHostAddress();
 	}
 	
 	public void close() {

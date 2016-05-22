@@ -18,7 +18,7 @@ import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 /*
  * Class models a network-UI adapter, bridging the two
@@ -59,14 +59,14 @@ public class Adapter {
 		}
 		
 		SoundPlayer.play("servoInsert");
-		Logger.appendColoredText("[client loading...]", Color.ORANGE);
+		DefaultLogger.appendColoredText("[client loading...]", Color.ORANGE);
 		
 		Action clientStartup = new Action() {
 			private String username;
 			
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
-				Logger.appendText("[client ready]");
+				DefaultLogger.appendText("[client ready]");
 				PopupUI.promptInput("USERNAME", false);
 				username = PopupUI.getData();
 				Client.setUsername(username);
@@ -110,12 +110,12 @@ public class Adapter {
 		}
 		
 		SoundPlayer.play("servoInsert");
-		Logger.appendColoredText("[server loading...]", Color.ORANGE);
+		DefaultLogger.appendColoredText("[server loading...]", Color.ORANGE);
 		
 		Action serverStartup = new Action() {
 			public void pre() {
 				SoundPlayer.play("tapeInsert");
-				Logger.appendText("[server ready]");
+				DefaultLogger.appendText("[server ready]");
 			}
 			public void execute() {
 				Server.startServer();
@@ -178,21 +178,21 @@ public class Adapter {
 		block = !block;
 
 		if(block == false) {
-			Logger.appendColoredText("[removed block from incoming packets]", Color.GRAY);
+			DefaultLogger.appendColoredText("[removed block from incoming packets]", Color.GRAY);
 			
 			synchronized(blockedPackets) {
 				if(showBlockedPackets) {
-					Logger.appendColoredText("[showing blocked packets...]", Color.GRAY);
+					DefaultLogger.appendColoredText("[showing blocked packets...]", Color.GRAY);
 	
 					for(int i = 0; i < blockedPackets.size(); i++) {
 						Object [] obj = blockedPackets.get(i);
 						NetworkTypes networkType = (NetworkTypes) obj[0];
 						Packet packet = (Packet) obj[1];
-						Logger.appendColoredText("["+obj[2]+"/"+blockedPacketCount+"]", Color.DARK_GRAY);
+						DefaultLogger.appendColoredText("["+obj[2]+"/"+blockedPacketCount+"]", Color.DARK_GRAY);
 						parsePacket(networkType, packet);
 					}
 					
-					Logger.appendColoredText("[...end of blocked packets]", Color.GRAY);
+					DefaultLogger.appendColoredText("[...end of blocked packets]", Color.GRAY);
 				}
 				
 				blockedPackets.clear();
@@ -200,7 +200,7 @@ public class Adapter {
 			}
 		} else
 		if(block == true) {
-			Logger.appendColoredText("[blocking incoming packets]", Color.GRAY);
+			DefaultLogger.appendColoredText("[blocking incoming packets]", Color.GRAY);
 		}
 	}
 	
@@ -209,26 +209,26 @@ public class Adapter {
 	 */
 	public static void status() {
 		if(Client.isRunning()) {
-			Logger.appendColoredText("[client connected to Server]", Color.CYAN);
+			DefaultLogger.appendColoredText("[client connected to Server]", Color.CYAN);
 		}
 		else
 		if(Server.isRunning()) {
 			try {
-				Logger.appendColoredText("[Server open at "+InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
+				DefaultLogger.appendColoredText("[Server open at "+InetAddress.getLocalHost().getHostAddress()+"]", Color.CYAN);
 			} catch (UnknownHostException e) {
-				Logger.appendColoredText("[Server status unknown]", Color.RED);
+				DefaultLogger.appendColoredText("[Server status unknown]", Color.RED);
 			}
 		}
 		else {
 			SoundPlayer.play("error");
-			Logger.appendColoredText("[no network detected]", Color.RED);
+			DefaultLogger.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	
 	private static void checkNetwork() throws AlreadyRunningNetworkException {
 		if(Server.isRunning() || Client.isRunning()) {
 			SoundPlayer.play("error");
-			Logger.appendColoredText("[network already running]", Color.RED);
+			DefaultLogger.appendColoredText("[network already running]", Color.RED);
 			throw new AlreadyRunningNetworkException("You are already running a network!");
 		}
 	}

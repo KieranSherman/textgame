@@ -21,10 +21,12 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
+import network.upnp.UPnPGateway;
 import util.Action;
 import util.Resources;
+import util.out.DeveloperLogger;
 import util.out.Formatter;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 /*
  * Class models a threadable server in a network
@@ -55,11 +57,17 @@ public class Server {
 	
 	private Server() {}
 	
+	/**
+	 * Initializes the server
+	 */
 	public static void initialize(int portNumber) {
 		Server.portNumber = portNumber;
 		Server.initialized = true;
 	}
 	
+	/**
+	 * Starts the server
+	 */
 	public static void startServer() {
 		serverThread = new Thread("ServerThread-Main") {
 			public void run() {
@@ -70,7 +78,7 @@ public class Server {
 		serverThread.start();
 	}
 	
-	/*
+	/**
 	 * opens a server; waits for incoming connections;
 	 * sends confirmation login packet; receives and parses packets
 	 */
@@ -78,15 +86,16 @@ public class Server {
 		String error = null;
 		try {
 			serverSocket = new ServerSocket(portNumber);
-			Logger.appendColoredText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
-					":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		} catch (IOException e) {
 			error = "[server unable to initialize]";
 			System.err.println(error);
-			Logger.appendColoredText(error, Color.RED);
+			DefaultLogger.appendColoredText(error, Color.RED);
 			Adapter.destroyServer();
 			return;
 		}
+		
+		UPnPGateway.openGatewayAtPort(portNumber);
+		DefaultLogger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -105,13 +114,21 @@ public class Server {
 		}.start();
 	}
 	
+	/**
+	 * Opens a connection at the client's socket
+	 */
 	private static void openConnection(Socket clientSocket) {
 		ServerConnection serverConnection = new ServerConnection(clientSocket);
 		new Thread(serverConnection).start();
 		
+		DeveloperLogger.appendText("clientSocket temporary connection address: "+serverConnection.getConnectedAddress());
+		
 		serverConnections.add(0, serverConnection);
 	}
 	
+	/**
+	 * Removes a serverConnection
+	 */
 	public static void removeConnection(ServerConnection serverConnection) {
 		int index = serverConnections.indexOf(serverConnection);
 		
@@ -125,15 +142,15 @@ public class Server {
 			if(serverConnection.getUser() != null)
 				username = serverConnection.getUser().getUsername();
 			
-			Logger.appendColoredText("["+username+" disconnected]", Color.GRAY);
+			DefaultLogger.appendColoredText("["+username+" disconnected]", Color.GRAY);
 			NotificationUI.queueNotification(username+" DISCONNECTED", 1500, null, true);
 			StatusUI.removeStatus(username);
 			
-			System.out.println("*REMOVED CONNECTION @ "+serverConnection.getConnectedAddress()+"*");
+			DeveloperLogger.appendColoredText("*Removed connection @ "+serverConnection.getConnectedAddress()+"*", Color.RED);
 		}
 	}
 	
-	/*
+	/**
 	 * Sends a packet to a client at hostAddress
 	 */
 	public static void sendPacketToClient(Packet packet, String hostAddress) {
@@ -144,7 +161,7 @@ public class Server {
 			}
 	}
 	
-	/*
+	/**
 	 * Sends a packet to all connected clients
 	 */
 	public static void sendPacketToAllClients(Packet packet) {
@@ -154,38 +171,41 @@ public class Server {
 			sConnection.sendPacket(packet);
 	}
 	
-	/*
+	/**
 	 * Relays a packet to all clients except for client at hostAddress
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
-		User user = getServerConnectionAtPacket(hostAddress).getUser();
+		User user = getServerConnectionAtAddress(hostAddress).getUser();
 		
-		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
-		System.out.println("\tUSER IS AT: "+user.getHostAddress());
-		System.out.println("\tHOST ADDRESS: "+hostAddress);
-		
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("\t\tCONNECTION @ "+sConnection.getConnectedAddress());
-			if(!sConnection.getConnectedAddress().equals(hostAddress)) {
+		for(ServerConnection sConnection : serverConnections)
+			if(!sConnection.getConnectedAddress().equals(hostAddress) && !isLocalHost(sConnection.getConnectedAddress())) {
 				Formatter.formatUsername(packet, user.getUsername());
 				sConnection.sendPacket(packet);
 			}
-		}
 		
 		Formatter.construct(packet);
 	}
 	
-	/*
+	/**
 	 * Attempts to register a user provided they're not banned, 
-	 * their username isn't taken, and they're not already connected
+	 * their username isn't taken, they're not already connected,
+	 * and the maximum number of clients hasn't been reached
 	 */
 	public static void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
 		
-		Logger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
-			
+		DeveloperLogger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
+		
+		if(checkUsername(username)) {
+			disconnectUser(hostAddress, "[username already taken]");
+			return;
+		}
+		
+		serverConnections.get(0).setUser(new User(hostAddress, username));
+		
+		
 		if(checkMaximum()) {
 			disconnectUser(hostAddress, "[server full]");
 			return;
@@ -201,40 +221,23 @@ public class Server {
 			return;
 		}
 		
-		if(checkUsername(username)) {
-			disconnectUser(hostAddress, "[username already taken]");
-			return;
-		}
-		
-		addUser(username, hostAddress);
+		addUser(hostAddress, username);
+		DefaultLogger.appendColoredText("[registering user: "+username+"]", Color.GREEN);
 	}
 	
-	/*
+	/**
 	 * Sets a server connection's user
 	 */
-	private static void addUser(String username, String hostAddress) {
-		ServerConnection userConnection = null;
-		
-		for(ServerConnection sConnection : serverConnections) {
-			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
-				userConnection = sConnection;
-				
-				Logger.appendColoredText("[adding user: "+username+"]", Color.GREEN);
-				userConnection.setUser(new User(hostAddress, username));
-				break;
-			}
-		}
-		
-		if(userConnection == null)
-			System.err.println("FATAL ERROR << userConnection NULL");
+	private synchronized static void addUser(String hostAddress, String username) {
+		ServerConnection userConnection = serverConnections.get(0);
 		
 		for(ServerConnection sConnection : serverConnections)
 			if(userConnection != null && !sConnection.equals(userConnection))
 				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
 		
 		Packet03Message connected = new Packet03Message("["+username+" has connected]");
-		
 		Formatter.construct(connected);
+		
 		sendPacketToAllOtherClients(connected, userConnection.getConnectedAddress());
 		
 		NotificationUI.queueNotification(username+" CONNECTED", 1500, null, true);
@@ -261,11 +264,11 @@ public class Server {
 		
 		StatusUI.addStatus(kick);
 	}
-	
-	/*
+		
+	/**
 	 * Disconnects a user at hostAddress with a message
 	 */
-	private static void disconnectUser(String hostAddress, String message) {
+	private synchronized static void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
 				sConnection.sendPacket(new Packet02Disconnect(message));
@@ -274,57 +277,57 @@ public class Server {
 			}
 	}
 
-	/*
-	 * 
+	/**
+	 * Checks to see if the maximum number of clients has joined
 	 */
 	private static boolean checkMaximum() {
 		return clientConnectionMaximum != -1 && serverConnections.size() >= clientConnectionMaximum;
 	}
 	
-	/*
+	/**
 	 * Checks the ban list for hostAddress
 	 */
 	private static boolean checkBanList(String hostAddress) {
 		for(String address : Resources.BANLIST)
 			if(address.equals(hostAddress)) {
-				Logger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
+				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
 			}
 		
 		for(String address : Resources.tempBanList)
 			if(address.equals(hostAddress)) {
-				Logger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
+				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
 			}
 		
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if username is already taken
 	 */
 	private static boolean checkUsername(String username) {
 		if(usernameTaken(username)) {
-			Logger.appendColoredText("[username ("+username+") already taken]", Color.RED);
+			DefaultLogger.appendColoredText("[username ("+username+") already taken]", Color.RED);
 			return true;
 		}
 		
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if connection request is already connected
 	 */
 	private static boolean checkConnected(String hostAddress) {
 		if(alreadyConnected(hostAddress)) {
-			Logger.appendColoredText("[user at ("+hostAddress+") already connected]", Color.RED);
+			DefaultLogger.appendColoredText("[user at ("+hostAddress+") already connected]", Color.RED);
 			return true;
 		}
 		
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if connection request is already connected.
 	 * Used in checkConnected()
 	 */
@@ -351,7 +354,7 @@ public class Server {
 		return connections > sameClientMaximum;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if username is already taken.
 	 * Used in checkUsername()
 	 */
@@ -367,18 +370,18 @@ public class Server {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Returns the user who sent packet
 	 */
-	private static ServerConnection getServerConnectionAtPacket(String hostAddress) {
-		for(ServerConnection sConnection : serverConnections) 
-			if(sConnection.getConnectedAddress().equals(hostAddress))
+	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
+		for(ServerConnection sConnection : serverConnections)
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress()))
 				return sConnection;
 		
 		return null;
 	}
 	
-	/*
+	/**
 	 * Checks to see if hostAddress matches the localhost
 	 */
 	private static boolean isLocalHost(String hostAddress) {
@@ -392,6 +395,9 @@ public class Server {
 		return false;
 	}
 	
+	/**
+	 * Add hostAddress to the ban list
+	 */
 	private static void addToBanList(String hostAddress) {
 		FileWriter fw = null;
 		try {
@@ -412,10 +418,12 @@ public class Server {
 		Resources.tempBanList.add(hostAddress);
 	}
 	
-	/*
+	/**
 	 * Notifies the server to close
 	 */
 	public static void close() {
+		UPnPGateway.disconnect();
+
 		try {
 			if(serverSocket != null)
 				serverSocket.close();
@@ -424,14 +432,20 @@ public class Server {
 		}
 		
 		serverThread = null;
-		
-		Logger.appendColoredText("[server closed]", Color.GRAY);
+
+		DefaultLogger.appendColoredText("[server closed]", Color.GRAY);
 	}
 	
+	/**
+	 * Returns if the server is initialized
+	 */
 	public static boolean isInitialized() {
 		return Server.initialized;
 	}
 	
+	/**
+	 * Returns if the server is running
+	 */
 	public static boolean isRunning() {
 		return serverThread != null;
 	}
