@@ -21,6 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
+import network.upnp.UPNPMapper;
 import util.Action;
 import util.Resources;
 import util.out.Formatter;
@@ -87,6 +88,8 @@ public class Server {
 			Adapter.destroyServer();
 			return;
 		}
+		
+		UPNPMapper.portForward(portNumber);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -159,7 +162,7 @@ public class Server {
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
-		User user = getServerConnectionAtPacket(hostAddress).getUser();
+		User user = getServerConnectionAtAddress(hostAddress).getUser();
 		
 		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
 		System.out.println("\tUSER IS AT: "+user.getHostAddress());
@@ -167,7 +170,7 @@ public class Server {
 		
 		for(ServerConnection sConnection : serverConnections) {
 			System.out.println("\t\tCONNECTION @ "+sConnection.getConnectedAddress());
-			if(!sConnection.getConnectedAddress().equals(hostAddress)) {
+			if(!sConnection.getConnectedAddress().equals(hostAddress) && !isLocalHost(sConnection.getConnectedAddress())) {
 				Formatter.formatUsername(packet, user.getUsername());
 				sConnection.sendPacket(packet);
 			}
@@ -370,9 +373,9 @@ public class Server {
 	/*
 	 * Returns the user who sent packet
 	 */
-	private static ServerConnection getServerConnectionAtPacket(String hostAddress) {
+	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
 		for(ServerConnection sConnection : serverConnections) 
-			if(sConnection.getConnectedAddress().equals(hostAddress))
+			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress()))
 				return sConnection;
 		
 		return null;
@@ -425,6 +428,8 @@ public class Server {
 		
 		serverThread = null;
 		
+		UPNPMapper.disconnect();
+
 		Logger.appendColoredText("[server closed]", Color.GRAY);
 	}
 	

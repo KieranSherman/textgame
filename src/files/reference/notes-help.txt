@@ -76,7 +76,7 @@ t:[TIME] (IN MILLISECONDS)
 r:[TRUE | FALSE] (RANDOM TIMES)
 x[NUMBER] (NUMBER OF NOTIFICATIONS)
 
-E.G: "notify m:test t:5000 r:true x25"
+E.G: "display_notification m:test t:5000 r:true x25"
 
 --------------------------------------------------------------------------------
 	
