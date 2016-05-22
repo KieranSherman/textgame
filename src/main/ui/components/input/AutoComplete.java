@@ -11,6 +11,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+/**
+ * Class extends {@link DocumentListener} to modify a document listener.
+ * 
+ * @author kieransherman
+ *
+ */
 public class AutoComplete implements DocumentListener {
 	
 	private JTextField textField;
@@ -22,6 +28,13 @@ public class AutoComplete implements DocumentListener {
 		COMPLETION
 	};
 	
+	/**
+	 * Creates a new {@link DocumentListener} and overrides its {@code insertUpdate(DocumentEvent e)} 
+	 * method to autcomplete words.
+	 * 
+	 * @param textField the text field to autocomplete.
+	 * @param keywords the keywords to autocomplete.
+	 */
 	public AutoComplete(JTextField textField, List<String> keywords) {
 		this.textField = textField;
 		this.keywords = keywords;

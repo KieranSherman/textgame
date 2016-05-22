@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import network.packet.types.PacketTypes;
 import util.Word;
 
-/*
- * Class holds Words and determines their color 
+/**
+ * Class holds {@link Word} objects and determines their color.
+ * 
+ * @author kieransherman
+ * 
  */
 public class Colorer {
 	
@@ -15,8 +18,10 @@ public class Colorer {
 	
 	private Colorer() {}
 	
-	/*
-	 * Add a word to the list
+	/**
+	 * Add a word to the list.
+	 * 
+	 * @param word the word object to add.
 	 */
 	public static void addWord(Word word) {
 		if(word.getWord().startsWith(":") || word.getWord().equals(""))
@@ -25,8 +30,11 @@ public class Colorer {
 		words.add(word);
 	}
 	
-	/*
-	 * Add a word to the list with a specific ColorRule
+	/**
+	 * Add a word to the list with a specific color rule.
+	 * 
+	 * @param word the word object to add.
+	 * @param cr the color rule to add.
 	 */
 	public static void addWord(String word, ColorRules cr) {
 		if(word.startsWith(":") || word.equals(""))
@@ -35,8 +43,11 @@ public class Colorer {
 		words.add(new Word(word, cr));
 	}
 	
-	/*
-	 * Return the color of the word
+	/**
+	 * Return the color of word.
+	 * 
+	 * @param str the word to search for.
+	 * @return the color of the word.
 	 */
 	public static Color getColor(String str) {
 		for(Word word : words)
@@ -46,6 +57,12 @@ public class Colorer {
 		return Color.WHITE;
 	}
 	
+	/**
+	 * Returns the color of a packet type.
+	 * 
+	 * @param packetType the packet type.
+	 * @return the color of the packet type.
+	 */
 	public static Color getPacketColor(PacketTypes packetType) {
 		switch(packetType) {
 			case ACTION: {
@@ -65,8 +82,11 @@ public class Colorer {
 		return null;
 	}
 	
-	/*
-	 * Coloring rules for different types of words
+	/**
+	 * Class models coloring rules for different types of words.
+	 * 
+	 * @author kieransherman
+	 * 
 	 */
 	public static enum ColorRules {
 		ACTION(Color.ORANGE), PLACE(Color.GREEN);
@@ -77,8 +97,8 @@ public class Colorer {
 			this.c = c;
 		}
 		
-		/*
-		 * return the color
+		/**
+		 * Return the color.
 		 */
 		public Color getColor() {
 			return this.c;

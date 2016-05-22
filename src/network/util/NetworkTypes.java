@@ -1,7 +1,7 @@
 package network.util;
 
-/*
- * A network consists of a Server and a Client
+/**
+ * Enum defining various network types.
  */
 public enum NetworkTypes {
 	CLIENT(), SERVER();

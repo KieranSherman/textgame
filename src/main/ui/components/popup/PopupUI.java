@@ -18,14 +18,25 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import main.ui.Developer;
+import main.misc.Developer;
 import main.ui.Window;
 import main.ui.components.input.AutoComplete;
 import sound.SoundPlayer;
 import util.Resources;
 
+/**
+ * This class consists exclusively of static methods that display various types of popups.
+ * 
+ * @author kieransherman
+ * @see #displayMessage(String)
+ * @see #promptInput(String, boolean)
+ * @see #promptChoice(String, String[])
+ * @see #getData()
+ *
+ */
 public class PopupUI {
 	
+	// Prevent object instantiation
 	private PopupUI() {}
 	
 	private static String data;
@@ -33,6 +44,11 @@ public class PopupUI {
 	private static Color panelBG = new Color(10, 10, 10);
 	private static Color panelFG = new Color(220, 200, 220);
 	
+	/**
+	 * Displays a message.
+	 * 
+	 * @param message the message to display.
+	 */
 	public static void displayMessage(String message) {
 		JDialog dialog = new JDialog(frame, "child", true);
 		
@@ -88,6 +104,12 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Promts user for input.  Response stored in data accessed by {@link #getData()}.
+	 * 
+	 * @param prompt the prompt.
+	 * @param useAutoComplete whether or not to use autocomplete.
+	 */
 	public static void promptInput(String prompt, boolean useAutoComplete) {
 	    SoundPlayer.play("computerBeep2");
 
@@ -181,6 +203,12 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Prompts user to make a choice.
+	 * 
+	 * @param prompt the prompt.
+	 * @param choices the array of choices.
+	 */
 	public static void promptChoice(String prompt, String[] choices) {
 		SoundPlayer.play("computerBeep2");
 
@@ -236,6 +264,11 @@ public class PopupUI {
 	    dialog.setVisible(true);
 	}
 	
+	/**
+	 * Returns the data, set by the most recent prompt.
+	 * 
+	 * @return the most recent data.
+	 */
 	public static String getData() {
 		return data;
 	}

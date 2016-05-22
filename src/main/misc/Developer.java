@@ -1,7 +1,8 @@
-package main.ui;
+package main.misc;
 
 import java.awt.Color;
 
+import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
@@ -13,12 +14,26 @@ import util.Action;
 import util.Resources;
 import util.out.DefaultLogger;
 
+/**
+ * This class consists exclusively of static methods that handle commands.
+ * 
+ * @author kieransherman
+ * @see #parseCommand(String)
+ *
+ */
 public class Developer {
 	
 	private static boolean developerMode = false;
 	
+	// Prevent object instantiation
 	private Developer() {}
 	
+	/**
+	 * Determines if {@code str} is a command.  If so, the appropriate command is executed.
+	 * Otherwise, an error is displayed.
+	 * 
+	 * @param str the command.
+	 */
 	public static void parseCommand(String str) {
 		if(str == null)
 			return;
@@ -33,7 +48,11 @@ public class Developer {
 
 	}
 	
-	public static boolean userCommand(String[] args) {
+
+	/**
+	 * Returns whether or not the String[] is a user command.
+	 */
+	private static boolean userCommand(String[] args) {
 		if(args[0].equals("server")) {
 			String port = "9999";
 			
@@ -105,7 +124,10 @@ public class Developer {
 		return true;
 	}
 	
-	public static boolean developerCommand(String[] args) {
+	/**
+	 * Returns whether or not the String[] is a developer command. 
+	 */
+	private static boolean developerCommand(String[] args) {
 		if(!developerMode)
 			return false;
 		
@@ -234,6 +256,11 @@ public class Developer {
 		return true;
 	}
 	
+	/**
+	 * Returns whether or not developer mode is enabled.
+	 * 
+	 * @return the status of the developer mode.
+	 */
 	public static boolean isDeveloperModeEnabled() {
 		return developerMode;
 	}
