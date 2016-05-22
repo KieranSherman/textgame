@@ -13,7 +13,7 @@ import network.upnp.components.gateway.GatewayDiscover;
 import util.Resources;
 import util.out.Logger;
 
-public class UPNPGateway {
+public class UPnPGateway {
 
 	private static int port = 9999;
 	private static boolean listAllMappings;
@@ -22,10 +22,10 @@ public class UPNPGateway {
 	private static String localAddress;
 	private static GatewayDevice activeGW;
 	
-	private UPNPGateway() {}
+	private UPnPGateway() {}
 	
 	public static void openGatewayAtPort(int port) {
-		UPNPGateway.port = port;
+		UPnPGateway.port = port;
 		
 		try {
 			mapToPort(port);
@@ -47,20 +47,20 @@ public class UPNPGateway {
 	
 	public static String getMappedAddress() {
 		if(!open)
-			System.err.println("UPNP gateway not open!");
+			System.err.println("UPnP gateway not open!");
 			
 		return mappedAddress;
 	}
 	
 	public static String getLocalAddress() {
 		if(!open)
-			System.err.println("UPNP gateway not open!");
+			System.err.println("UPnP gateway not open!");
 			
 		return localAddress;
 	}
 	
 	private static void mapToPort(int port) throws Exception {
-		addLogLine("Starting UPNP");
+		addLogLine("Starting UPnP");
 
 		GatewayDiscover gatewayDiscover = new GatewayDiscover();
 		addLogLine("Looking for gateway devices...");
@@ -119,7 +119,7 @@ public class UPNPGateway {
 		}
 
 		InetAddress localAddress = activeGW.getLocalAddress();
-		addLogLine("Using local address: "+ (UPNPGateway.localAddress = localAddress.getHostAddress()));
+		addLogLine("Using local address: "+ (UPnPGateway.localAddress = localAddress.getHostAddress()));
 		
 		mappedAddress = activeGW.getExternalIPAddress();
 		addLogLine("External address: "+ mappedAddress);
@@ -153,7 +153,7 @@ public class UPNPGateway {
 		if(activeGW == null)
 			return;
 		
-		addLogLine("Stopping UPNP");
+		addLogLine("Stopping UPnP");
 		
 		if(activeGW.deletePortMapping(port, "TCP")) {
 			addLogLine("Port mapping removal: SUCCESSFUL");

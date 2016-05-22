@@ -6,7 +6,7 @@ import java.net.Socket;
 
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
-import network.upnp.UPNPGateway;
+import network.upnp.UPnPGateway;
 
 public class ServerSender {
 	
@@ -20,7 +20,7 @@ public class ServerSender {
 	}
 	
 	private void init() {
-		sendPacket(new Packet01Login("[you have connected to "+UPNPGateway.getMappedAddress()+"]", null));
+		sendPacket(new Packet01Login("[you have connected to "+UPnPGateway.getMappedAddress()+"]", null));
 	}
 	
 	/*

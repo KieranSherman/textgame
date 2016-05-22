@@ -21,7 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
-import network.upnp.UPNPGateway;
+import network.upnp.UPnPGateway;
 import util.Action;
 import util.Resources;
 import util.out.Formatter;
@@ -87,8 +87,8 @@ public class Server {
 			return;
 		}
 		
-		UPNPGateway.openGatewayAtPort(portNumber);
-		Logger.appendColoredText("[server started at "+UPNPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
+		UPnPGateway.openGatewayAtPort(portNumber);
+		Logger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -190,8 +190,8 @@ public class Server {
 	 * their username isn't taken, and they're not already connected
 	 */
 	public static void registerUser(Packet01Login packet) {
-		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
+		String hostAddress = packet.getHostAddress();
 		
 		Logger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
 			
@@ -221,24 +221,11 @@ public class Server {
 	/*
 	 * Sets a server connection's user
 	 */
-	private static void addUser(String username, String hostAddress) {
-		System.out.println("call:: addUser("+username+", "+hostAddress+")");
+	private synchronized static void addUser(String username, String hostAddress) {
+		ServerConnection userConnection = serverConnections.get(0);
+		userConnection.setUser(new User(hostAddress, username));
 		
-		ServerConnection userConnection = null;
-		
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("\tCONNECTION @: "+sConnection.getConnectedAddress());
-			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
-				userConnection = sConnection;
-				
-				Logger.appendColoredText("[adding user: "+username+"]", Color.GREEN);
-				userConnection.setUser(new User(hostAddress, username));
-				break;
-			}
-		}
-		
-		if(userConnection == null)
-			System.err.println("FATAL ERROR << userConnection NULL");
+		Logger.appendColoredText("[adding user: "+username+"]", Color.GREEN);
 		
 		for(ServerConnection sConnection : serverConnections)
 			if(userConnection != null && !sConnection.equals(userConnection))
@@ -277,7 +264,7 @@ public class Server {
 	/*
 	 * Disconnects a user at hostAddress with a message
 	 */
-	private static void disconnectUser(String hostAddress, String message) {
+	private synchronized static void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
 				sConnection.sendPacket(new Packet02Disconnect(message));
@@ -431,7 +418,7 @@ public class Server {
 	 * Notifies the server to close
 	 */
 	public static void close() {
-		UPNPGateway.disconnect();
+		UPnPGateway.disconnect();
 
 		try {
 			if(serverSocket != null)
