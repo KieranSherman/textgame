@@ -14,6 +14,12 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import main.ui.Window;
 
+/**
+ * Class extends {@link JSplitPane} to modify a split pane.
+ * 
+ * @author kieransherman
+ *
+ */
 public class SplitPaneUI extends JSplitPane {
 	private static final long serialVersionUID = 1L;
 	

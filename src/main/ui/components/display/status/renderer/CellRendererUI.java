@@ -14,13 +14,21 @@ import javax.swing.border.EmptyBorder;
 
 import util.Resources;
 
-public class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
+/**
+ * Class extends {@link JLabel} and implements {@link ListCellRenderer} to modify how a {@link JList}
+ * renders its elements.
+ * 
+ * @author kieransherman
+ *
+ */
+public class CellRendererUI extends JLabel implements ListCellRenderer<Object> {
 	private static final long serialVersionUID = 1L;
 
-	public MyCellRenderer() {
+	public CellRendererUI() {
         super.setOpaque(true);
     }
 
+	@Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     	super.setText(value.toString());
     	super.setFont(Resources.DOS.deriveFont(14f));

@@ -4,15 +4,26 @@ import java.awt.Color;
 import java.text.DateFormat;
 import java.util.Date;
 
-import main.ui.Developer;
+import main.misc.Developer;
+import main.ui.components.display.DisplayUI;
 
 /**
- * Outputs data with timestamp to standard out and window if developer mode is enabled
+ * Class consists exclusively of static methods which append text to the {@link DisplayUI}
+ * and to standard out.
+ * 
+ * @author kieransherman
+ *
  */
 public class DeveloperLogger {
 	
+	// Prevent object instantiation
 	private DeveloperLogger() {}
 	
+	/**
+	 * Append text to the end of the display and standard out.
+	 * 
+	 * @param line the {@code String} to append.
+	 */
 	public static void appendText(String line) {
 		String timeStamp = DateFormat.getTimeInstance().format(new Date());
 		String logline = timeStamp+": "+line;
@@ -23,6 +34,12 @@ public class DeveloperLogger {
 		System.out.println(logline);
 	}
 	
+	/**
+	 * Append colored text to the end of the display and standard out.
+	 * 
+	 * @param line the {@code String} to append.
+	 * @param color the color of the line.
+	 */
 	public static void appendColoredText(String line, Color color) {
 		String timeStamp = DateFormat.getTimeInstance().format(new Date());
 		String logline = timeStamp+": "+line;

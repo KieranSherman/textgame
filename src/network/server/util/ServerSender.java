@@ -8,10 +8,22 @@ import network.packet.Packet;
 import network.packet.types.Packet01Login;
 import network.upnp.UPnPGateway;
 
+/**
+ * Class sends packets over a socket.
+ * 
+ * @author kieransherman
+ * 
+ */
 public class ServerSender {
 	
 	private ObjectOutputStream sOutput;
 	
+	/**
+	 * Creates a new object to send packets with.
+	 * 
+	 * @param socket the socket to send over.
+	 * @throws IOException the socket is closed.
+	 */
 	public ServerSender(Socket socket) throws IOException {
 		sOutput = new ObjectOutputStream(socket.getOutputStream());
 		sOutput.flush();
@@ -19,12 +31,17 @@ public class ServerSender {
 		init();
 	}
 	
+	/**
+	 * Send a login packet to the client.
+	 */
 	private void init() {
 		sendPacket(new Packet01Login("[you have connected to "+UPnPGateway.getMappedAddress()+"]", null));
 	}
 	
-	/*
-	 * sends a packet over the output stream
+	/**
+	 * Sends a packet over the socket output stream.
+	 * 
+	 * @param packet the packet to send.
 	 */
 	public void sendPacket(Packet packet) {
 		if(packet == null) {
@@ -54,8 +71,8 @@ public class ServerSender {
 		}
 	}
 	
-	/*
-	 * closes the output stream
+	/**
+	 * Closes the output stream.
 	 */
 	protected void close() {
 		if(sOutput != null) {

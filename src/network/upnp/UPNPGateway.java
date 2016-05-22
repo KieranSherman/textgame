@@ -9,6 +9,12 @@ import network.upnp.components.gateway.GatewayDevice;
 import network.upnp.components.gateway.GatewayDiscover;
 import util.out.DeveloperLogger;
 
+/**
+ * Class consists exclusively of static methods that operate a UPnP gateway.
+ * 
+ * @author kieransherman
+ *
+ */
 public class UPnPGateway {
 
 	private static int port = 9999;
@@ -19,8 +25,14 @@ public class UPnPGateway {
 	private static String localAddress;
 	private static GatewayDevice activeGW;
 	
+	// Prevent object instantiation
 	private UPnPGateway() {}
 	
+	/**
+	 * Opens a UPnP gateway to the local machine at a given port.
+	 * 
+	 * @param port the port to open.
+	 */
 	public static void openGatewayAtPort(int port) {
 		UPnPGateway.port = port;
 		
@@ -33,29 +45,12 @@ public class UPnPGateway {
 		}
 	}
 	
-	public static void disconnect() {
-		try {
-			removePortMap(port);
-			open = false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static String getMappedAddress() {
-		if(!open)
-			System.err.println("UPnP gateway not open!");
-			
-		return mappedAddress;
-	}
-	
-	public static String getLocalAddress() {
-		if(!open)
-			System.err.println("UPnP gateway not open!");
-			
-		return localAddress;
-	}
-	
+	/**
+	 * Maps a port to the local machine.
+	 * 
+	 * @param port the port to open.
+	 * @throws Exception
+	 */
 	public static void mapToPort(int port) throws Exception {
 		addLogLine("Starting UPnP");
 
@@ -145,10 +140,12 @@ public class UPnPGateway {
 		}
 	}
 	
-	public static void setRemap(boolean remap) {
-		UPnPGateway.remap = remap;
-	}
-	
+	/**
+	 * Removes map at port.
+	 * 
+	 * @param port the port to remove.
+	 * @throws Exception
+	 */
 	public static void removePortMap(int port) throws Exception {
 		if(!remap)
 			return;
@@ -167,7 +164,55 @@ public class UPnPGateway {
 			addLogLine("Port mapping removal: FAILED");
         }
 	}
-
+	
+	/**
+	 * Returns the address mapped to the UPnP gateway.
+	 * 
+	 * @return the address.
+	 */
+	public static String getMappedAddress() {
+		if(!open)
+			System.err.println("UPnP gateway not open!");
+			
+		return mappedAddress;
+	}
+	
+	/**
+	 * Returns the address of the local machine.
+	 * 
+	 * @return the address.
+	 */
+	public static String getLocalAddress() {
+		if(!open)
+			System.err.println("UPnP gateway not open!");
+			
+		return localAddress;
+	}
+	
+	/**
+	 * Removes the UPnP gateway.
+	 */
+	public static void disconnect() {
+		try {
+			removePortMap(port);
+			open = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Set whether or not the UPnP mapping will overwrite an existing map.
+	 * 
+	 * @param remap whether or not to overwite.
+	 */
+	public static void setRemap(boolean remap) {
+		UPnPGateway.remap = remap;
+	}
+	
+	/**
+	 * Add a line to the log.
+	 */
 	private static void addLogLine(String line) {
 		DeveloperLogger.appendText(line);
 	}

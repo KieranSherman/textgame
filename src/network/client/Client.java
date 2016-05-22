@@ -11,8 +11,14 @@ import network.packet.Packet;
 import sound.SoundPlayer;
 import util.out.DefaultLogger;
 
-/*
- * Class models a threadable client in a network
+/**
+ * Class consists exclusively of static methods and models a threadable client in a network.
+ * 
+ * @author kieransherman
+ * @see #initialize(String, int)
+ * @see #startClient()
+ * @see #disconnect()
+ * 
  */
 public class Client {
 	
@@ -28,22 +34,42 @@ public class Client {
 	
 	private static Thread clientThread;
 	
+	// Prevent object instantiation
 	private Client() {}
 
+	/**
+	 * Initializes the client at {@code [hostAddress:port]}.
+	 * 
+	 * @param hostAddress the address to connect to.
+	 * @param portNumber the port to connect to.
+	 */
 	public static void initialize(String hostAddress, int portNumber) {
 		Client.hostAddress = hostAddress;
 		Client.portNumber = portNumber;
 		Client.initialized = true;
 	}
 	
+	/**
+	 * Sets the client's username.
+	 * 
+	 * @param username the username.
+	 */
 	public static void setUsername(String username) {
 		Client.username = username;
 	}
 	
+	/**
+	 * Return the client's username.
+	 * 
+	 * @return the username.
+	 */
 	public static String getUsername() {
 		return username;
 	}
 	
+	/**
+	 * Starts a new client thread.
+	 */
 	public static void startClient() {
 		clientThread = new Thread("ClientThread-Main") {
 			public void run() {
@@ -54,9 +80,9 @@ public class Client {
 		clientThread.start();
 	}
 	
-	/*
-	 * connects to server on hostName, portNumber; opens the input/output streams;
-	 * sends a confirmation login packet; receives and parses packets 
+	/**
+	 * Connects to server on [hostAddress:portNumber].  Opens the input and output streams.
+	 * Sends a confirmation login packet.  Starts new client receiver thread.
 	 */
 	private static void run() {
 		String error = null;
@@ -95,11 +121,19 @@ public class Client {
 		cReceiver_T.start();
 	}
 
+	/**
+	 * Sends a packet to the server.
+	 * 
+	 * @param packet the packet to send.
+	 */
 	public static void sendPacket(Packet packet) {
 		if(clientSender != null)
 			clientSender.sendPacket(packet);
 	}
 	
+	/**
+	 * Disconnects the client from the server.
+	 */
 	public static void disconnect() {
 		if(clientSender != null)
 			clientSender.close();
@@ -119,10 +153,20 @@ public class Client {
 		DefaultLogger.appendColoredText("[you have been disconnected]", Color.GRAY);
 	}
 	
+	/**
+	 * Returns whether or not the client has been initialized.
+	 * 
+	 * @return whether the client has been initialized.
+	 */
 	public static boolean isInitialized() {
 		return Client.initialized;
 	}
 	
+	/**
+	 * Returns whether or not the client thread is running.
+	 * 
+	 * @return whether the client thread is running.
+	 */
 	public static boolean isRunning() {
 		return clientThread != null;
 	}

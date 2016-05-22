@@ -16,6 +16,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 
+import main.misc.Developer;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.handlers.WindowHandler;
@@ -25,8 +26,12 @@ import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 
-/*
- * Class models a window with an exterior JFrame and interior JPanel
+/**
+ * This class consists exclusively of static methods that initialize the program's window.
+ * 
+ * @author kieransherman
+ * @see #initialize(String[])
+ *
  */
 public class Window {	
 	
@@ -41,8 +46,19 @@ public class Window {
 	public static StyleContext context;			//* Styled for coloring output
 	public static Style style;					//*
 	
+	// Prevent object instantiation
 	private Window() {}
 	
+	/**
+	 * Initializes and displays the window with all components from {@code UI} classes.  Executes
+	 * startup commands when finished.
+	 * 
+	 * @param args the startup commands.
+	 * @see DisplayUI
+	 * @see StatusUI
+	 * @see NotificationUI
+	 * @see InputUI
+	 */
 	public static void initialize(String[] args) {
 		createWindow();
 		
@@ -91,7 +107,7 @@ public class Window {
 	}
 
 	
-	/*
+	/**
 	 * Initializes all components of the window
 	 */
 	private static void createWindow() {
@@ -125,8 +141,22 @@ public class Window {
 		});
 	}
 	
+	/**
+	 * Returns the {@link JFrame} object of the window.
+	 * 
+	 * @return the JFrame.
+	 */
 	public static JFrame getFrame() {
 		return windowFrame;
+	}
+	
+	/**
+	 * Returns the {@link JPanel} object of the window.
+	 * 
+	 * @return the JPanel.
+	 */
+	public static JPanel getPanel() {
+		return windowPanel;
 	}
 	
 }

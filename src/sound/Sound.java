@@ -7,16 +7,26 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
+/**
+ * Class models a sound.
+ * 
+ * @author kieransherman
+ *
+ */
 public class Sound {
 	
 	private Clip clip;
 	private AudioInputStream ais;
 	private String name;
-	private String filePath;
 	
+	/**
+	 * Create a new sound at a filepath and assign it a name.
+	 * 
+	 * @param name the sound's name.
+	 * @param filePath the fielpath to the sound.
+	 */
 	public Sound(String name, String filePath) {
 		this.name = name;
-		this.filePath = filePath;
 		
 		try {
 			ais = AudioSystem.getAudioInputStream(new File(filePath));
@@ -27,6 +37,9 @@ public class Sound {
 		}
 	}
 
+	/**
+	 * Play the sound.
+	 */
 	protected void play() {
 		try {
 			if(clip != null) {
@@ -39,6 +52,9 @@ public class Sound {
 		}
 	}
 	
+	/**
+	 * Loop the sound.
+	 */
 	protected void loop() {
 		try {
 			if(clip != null) {
@@ -51,21 +67,20 @@ public class Sound {
 		}
 	}
 	
+	/**
+	 * Set the gain.
+	 */
 	protected void setGain(float decibels) {
 		FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 		gainControl.setValue(decibels);
 	}
 	
-	protected String getFilePath() {
-		return filePath;
-	}
 	
+	/**
+	 * return the name.
+	 */
 	protected String getName() {
 		return name;
-	}
-	
-	protected Clip getClip() {
-		return clip;
 	}
 	
 }

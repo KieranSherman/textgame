@@ -1,5 +1,6 @@
 package network;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 
 import main.ui.Window;
 import main.ui.components.display.notification.NotificationUI;
+import main.ui.components.display.status.StatusUI;
 import main.ui.components.popup.PopupUI;
 import network.client.Client;
 import network.packet.Packet;
@@ -20,8 +22,10 @@ import util.Resources;
 import util.exceptions.AlreadyRunningNetworkException;
 import util.out.DefaultLogger;
 
-/*
- * Class models a network-UI adapter, bridging the two
+/**
+ * Class models a network <-> UI adapter, bridging the two.
+ * 
+ * @author kieransherman
  */
 public class Adapter {
 	
@@ -30,27 +34,31 @@ public class Adapter {
 	
 	private static ArrayList<Object[]> blockedPackets;
 	
+	// Prevent object instantiation
 	private Adapter() {}
 	
 	static {
 		blockedPackets = new ArrayList<Object[]>();
 	}
 
-	/*
-	 * Create a client connection hostName:portNumber
+	/**
+	 * Creates and connects a client to [hostAddress:port].
+	 * 
+	 * @param hostAddress the address to connect to. 
+	 * @param portNumber the port number to connect to.
 	 */
-	public static void createClient(String hostName, int portNumber) {
+	public static void createClient(String hostAddress, int portNumber) {
 		try {
 			Adapter.checkNetwork();
-			Client.initialize(hostName, portNumber);
+			Client.initialize(hostAddress, portNumber);
 			Adapter.startClient();
 		} catch (AlreadyRunningNetworkException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	/*
-	 * Start the client on a thread
+	/**
+	 * Start the client on a thread.
 	 */
 	private static void startClient() {
 		if(!Client.isInitialized()) {
@@ -79,16 +87,20 @@ public class Adapter {
 		NotificationUI.queueNotification("CLIENT STARTUP", 1100, clientStartup, true);
 	}
 	
-	/*
-	 * Destroy the client
+	
+	/**
+	 * Destroy the client.
 	 */
 	public static void destroyClient() {
 		Client.disconnect();
 		Window.getFrame().setTitle(Resources.VERSION);
 	}
 	
-	/*
-	 * Create a server
+	
+	/**
+	 * Create a server at a port.
+	 * 
+	 * @param portNumber the port number.
 	 */
 	public static void createServer(int portNumber) {
 		try {
@@ -100,8 +112,8 @@ public class Adapter {
 		}
 	}
 	
-	/*
-	 * Start the server
+	/**
+	 * Start the server.
 	 */
 	private static void startServer() {
 		if(!Server.isInitialized()) {
@@ -121,24 +133,26 @@ public class Adapter {
 				Server.startServer();
 			}
 			public void post() {
-				NotificationUI.createStatusDisplay();
+				StatusUI.createStatusDisplay(NotificationUI.getPanel(), BorderLayout.SOUTH);
 			}
 		};
 		
 		NotificationUI.queueNotification("SERVER STARTUP", 1100, serverStartup, true);
 	}
 	
-	/*
-	 * Destory the server
+	/**
+	 * Destroy the server
 	 */
 	public static void destroyServer() {
 		Server.close();
 		Window.getFrame().setTitle(Resources.VERSION);
-		NotificationUI.removeStatusDisplay();
+		StatusUI.removeStatusDisplay(NotificationUI.getPanel());
 	}
 	
-	/*
-	 * Send a packet
+	/**
+	 * Send a packet. Automatically determines over which network to send it.
+	 * 
+	 * @param packet the packet to send.
 	 */
 	public static synchronized void sendPacket(Packet packet) {
 		if(packet == null) {
@@ -153,8 +167,12 @@ public class Adapter {
 			Client.sendPacket(packet);
 	}
 	
-	/*
-	 * Parse a packet
+	
+	/**
+	 * Parse a packet based on network type.
+	 * 
+	 * @param networkType the destination.
+	 * @param packet the pazcket to parse.
 	 */
 	public static synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(block) {
@@ -171,8 +189,10 @@ public class Adapter {
 			PacketParser.parsePacket(NetworkTypes.SERVER, packet);
 	}
 
-	/*
-	 * Blocks incoming connections
+	/**
+	 * Block or unblock incoming connections.
+	 * 
+	 * @param showBlockedPackets show blocked packets.
 	 */
 	public static void block(boolean showBlockedPackets) {
 		block = !block;
@@ -204,8 +224,8 @@ public class Adapter {
 		}
 	}
 	
-	/*
-	 * Displays the status of the network
+	/**
+	 * Display the network status.
 	 */
 	public static void status() {
 		if(Client.isRunning()) {
@@ -225,6 +245,9 @@ public class Adapter {
 		}
 	}
 	
+	/**
+	 * Check to see if either the server or client is running.
+	 */
 	private static void checkNetwork() throws AlreadyRunningNetworkException {
 		if(Server.isRunning() || Client.isRunning()) {
 			SoundPlayer.play("error");
@@ -233,8 +256,8 @@ public class Adapter {
 		}
 	}
 	
-	/*
-	 * Close down connections
+	/**
+	 * Close down connections.
 	 */
 	public static void close() {
 		if(Client.isRunning()) {
@@ -265,7 +288,7 @@ public class Adapter {
 					Server.close();
 				}
 				public void post() {
-					NotificationUI.removeStatusDisplay();
+					StatusUI.removeStatusDisplay(NotificationUI.getPanel());
 				}
 			};
 			

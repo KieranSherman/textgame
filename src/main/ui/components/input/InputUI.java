@@ -24,8 +24,14 @@ import util.out.DefaultLogger;
 
 public class InputUI {
 	
+	// Prevent object instantiation
 	private InputUI() {}
 	
+	/**
+	 * Creates and returns the {@link JPanel} input panel containing a {@link JTextField}.
+	 * 
+	 * @return the input's JPanel
+	 */
 	public static JPanel createInput() {
 		JPanel inputPanel = new JPanel();
 		inputPanel.setLayout(new BorderLayout());

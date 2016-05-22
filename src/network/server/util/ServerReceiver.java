@@ -8,14 +8,27 @@ import network.Adapter;
 import network.packet.Packet;
 import network.util.NetworkTypes;
 
+/**
+ * Class listens on a socket for incoming packets.
+ * 
+ * @author kieransherman
+ * 
+ */
 public class ServerReceiver extends Thread {
 
 	private ServerConnection serverConnection;
 	private ObjectInputStream sInput;
 	
-	public ServerReceiver(ServerConnection serverConnection, Socket socket) throws IOException {
+	/**
+	 * Creates a new thread to listen on the given socket.
+	 * 
+	 * @param serverConnection the serverConnection 
+	 * @param clientSocket the socket to send to
+	 * @throws IOException the socket is closed
+	 */
+	public ServerReceiver(ServerConnection serverConnection, Socket clientSocket) throws IOException {
 		this.serverConnection = serverConnection;
-		this.sInput = new ObjectInputStream(socket.getInputStream());
+		this.sInput = new ObjectInputStream(clientSocket.getInputStream());
 	}
 	
 	@Override
@@ -42,8 +55,8 @@ public class ServerReceiver extends Thread {
 		serverConnection.close();
 	}
 	
-	/*
-	 * returns the packet from the input stream
+	/**
+	 * Returns the packet from the input stream.
 	 */
 	protected Packet getPacket() throws IOException {
 		Packet packet = null;
@@ -56,8 +69,8 @@ public class ServerReceiver extends Thread {
 		return packet;
 	}
 	
-	/*
-	 * closes the input stream
+	/**
+	 * Closes the input stream.
 	 */
 	protected void close() {
 		if(sInput != null)

@@ -7,8 +7,10 @@ import main.ui.Window;
 import network.Adapter;
 import network.upnp.UPnPGateway;
 
-/*
- * Class handles what happens on window events
+/**
+ * Class extends {@link WindowListener} to modify window closing events.
+ * 
+ * @author kieransherman
  */
 public class WindowHandler implements WindowListener {
 	
@@ -18,8 +20,8 @@ public class WindowHandler implements WindowListener {
 	public void windowOpened(WindowEvent e) {}
 
 	@Override
-	/*
-	 * closes connections when window is closing
+	/**
+	 * Removes the UPnP gateway and closes the adapter.
 	 */
 	public void windowClosing(WindowEvent e) {
 		UPnPGateway.disconnect();
@@ -37,9 +39,6 @@ public class WindowHandler implements WindowListener {
 	public void windowDeiconified(WindowEvent e) {}
 
 	@Override
-	/*
-	 * request textField focus upon window activation
-	 */
 	public void windowActivated(WindowEvent e) {
 		Window.input.requestFocus();
 	}

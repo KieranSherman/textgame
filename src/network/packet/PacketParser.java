@@ -7,15 +7,23 @@ import network.util.NetworkTypes;
 import util.out.Formatter;
 import util.out.DefaultLogger;
 
-/*
- * Class handles packets after they've been received
+/**
+ * Class consists exclusively of static methods that handle packets after they've been received.
+ * 
+ * @author kieransherman
+ * @see #parsePacket(NetworkTypes, Packet)
+ * 
  */
 public class PacketParser {
 	
+	// Prevent object instantiation
 	private PacketParser() {}
 	
-	/*
-	 * Parse a packet 
+	/**
+	 * Parse a packet based on network type.
+	 * 
+	 * @param networkType the destination.
+	 * @param packet the packet going to the destination.
 	 */
 	public static synchronized void parsePacket(NetworkTypes networkType, Packet packet) {
 		if(networkType == NetworkTypes.CLIENT)
@@ -25,8 +33,10 @@ public class PacketParser {
 			parseClientPacket(packet);
 	}
 	
-	/*
-	 * Parse a packet received from the server (i.e client handles this packet)
+	/**
+	 * Parse a packet received from the server. The client handles this packet.
+	 * 
+	 * @param packet the packet from the server.
 	 */
 	private static synchronized void parseServerPacket(Packet packet) {
 		switch(packet.getType()) {
@@ -51,8 +61,10 @@ public class PacketParser {
 		DefaultLogger.appendPacket(packet);
 	}
 	
-	/*
-	 * Parse a packet received from the client (i.e server handles this packet)
+	/**
+	 * Parse a packet received from the client. The server handles this packet.
+	 * 
+	 * @param packet the packet from the client.
 	 */
 	private static synchronized void parseClientPacket(Packet packet) {
 		Formatter.construct(packet);
