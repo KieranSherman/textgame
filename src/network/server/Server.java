@@ -21,7 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
-import network.upnp.UPNPMapper;
+import network.upnp.UPNPGateway;
 import util.Action;
 import util.Resources;
 import util.out.Formatter;
@@ -79,8 +79,6 @@ public class Server {
 		String error = null;
 		try {
 			serverSocket = new ServerSocket(portNumber);
-			Logger.appendColoredText("[server started at "+InetAddress.getLocalHost().getHostAddress()+
-					":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		} catch (IOException e) {
 			error = "[server unable to initialize]";
 			System.err.println(error);
@@ -89,7 +87,8 @@ public class Server {
 			return;
 		}
 		
-		UPNPMapper.portForward(portNumber);
+		UPNPGateway.openGatewayAtPort(portNumber);
+		Logger.appendColoredText("[server started at "+UPNPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -419,6 +418,8 @@ public class Server {
 	 * Notifies the server to close
 	 */
 	public static void close() {
+		UPNPGateway.disconnect();
+
 		try {
 			if(serverSocket != null)
 				serverSocket.close();
@@ -427,8 +428,6 @@ public class Server {
 		}
 		
 		serverThread = null;
-		
-		UPNPMapper.disconnect();
 
 		Logger.appendColoredText("[server closed]", Color.GRAY);
 	}

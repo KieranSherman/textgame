@@ -1,27 +1,4 @@
-/* 
- *              weupnp - Trivial upnp java library 
- *
- * Copyright (C) 2008 Alessandro Bahgat Shehata, Daniele Castagna
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
- * Alessandro Bahgat Shehata - ale dot bahgat at gmail dot com
- * Daniele Castagna - daniele dot castagna at gmail dot com
- * 
- */
-package network.upnp;
+package network.upnp.components;
 
 /**
  * A <tt>PortMappingEntry</tt> is the class used to represent port mappings on
@@ -32,8 +9,8 @@ package network.upnp;
  * using the specified <tt>protocol</tt> to be redirected to port
  * <tt>internalPort</tt> of <tt>internalClient</tt>.
  *
- * @see org.wetorrent.upnp.GatewayDevice
- * @see org.wetorrent.upnp.GatewayDevice#getExternalIPAddress()
+ * @see network.upnp.components.gateway.wetorrent.upnp.GatewayDevice
+ * @see network.upnp.components.gateway.wetorrent.upnp.GatewayDevice#getExternalIPAddress()
  */
 public class PortMappingEntry {
 
@@ -72,8 +49,7 @@ public class PortMappingEntry {
     /**
      * Creates a new PortMappingEntry
      */
-    public PortMappingEntry() {
-    }
+    public PortMappingEntry() {}
 
     /**
      * Gets the internal port for this mapping

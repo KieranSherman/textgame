@@ -1,27 +1,4 @@
-/*
- *              weupnp - Trivial upnp java library
- *
- * Copyright (C) 2008 Alessandro Bahgat Shehata, Daniele Castagna
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Alessandro Bahgat Shehata - ale dot bahgat at gmail dot com
- * Daniele Castagna - daniele dot castagna at gmail dot com
- *
- */
-package network.upnp;
+package network.upnp.components.gateway;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -48,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Handles the discovery of GatewayDevices, via the {@link org.bitlet.weupnp.GatewayDiscover#discover()} method.
+ * Handles the discovery of GatewayDevices, via the {@link network.upnp.components.gateway.bitlet.weupnp.GatewayDiscover#discover()} method.
  */
 public class GatewayDiscover {
 
@@ -81,11 +58,11 @@ public class GatewayDiscover {
      * The default gateway types to use in search
      */
     private static final String[] DEFAULT_SEARCH_TYPES =
-        {
-            "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
-            "urn:schemas-upnp-org:service:WANIPConnection:1",
-            "urn:schemas-upnp-org:service:WANPPPConnection:1"
-        };
+	    {
+	        "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+	        "urn:schemas-upnp-org:service:WANIPConnection:1",
+	        "urn:schemas-upnp-org:service:WANPPPConnection:1"
+	    };
             
     
     /**

@@ -5,6 +5,7 @@ import java.awt.event.WindowListener;
 
 import main.ui.Window;
 import network.Adapter;
+import network.upnp.UPNPGateway;
 
 /*
  * Class handles what happens on window events
@@ -21,8 +22,10 @@ public class WindowHandler implements WindowListener {
 	 * closes connections when window is closing
 	 */
 	public void windowClosing(WindowEvent e) {
+		UPNPGateway.disconnect();
 		Adapter.close();
 	}
+	
 
 	@Override
 	public void windowClosed(WindowEvent e) {}

@@ -1,27 +1,4 @@
-/* 
- *              weupnp - Trivial upnp java library 
- *
- * Copyright (C) 2008 Alessandro Bahgat Shehata, Daniele Castagna
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
- * Alessandro Bahgat Shehata - ale dot bahgat at gmail dot com
- * Daniele Castagna - daniele dot castagna at gmail dot com
- * 
- */
-package network.upnp;
+package network.upnp.components.gateway;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -37,6 +14,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import network.upnp.components.NameValueHandler;
+import network.upnp.components.PortMappingEntry;
 
 /**
  * A <tt>GatewayDevice</tt> is a class that abstracts UPnP-compliant gateways
@@ -112,8 +92,7 @@ public class GatewayDevice {
     /**
      * Creates a new instance of GatewayDevice
      */
-    public GatewayDevice() {
-    }
+    public GatewayDevice() {}
 
     /**
      * Retrieves the properties and description of the GatewayDevice.
@@ -124,10 +103,9 @@ public class GatewayDevice {
      *
      * @throws SAXException if an error occurs while parsing the request
      * @throws IOException  on communication errors
-     * @see org.bitlet.weupnp.GatewayDeviceHandler
+     * @see network.upnp.components.gateway.bitlet.weupnp.GatewayDeviceHandler
      */
     public void loadDescription() throws SAXException, IOException {
-
         URLConnection urlConn = new URL(getLocation()).openConnection();
         urlConn.setReadTimeout(httpReadTimeout);
 
@@ -172,9 +150,9 @@ public class GatewayDevice {
      * @throws IOException  on communication errors
      * @throws SAXException if errors occur while parsing the response
      */
-    public static Map<String, String> simpleUPnPcommand(String url,
-                                                        String service, String action, Map<String, String> args)
-            throws IOException, SAXException {
+    public static Map<String, String> simpleUPnPcommand(String url, String service, String action, 
+    		Map<String, String> args) throws IOException, SAXException {
+    	
         String soapAction = "\"" + service + "#" + action + "\"";
         StringBuilder soapBody = new StringBuilder();
 
@@ -185,15 +163,12 @@ public class GatewayDevice {
                 "<SOAP-ENV:Body>" +
                 "<m:" + action + " xmlns:m=\"" + service + "\">");
 
-        if (args != null && args.size() > 0) {
-
+        if(args != null && args.size() > 0) {
             Set<Map.Entry<String, String>> entrySet = args.entrySet();
 
-            for (Map.Entry<String, String> entry : entrySet) {
+            for (Map.Entry<String, String> entry : entrySet)
                 soapBody.append("<" + entry.getKey() + ">" + entry.getValue() +
                         "</" + entry.getKey() + ">");
-            }
-
         }
 
         soapBody.append("</m:" + action + ">");
@@ -226,8 +201,6 @@ public class GatewayDevice {
                 parser.parse(new InputSource(conn.getErrorStream()));
             } catch (SAXException e) {
                 // ignore the exception
-                // FIXME We probably need to find a better way to return
-                // significant information when we reach this point
             }
             conn.disconnect();
             return nameValue;
@@ -252,8 +225,7 @@ public class GatewayDevice {
                 serviceType, "GetStatusInfo", null);
 
         String connectionStatus = nameValue.get("NewConnectionStatus");
-        if (connectionStatus != null
-                && connectionStatus.equalsIgnoreCase("Connected")) {
+        if (connectionStatus != null && connectionStatus.equalsIgnoreCase("Connected")) {
             return true;
         }
 
@@ -295,9 +267,9 @@ public class GatewayDevice {
      *      java.lang.String, java.util.Map)
      * @see PortMappingEntry
      */
-    public boolean addPortMapping(int externalPort, int internalPort,
-                                  String internalClient, String protocol, String description)
-            throws IOException, SAXException {
+    public boolean addPortMapping(int externalPort, int internalPort, String internalClient, 
+    		String protocol, String description) throws IOException, SAXException {
+    	
         Map<String, String> args = new LinkedHashMap<String, String>();
         args.put("NewRemoteHost", "");    // wildcard, any remote host matches
         args.put("NewExternalPort", Integer.toString(externalPort));
@@ -334,9 +306,8 @@ public class GatewayDevice {
      *      java.lang.String, java.util.Map)
      * @see PortMappingEntry
      */
-    public boolean getSpecificPortMappingEntry(int externalPort,
-                                               String protocol, final PortMappingEntry portMappingEntry)
-            throws IOException, SAXException {
+    public boolean getSpecificPortMappingEntry(int externalPort, String protocol, 
+    		final PortMappingEntry portMappingEntry) throws IOException, SAXException {
 
         portMappingEntry.setExternalPort(externalPort);
         portMappingEntry.setProtocol(protocol);
@@ -368,7 +339,6 @@ public class GatewayDevice {
         } catch (NumberFormatException nfe) {
             // skip bad port
         }
-
 
         return true;
     }
@@ -410,14 +380,12 @@ public class GatewayDevice {
         try {
             portMappingEntry.setInternalPort(
                     Integer.parseInt(nameValue.get("NewInternalPort")));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         try {
             portMappingEntry.setExternalPort(
                     Integer.parseInt(nameValue.get("NewExternalPort")));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         return true;
     }
@@ -440,8 +408,7 @@ public class GatewayDevice {
         try {
             portMappingNumber = Integer.valueOf(
                     nameValue.get("NewPortMappingNumberOfEntries"));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         return portMappingNumber;
     }
@@ -657,16 +624,17 @@ public class GatewayDevice {
 
     // private methods
     private String copyOrCatUrl(String dst, String src) {
-        if (src != null) {
-            if (src.startsWith("http://")) {
+        if(src != null) {
+            if(src.startsWith("http://")) {
                 dst = src;
             } else {
-                if (!src.startsWith("/")) {
+                if(!src.startsWith("/")) {
                     dst += "/";
                 }
                 dst += src;
             }
         }
+        
         return dst;
     }
 }

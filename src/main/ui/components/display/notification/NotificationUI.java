@@ -127,7 +127,7 @@ public class NotificationUI {
 		if(playSound)
 			SoundPlayer.play("notification");
 		
-		new Thread("NotificationThread-"+notificationSize) {
+		Thread t = new Thread("NotificationThread-"+notificationSize) {
 			public void run() {
 				JProgressBar progressBar = (JProgressBar)((JPanel)panel.getComponent(1)).getComponent(0);
 				progressBar.setMaximum(disposeTime/fps);
@@ -149,7 +149,8 @@ public class NotificationUI {
 				notifications.revalidate();
 				notifications.repaint();
 			}
-		}.start();
+		};
+		t.start();
 	}
 
 }

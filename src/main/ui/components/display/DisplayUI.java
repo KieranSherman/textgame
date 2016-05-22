@@ -200,10 +200,14 @@ public class DisplayUI {
 		try {
 			Window.doc.insertString(Window.doc.getLength(), str, Window.style);
 			
-			if(str.contains("\n"))
-				lines++;
+			int lineCount = 0;
+			for(int i = 0; i < str.length(); i++)
+				if(str.charAt(i) == '\n')
+					lineCount++;
 			
-			if(lines > 34) {
+			lines += lineCount;
+			
+			while(lines > 34) {
 				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
 				lines--;
 			}
