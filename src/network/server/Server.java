@@ -56,11 +56,17 @@ public class Server {
 	
 	private Server() {}
 	
+	/**
+	 * Initializes the server
+	 */
 	public static void initialize(int portNumber) {
 		Server.portNumber = portNumber;
 		Server.initialized = true;
 	}
 	
+	/**
+	 * Starts the server
+	 */
 	public static void startServer() {
 		serverThread = new Thread("ServerThread-Main") {
 			public void run() {
@@ -71,7 +77,7 @@ public class Server {
 		serverThread.start();
 	}
 	
-	/*
+	/**
 	 * opens a server; waits for incoming connections;
 	 * sends confirmation login packet; receives and parses packets
 	 */
@@ -108,6 +114,9 @@ public class Server {
 		}.start();
 	}
 	
+	/**
+	 * Opens a connection at the client's socket
+	 */
 	private static void openConnection(Socket clientSocket) {
 		System.out.println("*call::openConnection()*");
 		
@@ -121,6 +130,9 @@ public class Server {
 		serverConnections.add(0, serverConnection);
 	}
 	
+	/**
+	 * Removes a serverConnection
+	 */
 	public static void removeConnection(ServerConnection serverConnection) {
 		int index = serverConnections.indexOf(serverConnection);
 		
@@ -142,7 +154,7 @@ public class Server {
 		}
 	}
 	
-	/*
+	/**
 	 * Sends a packet to a client at hostAddress
 	 */
 	public static void sendPacketToClient(Packet packet, String hostAddress) {
@@ -153,7 +165,7 @@ public class Server {
 			}
 	}
 	
-	/*
+	/**
 	 * Sends a packet to all connected clients
 	 */
 	public static void sendPacketToAllClients(Packet packet) {
@@ -163,7 +175,7 @@ public class Server {
 			sConnection.sendPacket(packet);
 	}
 	
-	/*
+	/**
 	 * Relays a packet to all clients except for client at hostAddress
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
@@ -185,21 +197,29 @@ public class Server {
 		Formatter.construct(packet);
 	}
 	
-	/*
+	/**
 	 * Attempts to register a user provided they're not banned, 
-	 * their username isn't taken, and they're not already connected
+	 * their username isn't taken, they're not already connected,
+	 * and the maximum number of clients hasn't been reached
 	 */
 	public static void registerUser(Packet01Login packet) {
-		String username = packet.getUsername();
 		String hostAddress = packet.getHostAddress();
+		String username = packet.getUsername();
+		
+		serverConnections.get(0).setUser(new User(hostAddress, username));
 		
 		Logger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
-			
+		
 		if(checkMaximum()) {
 			disconnectUser(hostAddress, "[server full]");
 			return;
 		}
 		
+		if(checkUsername(username)) {
+			disconnectUser(hostAddress, "[username already taken]");
+			return;
+		}
+
 		if(checkBanList(hostAddress)) {
 			disconnectUser(hostAddress, "[you have been banned]");
 			return;
@@ -210,30 +230,23 @@ public class Server {
 			return;
 		}
 		
-		if(checkUsername(username)) {
-			disconnectUser(hostAddress, "[username already taken]");
-			return;
-		}
-		
-		addUser(username, hostAddress);
+		addUser(hostAddress, username);
+		Logger.appendColoredText("[registering user: "+username+"]", Color.GREEN);
 	}
 	
-	/*
+	/**
 	 * Sets a server connection's user
 	 */
-	private synchronized static void addUser(String username, String hostAddress) {
+	private synchronized static void addUser(String hostAddress, String username) {
 		ServerConnection userConnection = serverConnections.get(0);
-		userConnection.setUser(new User(hostAddress, username));
-		
-		Logger.appendColoredText("[adding user: "+username+"]", Color.GREEN);
 		
 		for(ServerConnection sConnection : serverConnections)
 			if(userConnection != null && !sConnection.equals(userConnection))
 				sendPacketToClient(new Packet03Message("["+sConnection.getUser().getUsername()+" is here]"), userConnection.getConnectedAddress());
 		
 		Packet03Message connected = new Packet03Message("["+username+" has connected]");
-		
 		Formatter.construct(connected);
+		
 		sendPacketToAllOtherClients(connected, userConnection.getConnectedAddress());
 		
 		NotificationUI.queueNotification(username+" CONNECTED", 1500, null, true);
@@ -260,8 +273,8 @@ public class Server {
 		
 		StatusUI.addStatus(kick);
 	}
-	
-	/*
+		
+	/**
 	 * Disconnects a user at hostAddress with a message
 	 */
 	private synchronized static void disconnectUser(String hostAddress, String message) {
@@ -273,14 +286,14 @@ public class Server {
 			}
 	}
 
-	/*
-	 * 
+	/**
+	 * Checks to see if the maximum number of clients has joined
 	 */
 	private static boolean checkMaximum() {
 		return clientConnectionMaximum != -1 && serverConnections.size() >= clientConnectionMaximum;
 	}
 	
-	/*
+	/**
 	 * Checks the ban list for hostAddress
 	 */
 	private static boolean checkBanList(String hostAddress) {
@@ -299,7 +312,7 @@ public class Server {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if username is already taken
 	 */
 	private static boolean checkUsername(String username) {
@@ -311,7 +324,7 @@ public class Server {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if connection request is already connected
 	 */
 	private static boolean checkConnected(String hostAddress) {
@@ -323,7 +336,7 @@ public class Server {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if connection request is already connected.
 	 * Used in checkConnected()
 	 */
@@ -350,7 +363,7 @@ public class Server {
 		return connections > sameClientMaximum;
 	}
 	
-	/*
+	/**
 	 * Checks connected clients to see if username is already taken.
 	 * Used in checkUsername()
 	 */
@@ -366,7 +379,7 @@ public class Server {
 		return false;
 	}
 	
-	/*
+	/**
 	 * Returns the user who sent packet
 	 */
 	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
@@ -380,7 +393,7 @@ public class Server {
 		return null;
 	}
 	
-	/*
+	/**
 	 * Checks to see if hostAddress matches the localhost
 	 */
 	private static boolean isLocalHost(String hostAddress) {
@@ -394,6 +407,9 @@ public class Server {
 		return false;
 	}
 	
+	/**
+	 * Add hostAddress to the ban list
+	 */
 	private static void addToBanList(String hostAddress) {
 		FileWriter fw = null;
 		try {
@@ -414,7 +430,7 @@ public class Server {
 		Resources.tempBanList.add(hostAddress);
 	}
 	
-	/*
+	/**
 	 * Notifies the server to close
 	 */
 	public static void close() {
@@ -432,10 +448,16 @@ public class Server {
 		Logger.appendColoredText("[server closed]", Color.GRAY);
 	}
 	
+	/**
+	 * Returns if the server is initialized
+	 */
 	public static boolean isInitialized() {
 		return Server.initialized;
 	}
 	
+	/**
+	 * Returns if the server is running
+	 */
 	public static boolean isRunning() {
 		return serverThread != null;
 	}
