@@ -13,9 +13,9 @@ import sound.SoundPlayer;
 /*
  * Logger class has direct access to the Game's Window
  */
-public class Logger {
+public class DefaultLogger {
 	
-	private Logger() {}
+	private DefaultLogger() {}
 	
 	/*
 	 * Appends str to the end of textPane; acts as

@@ -5,7 +5,7 @@ import network.packet.types.Packet01Login;
 import network.server.Server;
 import network.util.NetworkTypes;
 import util.out.Formatter;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 /*
  * Class handles packets after they've been received
@@ -48,7 +48,7 @@ public class PacketParser {
 			}
 		}
 
-		Logger.appendPacket(packet);
+		DefaultLogger.appendPacket(packet);
 	}
 	
 	/*
@@ -76,7 +76,7 @@ public class PacketParser {
 			}
 		}
 		
-		Logger.appendPacket(packet);
+		DefaultLogger.appendPacket(packet);
 	}
 
 }

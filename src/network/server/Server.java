@@ -24,8 +24,9 @@ import network.server.util.ServerConnection;
 import network.upnp.UPnPGateway;
 import util.Action;
 import util.Resources;
+import util.out.DeveloperLogger;
 import util.out.Formatter;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 /*
  * Class models a threadable server in a network
@@ -88,13 +89,13 @@ public class Server {
 		} catch (IOException e) {
 			error = "[server unable to initialize]";
 			System.err.println(error);
-			Logger.appendColoredText(error, Color.RED);
+			DefaultLogger.appendColoredText(error, Color.RED);
 			Adapter.destroyServer();
 			return;
 		}
 		
 		UPnPGateway.openGatewayAtPort(portNumber);
-		Logger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
+		DefaultLogger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -102,7 +103,6 @@ public class Server {
 				while(true) {
 					try {
 						clientSocket = serverSocket.accept();
-						System.out.println("accepted clientSocket remoteSocketAddress: "+clientSocket.getRemoteSocketAddress().toString());
 					} catch (IOException e) {
 						System.err.println("server unable to connect with client");
 						break;
@@ -118,14 +118,10 @@ public class Server {
 	 * Opens a connection at the client's socket
 	 */
 	private static void openConnection(Socket clientSocket) {
-		System.out.println("*call::openConnection()*");
-		
-		System.out.println("clientSocket remoteSocketAddress: "+clientSocket.getRemoteSocketAddress().toString());
-		
 		ServerConnection serverConnection = new ServerConnection(clientSocket);
 		new Thread(serverConnection).start();
 		
-		System.out.println("\tclientSocket connection: "+serverConnection.getConnectedAddress());
+		DeveloperLogger.appendText("clientSocket temporary connection address: "+serverConnection.getConnectedAddress());
 		
 		serverConnections.add(0, serverConnection);
 	}
@@ -146,11 +142,11 @@ public class Server {
 			if(serverConnection.getUser() != null)
 				username = serverConnection.getUser().getUsername();
 			
-			Logger.appendColoredText("["+username+" disconnected]", Color.GRAY);
+			DefaultLogger.appendColoredText("["+username+" disconnected]", Color.GRAY);
 			NotificationUI.queueNotification(username+" DISCONNECTED", 1500, null, true);
 			StatusUI.removeStatus(username);
 			
-			System.out.println("*REMOVED CONNECTION @ "+serverConnection.getConnectedAddress()+"*");
+			DeveloperLogger.appendColoredText("*Removed connection @ "+serverConnection.getConnectedAddress()+"*", Color.RED);
 		}
 	}
 	
@@ -182,17 +178,11 @@ public class Server {
 		Formatter.deconstruct(packet);
 		User user = getServerConnectionAtAddress(hostAddress).getUser();
 		
-		System.out.println("USER WHO SENT PACKET: "+user.getUsername());
-		System.out.println("\tUSER IS AT: "+user.getHostAddress());
-		System.out.println("\tHOST ADDRESS: "+hostAddress);
-		
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("\t\tCONNECTION @ "+sConnection.getConnectedAddress());
+		for(ServerConnection sConnection : serverConnections)
 			if(!sConnection.getConnectedAddress().equals(hostAddress) && !isLocalHost(sConnection.getConnectedAddress())) {
 				Formatter.formatUsername(packet, user.getUsername());
 				sConnection.sendPacket(packet);
 			}
-		}
 		
 		Formatter.construct(packet);
 	}
@@ -206,20 +196,21 @@ public class Server {
 		String hostAddress = packet.getHostAddress();
 		String username = packet.getUsername();
 		
+		DeveloperLogger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
+		
+		if(checkUsername(username)) {
+			disconnectUser(hostAddress, "[username already taken]");
+			return;
+		}
+		
 		serverConnections.get(0).setUser(new User(hostAddress, username));
 		
-		Logger.appendColoredText("[attempting to register user ("+username+") at "+hostAddress+"]", Color.GRAY);
 		
 		if(checkMaximum()) {
 			disconnectUser(hostAddress, "[server full]");
 			return;
 		}
 		
-		if(checkUsername(username)) {
-			disconnectUser(hostAddress, "[username already taken]");
-			return;
-		}
-
 		if(checkBanList(hostAddress)) {
 			disconnectUser(hostAddress, "[you have been banned]");
 			return;
@@ -231,7 +222,7 @@ public class Server {
 		}
 		
 		addUser(hostAddress, username);
-		Logger.appendColoredText("[registering user: "+username+"]", Color.GREEN);
+		DefaultLogger.appendColoredText("[registering user: "+username+"]", Color.GREEN);
 	}
 	
 	/**
@@ -299,13 +290,13 @@ public class Server {
 	private static boolean checkBanList(String hostAddress) {
 		for(String address : Resources.BANLIST)
 			if(address.equals(hostAddress)) {
-				Logger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
+				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
 			}
 		
 		for(String address : Resources.tempBanList)
 			if(address.equals(hostAddress)) {
-				Logger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
+				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
 			}
 		
@@ -317,7 +308,7 @@ public class Server {
 	 */
 	private static boolean checkUsername(String username) {
 		if(usernameTaken(username)) {
-			Logger.appendColoredText("[username ("+username+") already taken]", Color.RED);
+			DefaultLogger.appendColoredText("[username ("+username+") already taken]", Color.RED);
 			return true;
 		}
 		
@@ -329,7 +320,7 @@ public class Server {
 	 */
 	private static boolean checkConnected(String hostAddress) {
 		if(alreadyConnected(hostAddress)) {
-			Logger.appendColoredText("[user at ("+hostAddress+") already connected]", Color.RED);
+			DefaultLogger.appendColoredText("[user at ("+hostAddress+") already connected]", Color.RED);
 			return true;
 		}
 		
@@ -383,12 +374,9 @@ public class Server {
 	 * Returns the user who sent packet
 	 */
 	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
-		System.out.println("getServerConnectionAtAddres()::"+hostAddress);
-		for(ServerConnection sConnection : serverConnections) {
-			System.out.println("\tCONNECTION @: "+sConnection.getConnectedAddress());
+		for(ServerConnection sConnection : serverConnections)
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress()))
 				return sConnection;
-		}
 		
 		return null;
 	}
@@ -445,7 +433,7 @@ public class Server {
 		
 		serverThread = null;
 
-		Logger.appendColoredText("[server closed]", Color.GRAY);
+		DefaultLogger.appendColoredText("[server closed]", Color.GRAY);
 	}
 	
 	/**

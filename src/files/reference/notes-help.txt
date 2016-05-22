@@ -20,16 +20,12 @@ p:[PORT]
 
 E.G: "client a:127.0.0.1 p:1234"
 
-DEFAULTS TO a:LOCALHOST AND p:9999 IF NOT ENTERED
-
 --------------------------------------------------------------------------------
 
 **SERVER USAGE**
 p:[PORT]
 
 E.G: "server p:1234"
-
-DEFAULTS TO p:9999 IF NOT ENTERED
 
 =================== DEVELOPER COMMANDS =========================================
 
@@ -46,6 +42,12 @@ DISPLAY_POPUP                  ...    DISPLAY A POPUP
 DISPLAY_NOTIFICATION           ...    DISPLAY A NOTIFICATION
 
 ADAPTER_BLOCK                  ...    BLOCK/UNBLOCK PACKETS
+
+REMOVE_UPNP_MAP_AT_PORT        ...    REMOVES THE PORTMAP AT A PORT
+
+ADD_UPNP_MAP_AT_PORT           ...    ADDS A MAP TO MACHINE ADDRESS AT PORT
+
+SET_UPNP_REMAP                 ...    CHANGE IF THE GATEWAY WILL OVERWRITE AN EXISTING MAP
 
 --------------------------------------------------------------------------------
 
@@ -84,5 +86,27 @@ E.G: "display_notification m:test t:5000 r:true x25"
 [TRUE | FALSE]
 
 E.G: "adapter_block true"
+
+--------------------------------------------------------------------------------
+
+** REMOVE_UPNP_MAP_AT_PORT USAGE **
+[NUMBER]
+
+E.G: "remove_upnp_map_at_port 9999"
+
+--------------------------------------------------------------------------------
+
+** ADD_UPNP_MAP_AT_PORT USAGE **
+[NUMBER]
+
+E.G: "add_upnp_map_at_port 9999"
+
+--------------------------------------------------------------------------------
+
+** SET_UPNP_REMAP USAGE **
+[TRUE | FALSE]
+
+E.G: "set_upnp_remap true"
+
 
 

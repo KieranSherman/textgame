@@ -9,7 +9,7 @@ import network.client.util.ClientReceiver;
 import network.client.util.ClientSender;
 import network.packet.Packet;
 import sound.SoundPlayer;
-import util.out.Logger;
+import util.out.DefaultLogger;
 
 /*
  * Class models a threadable client in a network
@@ -66,7 +66,7 @@ public class Client {
 			error = "[client unable to connect]";
 			System.err.println(error);
 			SoundPlayer.play("error");
-			Logger.appendColoredText(error, Color.RED);
+			DefaultLogger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 			return;
 		}
@@ -76,7 +76,7 @@ public class Client {
 		} catch (IOException e) {
 			error = "[client sender unable to initialize]";
 			System.err.println(error);
-			Logger.appendColoredText(error, Color.RED);
+			DefaultLogger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 			return;
 		}
@@ -86,7 +86,7 @@ public class Client {
 		} catch (IOException e) {
 			error = "[client receiver unable to initialize]";
 			System.err.println(error);
-			Logger.appendColoredText(error, Color.RED);
+			DefaultLogger.appendColoredText(error, Color.RED);
 			Adapter.destroyClient();
 			return;
 		}
@@ -116,7 +116,7 @@ public class Client {
 		
 		clientThread = null;
 		
-		Logger.appendColoredText("[you have been disconnected]", Color.GRAY);
+		DefaultLogger.appendColoredText("[you have been disconnected]", Color.GRAY);
 	}
 	
 	public static boolean isInitialized() {

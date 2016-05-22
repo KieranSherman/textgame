@@ -6,3 +6,6 @@ display_notification
 display_popup
 adapter_block
 devmode_set
+remove_upnp_map_at_port
+add_upnp_map_at_port
+set_upnp_remap

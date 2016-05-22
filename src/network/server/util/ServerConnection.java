@@ -53,7 +53,6 @@ public class ServerConnection extends Thread {
 			System.err.println("server receiver unable to initialize");
 		}
 		
-		// start a new thread to receive and handle incoming packets
 		Thread sReceiver_T = new Thread(serverReceiver);
 		sReceiver_T.start();
 		

@@ -1,23 +1,20 @@
 package network.upnp;
 
 import java.net.InetAddress;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.Map;
 
-import main.ui.Developer;
 import main.ui.components.popup.PopupUI;
 import network.upnp.components.PortMappingEntry;
 import network.upnp.components.gateway.GatewayDevice;
 import network.upnp.components.gateway.GatewayDiscover;
-import util.Resources;
-import util.out.Logger;
+import util.out.DeveloperLogger;
 
 public class UPnPGateway {
 
 	private static int port = 9999;
 	private static boolean listAllMappings;
 	private static boolean open;
+	private static boolean remap;
 	private static String mappedAddress;
 	private static String localAddress;
 	private static GatewayDevice activeGW;
@@ -59,7 +56,7 @@ public class UPnPGateway {
 		return localAddress;
 	}
 	
-	private static void mapToPort(int port) throws Exception {
+	public static void mapToPort(int port) throws Exception {
 		addLogLine("Starting UPnP");
 
 		GatewayDiscover gatewayDiscover = new GatewayDiscover();
@@ -69,12 +66,12 @@ public class UPnPGateway {
 
 		if(gateways.isEmpty()) {
 			addLogLine("No gateways found");
-			addLogLine("Stopping weupnp");
+			addLogLine("Stopping UPnP");
 			return;
 		}
 		addLogLine(gateways.size()+" gateway(s) found");
 
-		int counter=0;
+		int counter = 0;
 		for(GatewayDevice gw : gateways.values()) {
 			counter++;
 			addLogLine("Listing gateway details of device #" + counter+
@@ -85,18 +82,16 @@ public class UPnPGateway {
 					"\n\tLocal interface address: " + gw.getLocalAddress().getHostAddress());
 		}
 
-		// choose the first active gateway for the tests
 		activeGW = gatewayDiscover.getValidGateway();
 
-		if(null != activeGW) {
+		if(activeGW != null) {
 			addLogLine("Using gateway: " + activeGW.getFriendlyName());
 		} else {
 			addLogLine("No active gateway device found");
-			addLogLine("Stopping weupnp");
+			addLogLine("Stopping UPnP");
 			return;
 		}
 
-		// testing getGenericPortMappingEntry
 		PortMappingEntry portMapping = new PortMappingEntry();
 		if(listAllMappings) {
 			int pmCount = 0;
@@ -133,27 +128,38 @@ public class UPnPGateway {
 			String choice = PopupUI.getData();
 			
 			if(choice.equals("YES")) {
-				addLogLine("remapping...");
+				setRemap(true);
+				addLogLine("Remapping {"+port+"} at ("+mappedAddress+")->("+localAddress+")");
 				removePortMap(port);
 				mapToPort(port);
 			} else {
-				addLogLine("Will not remap");
+				addLogLine("Will NOT remap");
 			}
 			
 			return;
 		} else {
-			addLogLine("Mapping free. Sending port mapping request for port "+port);
+			addLogLine("Mapping FREE. Sending port mapping request for port "+port);
 
 			if(activeGW.addPortMapping(port, port, localAddress.getHostAddress(), "TCP", "[TEXTGAME SERVER]"))
 				addLogLine("Mapping SUCCESSFUL");
 		}
 	}
 	
-	private static void removePortMap(int port) throws Exception {
-		if(activeGW == null)
+	public static void setRemap(boolean remap) {
+		UPnPGateway.remap = remap;
+	}
+	
+	public static void removePortMap(int port) throws Exception {
+		if(!remap)
 			return;
 		
-		addLogLine("Stopping UPnP");
+		if(activeGW == null) {
+			GatewayDiscover gatewayDiscover = new GatewayDiscover();
+			activeGW = gatewayDiscover.getValidGateway();
+			mappedAddress = activeGW.getExternalIPAddress();
+		}
+		
+		addLogLine("Stopping UPnP @ ("+mappedAddress+":"+port+")");
 		
 		if(activeGW.deletePortMapping(port, "TCP")) {
 			addLogLine("Port mapping removal: SUCCESSFUL");
@@ -163,13 +169,7 @@ public class UPnPGateway {
 	}
 
 	private static void addLogLine(String line) {
-		String timeStamp = DateFormat.getTimeInstance().format(new Date());
-		String logline = timeStamp+": "+line;
-		
-		if(Developer.isDeveloperModeEnabled())
-			Logger.appendColoredText("["+logline+"]", Resources.DARK_GREEN);
-		
-		System.out.println(logline);
+		DeveloperLogger.appendText(line);
 	}
 
 }
