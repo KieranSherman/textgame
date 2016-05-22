@@ -96,6 +96,7 @@ public class Server {
 				while(true) {
 					try {
 						clientSocket = serverSocket.accept();
+						System.out.println("accepted clientSocket remoteSocketAddress: "+clientSocket.getRemoteSocketAddress().toString());
 					} catch (IOException e) {
 						System.err.println("server unable to connect with client");
 						break;
@@ -108,8 +109,14 @@ public class Server {
 	}
 	
 	private static void openConnection(Socket clientSocket) {
+		System.out.println("*call::openConnection()*");
+		
+		System.out.println("clientSocket remoteSocketAddress: "+clientSocket.getRemoteSocketAddress().toString());
+		
 		ServerConnection serverConnection = new ServerConnection(clientSocket);
 		new Thread(serverConnection).start();
+		
+		System.out.println("\tclientSocket connection: "+serverConnection.getConnectedAddress());
 		
 		serverConnections.add(0, serverConnection);
 	}
@@ -215,9 +222,12 @@ public class Server {
 	 * Sets a server connection's user
 	 */
 	private static void addUser(String username, String hostAddress) {
+		System.out.println("call:: addUser("+username+", "+hostAddress+")");
+		
 		ServerConnection userConnection = null;
 		
 		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("\tCONNECTION @: "+sConnection.getConnectedAddress());
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress())) {
 				userConnection = sConnection;
 				
@@ -373,9 +383,12 @@ public class Server {
 	 * Returns the user who sent packet
 	 */
 	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
-		for(ServerConnection sConnection : serverConnections) 
+		System.out.println("getServerConnectionAtAddres()::"+hostAddress);
+		for(ServerConnection sConnection : serverConnections) {
+			System.out.println("\tCONNECTION @: "+sConnection.getConnectedAddress());
 			if(sConnection.getConnectedAddress().equals(hostAddress) || isLocalHost(sConnection.getConnectedAddress()))
 				return sConnection;
+		}
 		
 		return null;
 	}

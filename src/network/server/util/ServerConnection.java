@@ -26,6 +26,10 @@ public class ServerConnection extends Thread {
 		return user;
 	}
 	
+	public String getConnectedAddress() {
+		return clientSocket.getInetAddress().getHostAddress();
+	}
+	
 	@Override
 	public void run() {
 		super.setName("ServerThread-ServerConnectionThread_@"+clientSocket.getInetAddress().getHostAddress());
@@ -60,10 +64,6 @@ public class ServerConnection extends Thread {
 		
 		serverSender.close();
 		serverReceiver.close();
-	}
-	
-	public String getConnectedAddress() {
-		return clientSocket.getInetAddress().getHostAddress();
 	}
 	
 	public void close() {
