@@ -2,6 +2,7 @@ package main.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -129,13 +130,13 @@ public class Window {
 				windowPanel.setBackground(new Color(15, 15, 15));
 				windowPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 				windowPanel.setLayout(new BorderLayout());
+				windowPanel.setPreferredSize(new Dimension(Resources.WIDTH, Resources.HEIGHT));
 				
 				windowPanel.add(DisplayUI.createDisplay(), BorderLayout.CENTER);
 				windowPanel.add(InputUI.createInput(), BorderLayout.SOUTH);
 				
 				windowFrame.add(windowPanel);
 				windowFrame.pack();
-				windowFrame.setSize(Resources.WIDTH, Resources.HEIGHT);
 				windowFrame.setLocationByPlatform(true);
 				windowFrame.setLocationRelativeTo(null);
 				
