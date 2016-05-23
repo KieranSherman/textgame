@@ -120,7 +120,7 @@ public class UPnPGateway {
 			addLogLine("Port "+port+" is already mapped.  Remap? (y/n)");
 			
 			PopupUI.promptChoice("REMAP->["+localAddress.getHostAddress()+"]", new String[] {"YES", "NO"});
-			String choice = PopupUI.getData();
+			String choice = (String)PopupUI.getData()[0];
 			
 			if(choice.equals("YES")) {
 				setRemap(true);

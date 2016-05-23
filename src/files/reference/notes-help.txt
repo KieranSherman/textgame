@@ -49,6 +49,8 @@ ADD_UPNP_MAP_AT_PORT           ...    ADDS A MAP TO MACHINE ADDRESS AT PORT
 
 SET_UPNP_REMAP                 ...    CHANGE IF THE GATEWAY WILL OVERWRITE AN EXISTING MAP
 
+FILE_BUG_REPORT                ...    FILES A BUG REPORT
+
 --------------------------------------------------------------------------------
 
 ** LOCAL_HOST_MAXIMUM USAGE **

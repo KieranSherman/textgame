@@ -1,0 +1,5 @@
+BUG NAME			DATE ISSUED		VERSION ISSUED		DESCRIPTION												STATUS			DATE CLOSED		VERSION CLOSED	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+COMMAND RIGHT   	05/22/16		v1.29   			Pressing right on command input will jump to right		RESOLVED    	05/22/16		v1.31			
+														even if not autocompleted.
+														
