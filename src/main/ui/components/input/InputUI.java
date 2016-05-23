@@ -38,16 +38,6 @@ public class InputUI {
 	 * @return the input's JPanel
 	 */
 	public static JPanel createInput() {
-		JPanel inputPanel = new JPanel();
-		inputPanel.setLayout(new BorderLayout());
-		inputPanel.setBackground(new Color(15, 15, 15));
-		inputPanel.setForeground(Color.WHITE);
-		
-		JLabel promptText = new JLabel("out:: ");
-		promptText.setForeground(Color.WHITE);
-		promptText.setFont(Resources.USER_INPUT);
-		inputPanel.add(promptText, BorderLayout.WEST);
-		
 		Window.input = new JTextField();
 		Window.input.setFocusTraversalKeysEnabled(false);
 		Window.input.setFont(Resources.USER_INPUT);
@@ -55,22 +45,15 @@ public class InputUI {
 		Window.input.setForeground(Color.WHITE);
 		Window.input.setCaretColor(Color.WHITE);
 		Window.input.setBorder(null);
-		inputPanel.add(Window.input, BorderLayout.CENTER);
-		
-		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
-		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", 
-				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_GREEN);
-		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
-		
-		inputPanel.setBorder(compound);
-		
 		Window.input.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String str = Window.input.getText();
 				
-				inputHistory.add(str);
-				historyIndex = inputHistory.size();
+				if(!str.equals("")) {
+					inputHistory.add(str);
+					historyIndex = inputHistory.size();
+				}
 
 				DefaultLogger.appendText("> "+str);
 				Window.input.setText("");
@@ -81,7 +64,6 @@ public class InputUI {
 					Adapter.sendPacket(new Packet03Message(str));
 			}
 		});
-		
 		Window.input.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
@@ -96,6 +78,7 @@ public class InputUI {
 						Window.input.setText(inputHistory.get(historyIndex));
 					}
 				}
+				else
 				if(e.getKeyCode() == KeyEvent.VK_DOWN) {
 					Window.input.setText("");
 					if (historyIndex < inputHistory.size()-1) {
@@ -108,8 +91,24 @@ public class InputUI {
 				}
 			}
 		});
-		
 		Window.input.setEnabled(false);
+		
+		JLabel promptText = new JLabel("out:: ");
+		promptText.setForeground(Color.WHITE);
+		promptText.setFont(Resources.USER_INPUT);
+		
+		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
+		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", 
+				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_GREEN);
+		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
+		
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(new BorderLayout());
+		inputPanel.setBackground(new Color(15, 15, 15));
+		inputPanel.setForeground(Color.WHITE);
+		inputPanel.add(promptText, BorderLayout.WEST);
+		inputPanel.add(Window.input, BorderLayout.CENTER);
+		inputPanel.setBorder(compound);
 		
 		return inputPanel;
 	}

@@ -65,7 +65,7 @@ public class DisplayUI {
 				+ "\t             -TERMINAL 1-");
 		terminalHead.setForeground(new Color(102, 186, 49, 150));
 		
-		splitPane.setDividerLocation(splitPane.getWidth()-150);
+		splitPane.setDividerLocation(Window.terminal.getWidth()/2);
 		splitPane.setEnabled(true);
 	}
 	
@@ -79,7 +79,7 @@ public class DisplayUI {
 		
 		splitPane.setLeftComponent(getTerminalPanel());
 		splitPane.setRightComponent(getNotesPanel());
-		splitPane.setBorder(Resources.getBorder("COMMLINK", Resources.DARK_RED));
+		splitPane.setBorder(Resources.getBorder("COMMLINK", new Color(255, 40, 40, 180)));
 		
 		splitPane.setDividerLocation(Resources.WIDTH);
 		splitPane.setBackground(new Color(15, 15, 15));
@@ -244,7 +244,7 @@ public class DisplayUI {
 			
 			lines += lineCount;
 			
-			while(lines > 34) {
+			while(lines > 36) {
 				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
 				lines--;
 			}
