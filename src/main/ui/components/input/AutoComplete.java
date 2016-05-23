@@ -11,6 +11,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import util.Resources;
+
 /**
  * Class extends {@link DocumentListener} to modify a document listener.
  * 
@@ -20,7 +22,7 @@ import javax.swing.text.BadLocationException;
 public class AutoComplete implements DocumentListener {
 	
 	private JTextField textField;
-	private final List<String> keywords;
+	private List<String> keywords;
 	private Mode mode = Mode.INSERT;
 	
 	private static enum Mode {
@@ -35,9 +37,9 @@ public class AutoComplete implements DocumentListener {
 	 * @param textField the text field to autocomplete.
 	 * @param keywords the keywords to autocomplete.
 	 */
-	public AutoComplete(JTextField textField, List<String> keywords) {
+	public AutoComplete(JTextField textField) {
 		this.textField = textField;
-		this.keywords = keywords;
+		this.keywords = Resources.USER_COMMANDLIST;
 		Collections.sort(keywords);
 	}
 	
@@ -81,6 +83,15 @@ public class AutoComplete implements DocumentListener {
 		}
 	}
 
+	public void setKeywordList(List<String> keywords) {
+		this.keywords = keywords;
+		Collections.sort(keywords);
+	}
+	
+	public boolean isActive() {
+		return mode == Mode.COMPLETION;
+	}
+	
 	public class CommitAction extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;

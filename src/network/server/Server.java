@@ -263,7 +263,12 @@ public class Server {
 			@Override
 			public void execute() {
 				PopupUI.promptChoice(username, new String[] {"BAN", "KICK", "CANCEL"});
-				String choice = PopupUI.getData();
+				
+				String choice;
+				if(PopupUI.getData() == null)
+					choice = "CANCEL";
+				else
+					choice = (String)PopupUI.getData()[0];
 				
 				if(choice.equalsIgnoreCase("cancel"))
 					return;

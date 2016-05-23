@@ -76,7 +76,11 @@ public class Adapter {
 				SoundPlayer.play("tapeInsert");
 				DefaultLogger.appendText("[client ready]");
 				PopupUI.promptInput("USERNAME", false);
-				username = PopupUI.getData();
+				
+				if(PopupUI.getData() == null)
+					username = "anonymous";
+				else
+					username = (String)PopupUI.getData()[0];
 				Client.setUsername(username);
 			}
 			public void execute() {

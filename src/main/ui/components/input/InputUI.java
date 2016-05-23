@@ -11,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -44,11 +45,15 @@ public class InputUI {
 		inputPanel.add(promptText, BorderLayout.WEST);
 		
 		Window.input = new JTextField();
+		Window.input.setFocusTraversalKeysEnabled(false);
 		Window.input.setFont(Resources.USER_INPUT);
 		Window.input.setBackground(new Color(15, 15, 15));
 		Window.input.setForeground(Color.WHITE);
 		Window.input.setCaretColor(Color.WHITE);
 		Window.input.setBorder(null);
+		Window.input.getInputMap().put(KeyStroke.getKeyStroke('`'), "doNothing");
+		Window.input.getInputMap().put(KeyStroke.getKeyStroke('~'), "doNothing");
+		Window.input.getActionMap().put("doNothing", null);
 		inputPanel.add(Window.input, BorderLayout.CENTER);
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);

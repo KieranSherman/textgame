@@ -16,7 +16,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 
-import main.misc.Developer;
+import main.Developer;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.handlers.WindowHandler;
@@ -66,14 +66,19 @@ public class Window {
 			boolean isPressed = false;
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
-				if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed) {
+				if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed && !PopupUI.popupAlreadyOpen()) {
 					isPressed = true;
-					PopupUI.promptInput("{ ENTER COMMAND }", true);
-					String command = PopupUI.getData();
-					Window.input.setText("");
+					PopupUI.promptInput("ENTER COMMAND", true);
+
+					if(PopupUI.getData() == null) {
+						isPressed = false;
+						return false;
+					}
+					
+					String command = (String)PopupUI.getData()[0];
 					Developer.parseCommand(command);
 					isPressed = false;
-				}
+				} 
 				
 				return false;
 			}
