@@ -21,7 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
-import network.upnp.UPnPGateway;
+import network.upnp.UPNnGateway;
 import util.Action;
 import util.Resources;
 import util.out.DeveloperLogger;
@@ -100,8 +100,8 @@ public class Server {
 			return;
 		}
 		
-		UPnPGateway.openGatewayAtPort(portNumber);
-		DefaultLogger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
+		UPNnGateway.openGatewayAtPort(portNumber);
+		DefaultLogger.appendColoredText("[server started at "+UPNnGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -444,7 +444,7 @@ public class Server {
 	 * Notifies the server to close and removes the UPnP gateway.
 	 */
 	public static void close() {
-		UPnPGateway.disconnect();
+		UPNnGateway.disconnect();
 
 		try {
 			if(serverSocket != null)

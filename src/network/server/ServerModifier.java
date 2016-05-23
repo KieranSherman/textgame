@@ -2,7 +2,7 @@ package network.server;
 
 import java.awt.Color;
 
-import network.upnp.UPnPGateway;
+import network.upnp.UPNnGateway;
 import util.out.DefaultLogger;
 
 /**
@@ -54,10 +54,10 @@ public class ServerModifier {
 			return;
 		}
 		
-		UPnPGateway.setRemap(true);
+		UPNnGateway.setRemap(true);
 		
 		try {
-			UPnPGateway.removePortMap(port);
+			UPNnGateway.removePortMap(port);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +70,7 @@ public class ServerModifier {
 	 */
 	public static void addUPnPMapAtPort(int port) {
 		try {
-			UPnPGateway.mapToPort(port);
+			UPNnGateway.mapToPort(port);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -82,7 +82,7 @@ public class ServerModifier {
 	 * @param remap overwrite an existing map.
 	 */
 	public static void setUPnPRemap(boolean remap) {
-		UPnPGateway.setRemap(remap);
+		UPNnGateway.setRemap(remap);
 	}
 	
 }

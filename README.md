@@ -31,4 +31,4 @@ Story (Some ideas)
 &nbsp;&nbsp;&nbsp;&nbsp;-*You are being chased*  
 *Multiplayer*  
 *Graphics*  
-*Sound / Music*  
+**Sound / Music**  
