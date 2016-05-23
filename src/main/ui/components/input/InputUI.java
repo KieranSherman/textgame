@@ -6,17 +6,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import main.Developer;
 import main.ui.Window;
+import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
@@ -24,6 +27,9 @@ import util.Resources;
 import util.out.DefaultLogger;
 
 public class InputUI {
+	
+	private static List<String> inputHistory = new ArrayList<String>();
+	private static int historyIndex;
 	
 	// Prevent object instantiation
 	private InputUI() {}
@@ -51,9 +57,6 @@ public class InputUI {
 		Window.input.setForeground(Color.WHITE);
 		Window.input.setCaretColor(Color.WHITE);
 		Window.input.setBorder(null);
-		Window.input.getInputMap().put(KeyStroke.getKeyStroke('`'), "doNothing");
-		Window.input.getInputMap().put(KeyStroke.getKeyStroke('~'), "doNothing");
-		Window.input.getActionMap().put("doNothing", null);
 		inputPanel.add(Window.input, BorderLayout.CENTER);
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
@@ -67,9 +70,14 @@ public class InputUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String str = Window.input.getText();
+				
+				inputHistory.add(str);
+				historyIndex = inputHistory.size();
 
 				DefaultLogger.appendText("> "+str);
 				Window.input.setText("");
+				
+				SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 				
 				if(str != null && !str.equals(""))
 					Adapter.sendPacket(new Packet03Message(str));
@@ -84,8 +92,28 @@ public class InputUI {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER)
-					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
+				if(e.getKeyCode() == KeyEvent.VK_UP) {
+					if (historyIndex > 0) {
+						historyIndex--;
+						Window.input.setText(inputHistory.get(historyIndex));
+					}
+				}
+				if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+					Window.input.setText("");
+					if (historyIndex < inputHistory.size()-1) {
+						historyIndex++;
+						Window.input.setText(inputHistory.get(historyIndex));
+					} else {
+						Window.input.setText("");
+						historyIndex = inputHistory.size();
+					}
+				}
+				if(e.getKeyCode() == KeyEvent.VK_BACK_QUOTE) {
+					PopupUI.promptInput("ENTER COMMAND", true);
+					String command = (String)PopupUI.getData()[0];
+					Window.input.setText("");
+					Developer.parseCommand(command);
+				}
 			}
 		});
 		

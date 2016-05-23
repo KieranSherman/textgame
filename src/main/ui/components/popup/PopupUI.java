@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,6 +44,9 @@ import util.Resources;
  *
  */
 public class PopupUI {
+	
+	private static List<String> inputHistory = new ArrayList<String>();
+	private static int historyIndex;
 	
 	// Prevent object instantiation
 	private PopupUI() {}
@@ -160,6 +165,8 @@ public class PopupUI {
 	    	public void actionPerformed(ActionEvent e) {
 	    		data = new Object[] {textField.getText()};
 	    		dialog.dispose();
+	    		inputHistory.add(textField.getText());
+				historyIndex = inputHistory.size();
 	    		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 				popupOpen = false;
 	    	}
@@ -187,15 +194,28 @@ public class PopupUI {
 					data = null;
 					dialog.dispose();
 					SoundPlayer.play("key"+((int)(Math.random()*10)+1));
-					popupOpen = false;
-				}
-				else
+				} else
 				if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					if(autoComplete != null && autoComplete.isActive())
-						textField.setCaretPosition(textField.getText().length());
+					textField.setCaretPosition(textField.getText().length());
+				}
+				
+				if(e.getKeyCode() == KeyEvent.VK_UP) {
+					if (historyIndex > 0) {
+						historyIndex--;
+						textField.setText(inputHistory.get(historyIndex));
+					}
+				}
+				if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+					textField.setText("");
+					if (historyIndex < inputHistory.size()-1) {
+						historyIndex++;
+						textField.setText(inputHistory.get(historyIndex));
+					} else {
+						textField.setText("");
+						historyIndex = inputHistory.size();
+					}
 				}
 			}
-
 		});
 	    inputPanel.add(textField, BorderLayout.CENTER);
 
