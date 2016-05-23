@@ -1,4 +1,4 @@
-package main.misc;
+package main.game;
 
 import main.ui.Window;
 import sound.SoundPlayer;

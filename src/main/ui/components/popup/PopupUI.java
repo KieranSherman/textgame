@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import main.Developer;
+import main.misc.Developer;
 import main.ui.Window;
 import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import main.ui.components.input.AutoComplete;
