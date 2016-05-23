@@ -3,9 +3,6 @@ package main.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +18,6 @@ import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.handlers.WindowHandler;
 import main.ui.components.input.InputUI;
-import main.ui.components.popup.PopupUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
@@ -61,28 +57,6 @@ public class Window {
 	 */
 	public static void initialize(String[] args) {
 		createWindow();
-		
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			boolean isPressed = false;
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent e) {
-				if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed && !PopupUI.popupAlreadyOpen()) {
-					isPressed = true;
-					PopupUI.promptInput("ENTER COMMAND", true);
-
-					if(PopupUI.getData() == null) {
-						isPressed = false;
-						return false;
-					}
-					
-					String command = (String)PopupUI.getData()[0];
-					Developer.parseCommand(command);
-					isPressed = false;
-				} 
-				
-				return false;
-			}
-		});
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
