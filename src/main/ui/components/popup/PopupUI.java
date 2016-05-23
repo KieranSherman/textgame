@@ -199,8 +199,6 @@ public class PopupUI {
 		});
 	    inputPanel.add(textField, BorderLayout.CENTER);
 
-    	
-		
 	    JLabel in = new JLabel(" >> ");
 	    in.setOpaque(false);
 	    in.setFont(Resources.DOS.deriveFont(16f));

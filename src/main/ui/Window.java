@@ -69,7 +69,6 @@ public class Window {
 				if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed && !PopupUI.popupAlreadyOpen()) {
 					isPressed = true;
 					PopupUI.promptInput("ENTER COMMAND", true);
-					Window.input.setText("");
 
 					if(PopupUI.getData() == null) {
 						isPressed = false;
