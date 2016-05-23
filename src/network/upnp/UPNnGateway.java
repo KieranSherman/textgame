@@ -15,7 +15,7 @@ import util.out.DeveloperLogger;
  * @author kieransherman
  *
  */
-public class UPnPGateway {
+public class UPNnGateway {
 
 	private static int port = 9999;
 	private static boolean listAllMappings;
@@ -26,7 +26,7 @@ public class UPnPGateway {
 	private static GatewayDevice activeGW;
 	
 	// Prevent object instantiation
-	private UPnPGateway() {}
+	private UPNnGateway() {}
 	
 	/**
 	 * Opens a UPnP gateway to the local machine at a given port.
@@ -34,7 +34,7 @@ public class UPnPGateway {
 	 * @param port the port to open.
 	 */
 	public static void openGatewayAtPort(int port) {
-		UPnPGateway.port = port;
+		UPNnGateway.port = port;
 		
 		try {
 			mapToPort(port);
@@ -109,7 +109,7 @@ public class UPnPGateway {
 		}
 
 		InetAddress localAddress = activeGW.getLocalAddress();
-		addLogLine("Using local address: "+ (UPnPGateway.localAddress = localAddress.getHostAddress()));
+		addLogLine("Using local address: "+ (UPNnGateway.localAddress = localAddress.getHostAddress()));
 		
 		mappedAddress = activeGW.getExternalIPAddress();
 		addLogLine("External address: "+ mappedAddress);
@@ -207,7 +207,7 @@ public class UPnPGateway {
 	 * @param remap whether or not to overwite.
 	 */
 	public static void setRemap(boolean remap) {
-		UPnPGateway.remap = remap;
+		UPNnGateway.remap = remap;
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-package main;
+package main.misc;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;

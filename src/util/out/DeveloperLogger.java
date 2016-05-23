@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.text.DateFormat;
 import java.util.Date;
 
-import main.Developer;
+import main.misc.Developer;
 import main.ui.components.display.DisplayUI;
 
 /**

@@ -5,7 +5,7 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import main.misc.Game;
+import main.game.Game;
 import network.Adapter;
 
 /*
