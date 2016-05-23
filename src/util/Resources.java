@@ -7,10 +7,13 @@ import java.awt.FontFormatException;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -41,6 +44,7 @@ public class Resources {
 	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
 	
 	public final static String VERSION;
+	public static ArrayList<String> ALL_VERSIONS;
 	
 	public final static String[] BANLIST;
 	public static ArrayList<String> MASTER_COMMANDLIST;
@@ -64,12 +68,14 @@ public class Resources {
 		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/devterminal.gif");
 		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/notes.gif");
 		
+		ALL_VERSIONS = new ArrayList<String>();
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
+		
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
 		
-		BANLIST = parseText(DIRECTORY+"src/files/reference/lists/banlist.txt", "\\s+");
-		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/lists/user_commandlist.txt", "\n")));
-		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseText(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt", "\n")));
+		BANLIST = parseTextFromFile(DIRECTORY+"src/files/reference/lists/banlist.txt", "\\s+");
+		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/user_commandlist.txt", "\n")));
+		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt", "\n")));
 		
 		MASTER_COMMANDLIST = new ArrayList<String>();
 		MASTER_COMMANDLIST.addAll(USER_COMMANDLIST);
@@ -111,7 +117,7 @@ public class Resources {
 	 * Load Word objects into Colorer.
 	 */
 	private static void loadWords(String filePath, ColorRules cr) {
-		for(String word : parseText(filePath, "\\s+"))
+		for(String word : parseTextFromFile(filePath, "\\s+"))
 			Colorer.addWord(word, cr);
 	}
 	
@@ -119,12 +125,21 @@ public class Resources {
 	 * Loads the VERISON.
 	 */
 	private static String loadVersion(String filePath) {
-		String[] lines = parseText(filePath, "\\s+");
-		for(int i = 0; i < lines.length-1; i++)
-			if(lines[i].equalsIgnoreCase("version:"))
-				return lines[i+1];
+		String version = null;
 		
-		return null;
+		String[] lines = parseTextFromFile(filePath, "\\s+");
+		for(int i = 0; i < lines.length-1; i++)
+			if(lines[i].equalsIgnoreCase("version:")) {
+				version = lines[i+1];
+				break;
+			}
+		
+		DecimalFormat formatter = new DecimalFormat("00");
+		int versionNumber = Integer.parseInt(version.substring(3));
+		for(int i = versionNumber; i > 0; i--)
+			ALL_VERSIONS.add("v1."+formatter.format(i));
+		
+		return version;
 	}
 	
 	/**
@@ -134,7 +149,7 @@ public class Resources {
 	 * @param delimter the delimiter to split the {@code String}.
 	 * @return array split by "\n"
 	 */
-	public static String[] parseText(String filePath, String delimiter) {
+	public static String[] parseTextFromFile(String filePath, String delimiter) {
 		FileReader fr = null;
 		try {
 			fr = new FileReader(new File(filePath));
@@ -157,6 +172,34 @@ public class Resources {
 		}
 		
 		return text.split(delimiter);
+	}
+	
+	
+	/**
+	 * Writes formatted text to a file.
+	 * 
+	 * @param filePath the path to the file.
+	 * @param text the text to write.
+	 * @param format the format to write the text.
+	 * @param append whether or not to append to the file.
+	 */
+	public static void writeTextToFile(String filePath, String text, boolean append) {
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(new File(filePath), append);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		try {
+			bw.write(text);
+			bw.flush();
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
