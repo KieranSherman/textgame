@@ -17,7 +17,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import main.game.Game;
+import main.misc.Developer;
 import main.ui.Window;
+import main.ui.components.popup.PopupUI;
 import network.Adapter;
 import network.packet.types.Packet03Message;
 import sound.SoundPlayer;
@@ -60,8 +63,10 @@ public class InputUI {
 				
 				SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 				
-				if(str != null && !str.equals(""))
+				if(str != null && !str.equals("")) {
 					Adapter.sendPacket(new Packet03Message(str));
+					Game.sendInput(str);
+				}
 			}
 		});
 		Window.input.addKeyListener(new KeyListener() {
@@ -88,6 +93,17 @@ public class InputUI {
 						Window.input.setText("");
 						historyIndex = inputHistory.size();
 					}
+				}
+				if(e.getKeyCode() == KeyEvent.VK_BACK_QUOTE) {
+					PopupUI.promptInput("ENTER COMMAND", true);
+					Window.input.setText("");
+
+					if(PopupUI.getData() == null) {
+						return;
+					}
+					
+					String command = (String)PopupUI.getData()[0];
+					Developer.parseCommand(command);
 				}
 			}
 		});

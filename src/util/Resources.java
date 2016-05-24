@@ -63,10 +63,10 @@ public class Resources {
 		loadActionWords(DIRECTORY+"src/files/Actions.txt");
 		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
 		
-		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/command.gif");
-		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/terminal.gif");
-		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/devterminal.gif");
-		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/imgs/gifs/notes.gif");
+		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/command.gif");
+		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/terminal.gif");
+		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/devterminal.gif");
+		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/notes.gif");
 		
 		ALL_VERSIONS = new ArrayList<String>();
 		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
