@@ -64,29 +64,6 @@ public class Window {
 	public static void initialize(String[] args) {
 		createWindow();
 		
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			boolean isPressed = false;
-				@Override
-				public boolean dispatchKeyEvent(KeyEvent e) {
-					if((e.getKeyChar() == '`' || e.getKeyChar() == '~') && !isPressed && !PopupUI.popupAlreadyOpen()) {
-						isPressed = true;
-						PopupUI.promptInput("ENTER COMMAND", true);
-						Window.input.setText("");
-	
-						if(PopupUI.getData() == null) {
-							isPressed = false;
-							return false;
-						}
-						
-						String command = (String)PopupUI.getData()[0];
-						Developer.parseCommand(command);
-						isPressed = false;
-					} 
-					
-			        return false;
-				}
-	    });
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				windowFrame.setVisible(true);
