@@ -17,7 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.MutableAttributeSet;
@@ -159,8 +158,6 @@ public class DisplayUI {
 		Window.notes.setSelectionColor(Color.GRAY);
 		Window.notes.setBorder(new EmptyBorder(0, 0, 0, 20));
 		Window.notes.setText("[ ` ] { HELP }\n\n");
-		Window.notes.getInputMap().put(KeyStroke.getKeyStroke('`'), "doNothing");
-		Window.notes.getActionMap().put("doNothing", null);
 		
 		JTextArea noteHead = new JTextArea(
 				  "KLETUS INDUSTRIES UNIFIED NOTEPAD SYSTEM\n"

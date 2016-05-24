@@ -46,7 +46,7 @@ public class Main {
 	
 	private static void start(String[] args) {
 		Game.init(args);
-		Game.play();
+		Game.play(0);
 	}
 	
 }
