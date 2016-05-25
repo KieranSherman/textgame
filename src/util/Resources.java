@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
@@ -85,7 +86,7 @@ public class Resources {
 		
 		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/user_commandlist.txt", "\n")));
 		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt", "\n")));
-		MAN_LIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/manlist.txt", "\n")));
+		MAN_LIST = getLexicographicalText(DIRECTORY+"src/files/reference/lists/manlist.txt", "<EOF>");
 		TAG_LIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/taglist.txt", "\n")));
 
 		all_versions = new ArrayList<String>();
@@ -224,6 +225,51 @@ public class Resources {
 	}
 	
 	/**
+	 * Returns an ArrayList of lexicographically sorted text, but only where
+	 * marked with SORT tags.
+	 * 
+	 * @param filePath the file to sort.
+	 * @return an ArrayList containing sorted lines.
+	 */
+	public static ArrayList<String> getLexicographicalText(String filePath, String delimeter) {
+		ArrayList<String> toSort = new ArrayList<String>();
+		String [] text = parseTextFromFile(filePath, delimeter);
+		
+		int startSort = -1;
+		int endSort = -1;
+		int i;
+		
+		for(i = 0; i < text.length; i++)
+			if(text[i].trim().startsWith("<SORT>")) {
+				startSort = endSort = i;
+				break;
+			}
+		
+		while(++i < text.length && !text[i].trim().startsWith("</SORT>"))
+			endSort++;
+		
+		if(!text[endSort+1].trim().startsWith("</SORT>"))
+			return null;
+		
+		for(i = startSort+1; i < endSort; i++)
+			toSort.add(text[i]);
+		
+		Collections.sort(toSort);
+		
+		ArrayList<String> sorted = new ArrayList<String>();
+		
+		for(i = 0; i < startSort; i++)
+			sorted.add(text[i]);
+		
+		sorted.addAll(toSort);
+		
+		for(i = endSort+2; i < text.length; i++)
+			sorted.add(text[i]);
+		
+		return sorted;
+	}
+	
+	/**
 	 * Returns a TitledBorder.
 	 * 
 	 * @param title the title.
@@ -243,10 +289,10 @@ public class Resources {
 	/**
 	 * Returns the value of a tag with a given ID.
 	 * 
-	 * @param tagID the tagID in <>
+	 * @param tagID the tagID in <> format.
 	 * @return the name of the tag.
 	 */
-	public static String getTag(String tagID) {
+	public static String getTagString(String tagID) {
 		int index = -1;
 		
 		for(int i = 0; i < TAG_LIST.size(); i++)
@@ -259,6 +305,20 @@ public class Resources {
 			return null;
 		
 		return Resources.TAG_LIST.get(index).split("=")[1].trim();
+	}
+	
+	/**
+	 * Returns if a String is a tag.
+	 * 
+	 * @param str the tagId in <> format.
+	 * @return if the tag exists.
+	 */
+	public static boolean isTag(String str) {
+		for(int i = 0; i < TAG_LIST.size(); i++)
+			if(TAG_LIST.get(i).startsWith(str))
+				return true;
+		
+		return false;
 	}
 	
 }

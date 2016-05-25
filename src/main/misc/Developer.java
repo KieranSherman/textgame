@@ -327,7 +327,7 @@ public class Developer {
 		int indexOfCommand = -1;
 		
 		for(int i = 0; i < manList.size(); i++)
-			if(manList.get(i).startsWith(str)) {
+			if(manList.get(i).trim().startsWith(str)) {
 				indexOfCommand = i;
 				break;
 			}
@@ -335,23 +335,32 @@ public class Developer {
 		if(indexOfCommand == -1)
 			return "unrecognized command: "+str+"\n";
 		
-		String header = manList.get(indexOfCommand);
-		String manualEntry = "";
+		String header = manList.get(indexOfCommand).split("\n")[1];
+		String tagHeader = "";
+		String regex = "";
 		ArrayList<String> tags = new ArrayList<String>();
 
 		for(String tagID : header.split("\\s+")) {
-			String tag = Resources.getTag(tagID);
+			String tag = Resources.getTagString(tagID);
 			
-			if(tag != null)
+			if(tag != null) {
 				tags.add(tag);
+				regex += tagID+" ";
+			}
 		}
 		
-		manualEntry += manList.get(++indexOfCommand).trim()+(tags.isEmpty() ? "" : " "+tags.toString().replaceAll("[\\[\\]]", "").replace(",", " "))+"\n";
+		tagHeader = (tags.isEmpty() ? "" : " "+tags.toString().replaceAll("[\\[\\]]", "").replace(",", " "))+"\n";
 		
-		while(!manList.get(++indexOfCommand).contains("<EOF>"))
-			manualEntry += manList.get(indexOfCommand)+"\n";
+		String entry = "";
 		
-		return manualEntry;
+		if(!regex.equals("")) {
+			for(String s : regex.split(" "))
+				entry = manList.get(indexOfCommand).replace(s, "");
+		
+			return tagHeader+entry;
+		}
+		
+		return manList.get(indexOfCommand);
 	}
 	
 	/**

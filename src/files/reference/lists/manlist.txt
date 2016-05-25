@@ -1,4 +1,7 @@
-adapter_block <DEV>
+<SORT>
+<EOF>
+
+adapter_block USAGE <DEV>
 	adapter_block [true | false]
 	
 	Blocks or unblocks incoming packets.
@@ -8,7 +11,7 @@ adapter_block <DEV>
 	e.g. "adapter_block true"
 
 <EOF>
-add_upnp_map_at_port <DEV>
+add_upnp_map_at_port USAGE <DEV>
 	add_upnp_map_at_port [port number]
 	
 	Add a map from your public IP address to your local machine at a specific port number.
@@ -18,7 +21,7 @@ add_upnp_map_at_port <DEV>
 	e.g. "add_upnp_map_at_port 9999"
 	
 <EOF>
-clear
+clear USAGE
 	clear
 	
 	Clears the terminal screen.
@@ -26,7 +29,7 @@ clear
 	e.g. "clear"
 
 <EOF>
-client
+client USAGE
 	client a:[IP address] p:[port]
 	
 	Connect to a server at an IP address and port.
@@ -37,7 +40,7 @@ client
 	e.g. "client a:127.0.0.1 p:9999"
 
 <EOF>
-client_connection_maximum <DEV>
+client_connection_maximum USAGE <DEV>
 	client_connection_maximum [maximum]
 	
 	Set a limit on how many clients can connect to your server.
@@ -47,7 +50,7 @@ client_connection_maximum <DEV>
 	e.g. "client_connection_maximum 5"
 	
 <EOF>
-devmode_set
+devmode_set USAGE
 	devmode_set [true | false]
 	
 	Enable or disable the developer mode.
@@ -57,7 +60,7 @@ devmode_set
 	e.g. "devmode_set true"
 
 <EOF>
-display_notification <DEV>
+display_notification USAGE <DEV>
 	display_notification m:[message] t:[time] r:[true | false] x[number]
 	
 	Display a notification.
@@ -70,7 +73,7 @@ display_notification <DEV>
 	e.g. "display_notification m:test t:2000 r:true x15"
 	
 <EOF>
-display_popup <DEV>
+display_popup USAGE <DEV>
 	display_popup
 	
 	Display a popup.
@@ -78,7 +81,7 @@ display_popup <DEV>
 	e.g. "display_popup"
 
 <EOF>
-file_bug_report <DEV>
+file_bug_report USAGE <DEV>
 	file_bug_report
 	
 	File a bug report.
@@ -87,13 +90,13 @@ file_bug_report <DEV>
 
 <EOF>
 help
-	help
+	help USAGE
 	
 	Display a help screen.
 	
 	e.g. "help"
 <EOF>
-local_host_maximum <DEV>
+local_host_maximum USAGE <DEV>
 	local_host_maximum [maximum]
 	
 	Set a limit on how many localhost clients can connect to your server.
@@ -103,7 +106,7 @@ local_host_maximum <DEV>
 	e.g. "local_host_maximum 2" 
 
 <EOF>
-logout
+logout USAGE
 	logout
 	
 	Close either a client's connection to a server or the server itself.
@@ -111,7 +114,7 @@ logout
 	e.g. "logout"
 
 <EOF>
-man
+man USAGE
 	man [command]
 	
 	Display more information about a command.
@@ -121,7 +124,7 @@ man
 	e.g. "man server"
 
 <EOF>
-mute_set <DEV>
+mute_set USAGE <DEV>
 	mute_set [true | false]
 
 	Mute or unmute the audio.
@@ -131,7 +134,7 @@ mute_set <DEV>
 	e.g. "mute_set true"
 	
 <EOF>
-notes
+notes USAGE
 	notes
 	
 	Send your notes over the server to all clients.
@@ -139,7 +142,7 @@ notes
 	e.g. "notes"
 
 <EOF>
-play_remix <DEV>
+play_remix USAGE <DEV>
 	play_remix
 	
 	Play a short remix of Pegboard Nerds' "Fire in the Hole".
@@ -147,7 +150,7 @@ play_remix <DEV>
 	e.g. "play remix"
 
 <EOF>
-remove_upnp_map_at_port <DEV>
+remove_upnp_map_at_port USAGE <DEV>
 	remove_upnp_map_at_port [port]
 	
 	Remove a map from your public IP address at a specific port number.
@@ -157,7 +160,7 @@ remove_upnp_map_at_port <DEV>
 	e.g. "remove_upnp_map_at_port 9999"
 
 <EOF>
-same_client_maximum <DEV>
+same_client_maximum USAGE <DEV>
 	same_client_maximum [maximum]
 	
 	Set a limit on how many clients from the same IP address can connect to your server.
@@ -167,7 +170,7 @@ same_client_maximum <DEV>
 	e.g. "same_client_maximum 2"
 	
 <EOF>
-server
+server USAGE
 	server p:[port]
 	
 	Start a server mapped to your machine at a specific port.
@@ -177,7 +180,7 @@ server
 	e.g. "server p:9999"
 
 <EOF>
-status
+status USAGE
 	status
 	
 	Display the current network status.
@@ -185,7 +188,7 @@ status
 	e.g. "status"
 
 <EOF>
-upnp_overwrite_set <DEV>
+upnp_overwrite_set USAGE <DEV>
 	upnp_overwrite_set [true | false]
 	
 	Set whether or not the UPnP mapper will overwrite an existing portmap.
@@ -195,3 +198,6 @@ upnp_overwrite_set <DEV>
 	e.g. "upnp_overwrite_set true"
 	
 <EOF>
+
+<EOF>
+</SORT>
