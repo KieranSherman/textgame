@@ -240,6 +240,12 @@ public class Resources {
 		return titledBorder;
 	}
 	
+	/**
+	 * Returns the value of a tag with a given ID.
+	 * 
+	 * @param tagID the tagID in <>
+	 * @return the name of the tag.
+	 */
 	public static String getTag(String tagID) {
 		int index = -1;
 		
