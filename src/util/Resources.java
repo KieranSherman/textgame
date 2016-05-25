@@ -42,26 +42,35 @@ public class Resources {
 
 	public static final Font USER_INPUT;
 	public static final Font DOS;
+	public static final Font PLAY;
+	public static final Font MAN_DISPLAY;
 	
 	public static final Color CONSOLE_RED;
 	public static final Color CONSOLE_GREEN;
 	
-	public static final String[] BANLIST;
+	public static final String BAN_LIST;
+	public static final String BUG_LIST;
+	public static final String DEV_COMMANDLIST;
+	public static final String TAG_LIST;
+	public static final String MAN_LIST;
+	public static final String USER_COMMANDLIST;
+	public static final String HELP;
+	public static final String REFERENCE;
+	public static final String SOUND;
+	public static final String CURRENT_VERSION;
 	
-	public static final ArrayList<String> USER_COMMANDLIST;
-	public static final ArrayList<String> DEV_COMMANDLIST;
-	public static final ArrayList<String> MAN_LIST;
-	public static final ArrayList<String> TAG_LIST;
+	public static final String[] BAN_LIST_ENTRIES;
+	
+	public static final ArrayList<String> USER_COMMANDLIST_ENTRIES;
+	public static final ArrayList<String> DEV_COMMANDLIST_ENTRIES;
+	public static final ArrayList<String> MAN_LIST_ENTRIES;
+	public static final ArrayList<String> TAG_LIST_ENTRIES;
 	
 	public static ArrayList<String> all_versions;
 	public static ArrayList<String> master_commandList;
 	public static ArrayList<String> tempBanList;
-	
-	public static final String CURRENT_VERSION;
-	
-	public static final Image commandBG;
+
 	public static final Image terminalBG;
-	public static final Image devterminalBG;
 	public static final Image notesBG;
 	
 	// Prevent object instantiation
@@ -78,30 +87,39 @@ public class Resources {
 		
 		USER_INPUT = new Font("Courier", Font.PLAIN, 12);
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
+		PLAY = loadFont(DIRECTORY+"src/files/fonts/Play.ttf").deriveFont(13f);
+		MAN_DISPLAY = loadFont(DIRECTORY+"src/files/fonts/Trebuchet.ttf").deriveFont(13f);
 		
 		CONSOLE_RED = new Color(185, 0, 15);
 		CONSOLE_GREEN = new Color(15, 170, 0);
 		
-		BANLIST = parseTextFromFile(DIRECTORY+"src/files/reference/lists/banlist.txt", "\\s+");
+		BAN_LIST = "src/files/reference/lists/developer/banlist.txt";
+		BUG_LIST = "src/files/reference/lists/developer/buglist.txt";
+		DEV_COMMANDLIST = "src/files/reference/lists/developer/developer_commandlist.txt";
+		TAG_LIST = "src/files/reference/lists/developer/taglist.txt";
+		MAN_LIST = "src/files/reference/lists/user/manlist.txt";
+		USER_COMMANDLIST = "src/files/reference/lists/user/user_commandlist.txt";
+		HELP = "src/files/reference/help.txt";
+		REFERENCE = "src/files/reference/reference.txt";
+		SOUND = "src/files/reference/sound.txt";
 		
-		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/user_commandlist.txt", "\n")));
-		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt", "\n")));
-		MAN_LIST = getLexicographicalText(DIRECTORY+"src/files/reference/lists/manlist.txt", "<EOF>");
-		TAG_LIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/taglist.txt", "\n")));
+		BAN_LIST_ENTRIES = parseTextFromFile(DIRECTORY+BAN_LIST, "\\s+");
+		
+		USER_COMMANDLIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+USER_COMMANDLIST, "\n")));
+		DEV_COMMANDLIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+DEV_COMMANDLIST, "\n")));
+		MAN_LIST_ENTRIES = getLexicographicalText(DIRECTORY+MAN_LIST, "<EOF>");
+		TAG_LIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+TAG_LIST, "\n")));
 
 		all_versions = new ArrayList<String>();
 		master_commandList = new ArrayList<String>();
-		master_commandList.addAll(USER_COMMANDLIST);
-		master_commandList.addAll(DEV_COMMANDLIST);
+		master_commandList.addAll(USER_COMMANDLIST_ENTRIES);
+		master_commandList.addAll(DEV_COMMANDLIST_ENTRIES);
 		tempBanList = new ArrayList<String>();
 		
-		CURRENT_VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
-		
-		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/command.gif");
 		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/terminal.gif");
-		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/devterminal.gif");
 		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/notes.gif");
 		
+		CURRENT_VERSION = loadVersion(DIRECTORY+REFERENCE);
 		loadActionWords(DIRECTORY+"src/files/Actions.txt");
 		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
 	}
@@ -295,8 +313,8 @@ public class Resources {
 	public static String getTagString(String tagID) {
 		int index = -1;
 		
-		for(int i = 0; i < TAG_LIST.size(); i++)
-			if(TAG_LIST.get(i).startsWith(tagID)) {
+		for(int i = 0; i < TAG_LIST_ENTRIES.size(); i++)
+			if(TAG_LIST_ENTRIES.get(i).startsWith(tagID)) {
 				index = i;
 				break;
 			}
@@ -304,7 +322,7 @@ public class Resources {
 		if(index == -1)
 			return null;
 		
-		return Resources.TAG_LIST.get(index).split("=")[1].trim();
+		return Resources.TAG_LIST_ENTRIES.get(index).split("=")[1].trim();
 	}
 	
 	/**
@@ -314,8 +332,8 @@ public class Resources {
 	 * @return if the tag exists.
 	 */
 	public static boolean isTag(String str) {
-		for(int i = 0; i < TAG_LIST.size(); i++)
-			if(TAG_LIST.get(i).startsWith(str))
+		for(int i = 0; i < TAG_LIST_ENTRIES.size(); i++)
+			if(TAG_LIST_ENTRIES.get(i).startsWith(str))
 				return true;
 		
 		return false;

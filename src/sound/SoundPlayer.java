@@ -20,7 +20,7 @@ public class SoundPlayer {
 	static {
 		allSounds = new ArrayList<Sound>();
 		
-		String [] soundData = Resources.parseTextFromFile(Resources.DIRECTORY+"src/files/reference/sound.txt", "\n");
+		String [] soundData = Resources.parseTextFromFile(Resources.SOUND, "\n");
 		
 		String [] data;
 		String name, filePath, gain;

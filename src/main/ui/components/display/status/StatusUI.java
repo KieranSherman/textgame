@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
+import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import main.ui.components.display.status.renderer.CellRendererUI;
 import util.Action;
@@ -30,7 +31,6 @@ import util.Resources;
  * @see #removeStatus(String)
  *
  */
-
 public class StatusUI {
 	
 	private static DefaultListModel<Action> listModel;
@@ -105,6 +105,8 @@ public class StatusUI {
 		mainPanel.add(scrollPane, BorderLayout.SOUTH);
 		
 		addToPanel.add(mainPanel, borderLayout);
+		
+		NotificationUI.setNotificationCapacity(6);
 	}
 	
 	/**
@@ -114,6 +116,7 @@ public class StatusUI {
 	 */
 	public static void removeStatusDisplay(JPanel removeFromPanel) {
 		removeFromPanel.remove(mainPanel);
+		NotificationUI.setNotificationCapacity(10);
 	}
 	
 	/**
