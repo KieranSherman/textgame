@@ -3,7 +3,7 @@
 adapter_block USAGE <DEV>
 	adapter_block [true | false]
 	
-	Blocks or unblocks incoming packets.
+	Description: Blocks or unblocks incoming packets.
 	
 	-[true | false] display or hide blocked packets.
 	
@@ -13,7 +13,7 @@ adapter_block USAGE <DEV>
 add_upnp_map_at_port USAGE <DEV>
 	add_upnp_map_at_port [port number]
 	
-	Add a map from your public IP address to your local machine at a specific port number.
+	Description: Add a map from your public IP address to your local machine at a specific port number.
 	
 	-[port number] the port to map.
 	
@@ -23,7 +23,7 @@ add_upnp_map_at_port USAGE <DEV>
 clear USAGE
 	clear
 	
-	Clears the terminal screen.
+	Description: Clears the terminal screen.
 	
 	e.g. "clear"
 
@@ -31,7 +31,7 @@ clear USAGE
 client USAGE
 	client a:[IP address] p:[port]
 	
-	Connect to a server at an IP address and port.
+	Description: Connect to a server at an IP address and port.
 	
 	-a:[IP address] the IP address to connect to.
 	-p:[port]       the port to connect to.
@@ -42,7 +42,7 @@ client USAGE
 client_connection_maximum USAGE <DEV>
 	client_connection_maximum [maximum]
 	
-	Set a limit on how many clients can connect to your server.
+	Description: Set a limit on how many clients can connect to your server.
 	
 	-[maximum] the maximum number of clients that can connect.
 
@@ -52,7 +52,7 @@ client_connection_maximum USAGE <DEV>
 devmode_set USAGE
 	devmode_set [true | false]
 	
-	Enable or disable the developer mode.
+	Description: Enable or disable the developer mode.
 	
 	-[true | false] enable or disable.
 	
@@ -62,7 +62,7 @@ devmode_set USAGE
 display_notification USAGE <DEV>
 	display_notification m:[message] t:[time] r:[true | false] x[number]
 	
-	Display a notification.
+	Description: Display a notification.
 	
 	-m:[message]       the notification message.
 	-t:[time]          the time to display in milliseconds.
@@ -75,7 +75,7 @@ display_notification USAGE <DEV>
 display_popup USAGE <DEV>
 	display_popup
 	
-	Display a popup.
+	Description: Display a popup.
 	
 	e.g. "display_popup"
 
@@ -83,7 +83,7 @@ display_popup USAGE <DEV>
 file_bug_report USAGE <DEV>
 	file_bug_report
 	
-	File a bug report.
+	Description: File a bug report.
 	
 	e.g. "file_bug_report"
 
@@ -91,14 +91,14 @@ file_bug_report USAGE <DEV>
 help
 	help USAGE
 	
-	Display a help screen.
+	Description: Display a help screen.
 	
 	e.g. "help"
 <EOF>
 local_host_maximum USAGE <DEV>
 	local_host_maximum [maximum]
 	
-	Set a limit on how many localhost clients can connect to your server.
+	Description: Set a limit on how many localhost clients can connect to your server.
 	
 	-[maximum] the maximum number of clients that can connect.
 	
@@ -108,7 +108,7 @@ local_host_maximum USAGE <DEV>
 logout USAGE
 	logout
 	
-	Close either a client's connection to a server or the server itself.
+	Description: Close either a client's connection to a server or the server itself.
 
 	e.g. "logout"
 
@@ -116,7 +116,7 @@ logout USAGE
 man USAGE
 	man [command]
 	
-	Display more information about a command.
+	Description: Display more information about a command.
 	
 	-[command] the command to display.
 	
@@ -126,7 +126,7 @@ man USAGE
 mute_set USAGE <DEV>
 	mute_set [true | false]
 
-	Mute or unmute the audio.
+	Description: Mute or unmute the audio.
 	
 	-[true | false] whether or not to mute the audio.
 	
@@ -136,7 +136,7 @@ mute_set USAGE <DEV>
 notes USAGE
 	notes
 	
-	Send your notes over the server to all clients.
+	Description: Send your notes over the server to all clients.
 	
 	e.g. "notes"
 
@@ -144,7 +144,7 @@ notes USAGE
 play_remix USAGE <DEV>
 	play_remix
 	
-	Play a short remix of Pegboard Nerds' "Fire in the Hole".
+	Description: Play a short remix of Pegboard Nerds' "Fire in the Hole".
 	
 	e.g. "play remix"
 
@@ -152,7 +152,7 @@ play_remix USAGE <DEV>
 remove_upnp_map_at_port USAGE <DEV>
 	remove_upnp_map_at_port [port]
 	
-	Remove a map from your public IP address at a specific port number.
+	Description: Remove a map from your public IP address at a specific port number.
 	
 	-[port] the port to remove.
 	
@@ -162,7 +162,7 @@ remove_upnp_map_at_port USAGE <DEV>
 same_client_maximum USAGE <DEV>
 	same_client_maximum [maximum]
 	
-	Set a limit on how many clients from the same IP address can connect to your server.
+	Description: Set a limit on how many clients from the same IP address can connect to your server.
 	
 	-[maximum] the maximum number of clients.
 	
@@ -172,7 +172,7 @@ same_client_maximum USAGE <DEV>
 server USAGE
 	server p:[port]
 	
-	Start a server mapped to your machine at a specific port.
+	Description: Start a server mapped to your machine at a specific port.
 	
 	-p:[port] the port to open the server on.
 	
@@ -182,7 +182,7 @@ server USAGE
 status USAGE
 	status
 	
-	Display the current network status.
+	Description: Display the current network status.
 	
 	e.g. "status"
 
@@ -190,7 +190,7 @@ status USAGE
 upnp_overwrite_set USAGE <DEV>
 	upnp_overwrite_set [true | false]
 	
-	Set whether or not the UPnP mapper will overwrite an existing portmap.
+	Description: Set whether or not the UPnP mapper will overwrite an existing portmap.
 	
 	-[true | false] whether or not to overwrite.
 	

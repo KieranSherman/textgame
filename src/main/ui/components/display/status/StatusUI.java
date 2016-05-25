@@ -31,7 +31,6 @@ import util.Resources;
  * @see #removeStatus(String)
  *
  */
-
 public class StatusUI {
 	
 	private static DefaultListModel<Action> listModel;

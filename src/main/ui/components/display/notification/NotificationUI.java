@@ -162,6 +162,11 @@ public class NotificationUI {
 		t.start();
 	}
 
+	/**
+	 * Sets the new maximum capacity for the notification display.
+	 * 
+	 * @param notificationCapacity the maximum capacity.
+	 */
 	public static void setNotificationCapacity(int notificationCapacity) {
 		NotificationUI.notificationCapacity = notificationCapacity;
 		((GridLayout)notifications.getLayout()).setRows(notificationCapacity);

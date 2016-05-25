@@ -145,7 +145,7 @@ public class Adapter {
 	}
 	
 	/**
-	 * Destroy the server
+	 * Destroy the server.
 	 */
 	public static void destroyServer() {
 		Server.close();
