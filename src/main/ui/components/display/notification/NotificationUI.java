@@ -51,7 +51,7 @@ public class NotificationUI {
 	public static void createNotificationDisplay(JPanel addToPanel, String borderLayout) {
 		notifications = new JPanel(new GridLayout(notificationCapacity, 1, 0, 8));
 		notifications.setOpaque(false);
-		notifications.setPreferredSize(new Dimension(200, Resources.HEIGHT));
+		notifications.setPreferredSize(new Dimension(200, Resources.WINDOW_HEIGHT));
 		notifications.setBorder(Resources.getBorder("TODO", new Color(40, 190, 230, 180)));
 		
 		background = new PanelBackground(Resources.notesBG);
@@ -99,7 +99,7 @@ public class NotificationUI {
 		pB.setFont(Resources.DOS.deriveFont(12f));
 		pB.setStringPainted(true);
 		
-		notification.setPreferredSize(new Dimension(Resources.WIDTH/6, 50));
+		notification.setPreferredSize(new Dimension(Resources.WINDOW_WIDTH/6, 50));
 		notification.setLayout(new BorderLayout());
 		notification.add(area, BorderLayout.CENTER);
 		

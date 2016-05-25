@@ -23,8 +23,8 @@ import main.ui.Window;
 public class SplitPaneUI extends JSplitPane {
 	private static final long serialVersionUID = 1L;
 	
-	private int dividerDragSize = 10;
-    private int dividerDragOffset = 4;
+	private int dividerDragSize = 3;
+    private int dividerDragOffset = 0;
     
     public SplitPaneUI() {
         setDividerSize(dividerDragSize);

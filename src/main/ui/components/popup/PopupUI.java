@@ -28,8 +28,8 @@ import javax.swing.border.EmptyBorder;
 import main.misc.Developer;
 import main.ui.Window;
 import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
-import main.ui.components.input.AutoComplete;
-import main.ui.components.input.JTextFieldLimit;
+import main.ui.components.input.modifiers.AutoComplete;
+import main.ui.components.input.modifiers.TextFieldLimitter;
 import sound.SoundPlayer;
 import util.Resources;
 
@@ -69,7 +69,7 @@ public class PopupUI {
 		dialog.setUndecorated(true);
 		dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.WHITE));
 		dialog.setLayout(new BorderLayout());
-		dialog.setSize(Resources.WIDTH/5, Resources.HEIGHT/8);
+		dialog.setSize(Resources.WINDOW_WIDTH/5, Resources.WINDOW_HEIGHT/8);
 		dialog.setLocationRelativeTo(frame);
 		dialog.setOpacity(.9f);
 		dialog.addKeyListener(new KeyListener() {
@@ -135,7 +135,7 @@ public class PopupUI {
 		dialog.setUndecorated(true);
 		dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.WHITE));
 		dialog.setLayout(new BorderLayout());
-		dialog.setSize(Resources.WIDTH/5, Resources.HEIGHT/8);
+		dialog.setSize(Resources.WINDOW_WIDTH/5, Resources.WINDOW_HEIGHT/8);
 		dialog.setLocationRelativeTo(frame);
 		dialog.setOpacity(.9f);
 		
@@ -175,7 +175,7 @@ public class PopupUI {
 	    final AutoComplete autoComplete = new AutoComplete(textField);
 	    if(useAutoComplete) {
 	    	if(Developer.isDeveloperModeEnabled())
-	    		autoComplete.setKeywordList(Resources.MASTER_COMMANDLIST);
+	    		autoComplete.setKeywordList(Resources.master_commandList);
 	    	
 			textField.getDocument().addDocumentListener(autoComplete);
 			textField.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "commit");
@@ -252,7 +252,7 @@ public class PopupUI {
 		dialog.setUndecorated(true);
 		dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.WHITE));
 		dialog.setLayout(new BorderLayout());
-		dialog.setSize(Resources.WIDTH/5, Resources.HEIGHT/8);
+		dialog.setSize(Resources.WINDOW_WIDTH/5, Resources.WINDOW_HEIGHT/8);
 		dialog.setLocationRelativeTo(frame);
 		dialog.setOpacity(.9f);
 		
@@ -331,7 +331,7 @@ public class PopupUI {
 	    
 	    JTextField textField = new JTextField();
 	    textField.setOpaque(false);
-	    textField.setDocument(new JTextFieldLimit(maxTitleChars));
+	    textField.setDocument(new TextFieldLimitter(maxTitleChars));
 	    textField.setText(title);
 	    textField.selectAll();
 	    textField.setHorizontalAlignment(JTextField.CENTER);
@@ -362,7 +362,7 @@ public class PopupUI {
 	    textArea.setLineWrap(true);
 	    textArea.setWrapStyleWord(true);
 	    textArea.setCaretColor(Color.WHITE);
-	    textArea.setFont(Resources.DOS.deriveFont(14f));
+	    textArea.setFont(Resources.USER_INPUT.deriveFont(14f));
 	    textArea.setForeground(Color.WHITE);
 	    textArea.setBackground(new Color(20, 20, 20));
 	    textArea.setSelectionColor(Color.GRAY);
@@ -399,7 +399,7 @@ public class PopupUI {
 	    scrollPane.setBorder(null);
 	    
 	    JComboBox<String> version = new JComboBox<String>();
-	    for(String str : Resources.ALL_VERSIONS)
+	    for(String str : Resources.all_versions)
 	    	version.addItem(str);
 	    version.setFont(Resources.DOS);
 	    version.setBackground(Color.LIGHT_GRAY);

@@ -1,9 +1,6 @@
 package network.server;
 
-import java.awt.Color;
-
-import network.upnp.UPNnGateway;
-import util.out.DefaultLogger;
+import network.upnp.UPnPGateway;
 
 /**
  * Class consists of exclusively static methods and modifies the server.
@@ -49,18 +46,13 @@ public class ServerModifier {
 	 * @param port the port to remove UPnP mapping.
 	 */
 	public static void removeUPnPMapAtPort(int port) {
-		if(!Server.isRunning()) {
-			DefaultLogger.appendColoredText("[you must be running a server]", Color.RED);
-			return;
-		}
+		UPnPGateway.setOverwriteExisting(true);
 		
-		UPNnGateway.setRemap(true);
-		
-		try {
-			UPNnGateway.removePortMap(port);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new Thread() {
+			public void run() {
+				UPnPGateway.removeMapAtPort(port);
+			}
+		}.start();
 	}
 	
 	/**
@@ -69,11 +61,11 @@ public class ServerModifier {
 	 * @param port the port to add UPnP mapping to.
 	 */
 	public static void addUPnPMapAtPort(int port) {
-		try {
-			UPNnGateway.mapToPort(port);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new Thread() {
+			public void run() {
+				UPnPGateway.openGatewayAtPort(port);
+			}
+		}.start();
 	}
 	
 	/**
@@ -82,7 +74,7 @@ public class ServerModifier {
 	 * @param remap overwrite an existing map.
 	 */
 	public static void setUPnPRemap(boolean remap) {
-		UPNnGateway.setRemap(remap);
+		UPnPGateway.setOverwriteExisting(remap);
 	}
 	
 }

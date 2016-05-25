@@ -94,13 +94,13 @@ public class InputUI {
 						historyIndex = inputHistory.size();
 					}
 				}
+				else
 				if(e.getKeyCode() == KeyEvent.VK_BACK_QUOTE) {
 					PopupUI.promptInput("ENTER COMMAND", true);
 					Window.input.setText("");
 
-					if(PopupUI.getData() == null) {
+					if(PopupUI.getData() == null)
 						return;
-					}
 					
 					String command = (String)PopupUI.getData()[0];
 					Developer.parseCommand(command);
@@ -115,7 +115,7 @@ public class InputUI {
 		
 		Border lineB = BorderFactory.createLineBorder(Color.WHITE);
 		Border b = BorderFactory.createTitledBorder(lineB, "COMMS", 
-				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.DARK_GREEN);
+				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), Resources.CONSOLE_GREEN);
 		Border compound = BorderFactory.createCompoundBorder(b, new EmptyBorder(0, 10, 10, 10));
 		
 		JPanel inputPanel = new JPanel();

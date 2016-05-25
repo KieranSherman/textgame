@@ -49,7 +49,7 @@ public class PanelBackground extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		g.drawImage(imageBackground, 0, 0, Resources.WIDTH, Resources.HEIGHT, null);
+		g.drawImage(imageBackground, 0, 0, Resources.WINDOW_WIDTH, Resources.WINDOW_HEIGHT, null);
 	}
 
 }

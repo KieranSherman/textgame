@@ -1,114 +1,43 @@
 ============================ HELP ==============================================
 
-SERVER      ...     STARTS A SERVER
+CLEAR       ...     CLEARS THE SCREEN
 
 CLIENT      ...     STARTS A CLIENT
 
+LOGOUT      ...     CLOSES CURRENT NETWORK
+
+MAN         ...     SHOW MORE INFORMATION ABOUT A COMMAND
+
 NOTES       ...     SENDS NOTES OVER NETWORK
 
-CLEAR       ...     CLEARS THE SCREEN
+SERVER      ...     STARTS A SERVER
 
 STATUS      ...     SHOWS STATUS OF NETWORK
 
-LOGOUT      ...     CLOSES CURRENT NETWORK
-
---------------------------------------------------------------------------------
-
-**CLIENT USAGE**
-a:[ADDRESS]
-p:[PORT]
-
-E.G: "client a:127.0.0.1 p:1234"
-
---------------------------------------------------------------------------------
-
-**SERVER USAGE**
-p:[PORT]
-
-E.G: "server p:1234"
 
 =================== DEVELOPER COMMANDS =========================================
 
-LOCAL_HOST_MAXIMUM             ...    CHANGE LOCAL HOST CONNECTION MAXIMUM
-
-SAME_CLIENT_MAXIMUM            ...    CHANGE SAME CLIENT CONNECTION MAXIMUM
-
-CLIENT_CONNECTION_MAXIMUM      ...    CHANGE MAXIMUM CLIENT CONNECTION
-
-PLAY_REMIX                     ...    JUST A LITTLE FUN
-
-DISPLAY_POPUP                  ...    DISPLAY A POPUP
-
-DISPLAY_NOTIFICATION           ...    DISPLAY A NOTIFICATION
-
 ADAPTER_BLOCK                  ...    BLOCK/UNBLOCK PACKETS
-
-REMOVE_UPNP_MAP_AT_PORT        ...    REMOVES THE PORTMAP AT A PORT
 
 ADD_UPNP_MAP_AT_PORT           ...    ADDS A MAP TO MACHINE ADDRESS AT PORT
 
-SET_UPNP_REMAP                 ...    CHANGE IF THE GATEWAY WILL OVERWRITE AN EXISTING MAP
+CLIENT_CONNECTION_MAXIMUM      ...    CHANGE MAXIMUM CLIENT CONNECTION
+
+DISPLAY_NOTIFICATION           ...    DISPLAY A NOTIFICATION
+
+DISPLAY_POPUP                  ...    DISPLAY A POPUP
 
 FILE_BUG_REPORT                ...    FILES A BUG REPORT
 
---------------------------------------------------------------------------------
+LOCAL_HOST_MAXIMUM             ...    CHANGE LOCAL HOST CONNECTION MAXIMUM
 
-** LOCAL_HOST_MAXIMUM USAGE **
-[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+MUTE_SET                       ...    CHANGE IF SOUNDS ARE MUTED
 
-E.G: "local_host_maximum 3"
+PLAY_REMIX                     ...    JUST A LITTLE FUN
 
---------------------------------------------------------------------------------
+REMOVE_UPNP_MAP_AT_PORT        ...    REMOVES THE PORTMAP AT A PORT
 
-** SAME_CLIENT_MAXIMUM USAGE **
-[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
+SAME_CLIENT_MAXIMUM            ...    CHANGE SAME CLIENT CONNECTION MAXIMUM
 
-E.G: "same_client_maximum 3"
-
---------------------------------------------------------------------------------
-
-** CLIENT_CONNECTION_MAXIMUM USAGE **
-[NUMBER] (NUMBER OF LOCAL HOST CONNECTIONS)
-
-E.G: "client_connection_maximum 3"
-
---------------------------------------------------------------------------------
-
-** DISPLAY_NOTIFICATION USAGE **
-m:[MESSAGE]
-t:[TIME] (IN MILLISECONDS) 
-r:[TRUE | FALSE] (RANDOM TIMES)
-x[NUMBER] (NUMBER OF NOTIFICATIONS)
-
-E.G: "display_notification m:test t:5000 r:true x25"
-
---------------------------------------------------------------------------------
-	
-** ADAPTER_BLOCK USAGE **
-[TRUE | FALSE]
-
-E.G: "adapter_block true"
-
---------------------------------------------------------------------------------
-
-** REMOVE_UPNP_MAP_AT_PORT USAGE **
-[NUMBER]
-
-E.G: "remove_upnp_map_at_port 9999"
-
---------------------------------------------------------------------------------
-
-** ADD_UPNP_MAP_AT_PORT USAGE **
-[NUMBER]
-
-E.G: "add_upnp_map_at_port 9999"
-
---------------------------------------------------------------------------------
-
-** SET_UPNP_REMAP USAGE **
-[TRUE | FALSE]
-
-E.G: "set_upnp_remap true"
-
-
-
+UPNP_OVERWRITE_SET             ...    CHANGE IF THE GATEWAY WILL OVERWRITE AN 
+                                      EXISTING MAP

@@ -1,5 +1,6 @@
 server
 client
+man
 notes
 clear
 status

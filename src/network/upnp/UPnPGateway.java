@@ -1,6 +1,7 @@
 package network.upnp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Map;
 
 import main.ui.components.popup.PopupUI;
@@ -15,18 +16,21 @@ import util.out.DeveloperLogger;
  * @author kieransherman
  *
  */
-public class UPNnGateway {
+public class UPnPGateway {
 
-	private static int port = 9999;
+	private static ArrayList<Integer> ports;
 	private static boolean listAllMappings;
-	private static boolean open;
-	private static boolean remap;
+	private static boolean gatewayOpen;
+	private static boolean overwriteExisting;
 	private static String mappedAddress;
 	private static String localAddress;
-	private static GatewayDevice activeGW;
+	
+	static {
+		ports = new ArrayList<Integer>();
+	}
 	
 	// Prevent object instantiation
-	private UPNnGateway() {}
+	private UPnPGateway() {}
 	
 	/**
 	 * Opens a UPnP gateway to the local machine at a given port.
@@ -34,14 +38,30 @@ public class UPNnGateway {
 	 * @param port the port to open.
 	 */
 	public static void openGatewayAtPort(int port) {
-		UPNnGateway.port = port;
-		
 		try {
 			mapToPort(port);
-			open = true;
+			addLogLine("added UPnP map at port "+port);
+			
+			if(!ports.contains(port))
+				ports.add(port);
 		} catch (Exception e) {
 			e.printStackTrace();
-			open = false;
+		}
+	}
+	
+	/**
+	 * Removes a port map at a given port.
+	 * 
+	 * @param port the port to remove.
+	 */
+	public static void removeMapAtPort(int port) {
+		try {
+			removePortMap(port);
+			addLogLine("removed map at port "+port);
+			
+			ports.remove(new Integer(port));
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 		}
 	}
 	
@@ -51,7 +71,7 @@ public class UPNnGateway {
 	 * @param port the port to open.
 	 * @throws Exception
 	 */
-	public static void mapToPort(int port) throws Exception {
+	private static void mapToPort(int port) throws Exception {
 		addLogLine("Starting UPnP");
 
 		GatewayDiscover gatewayDiscover = new GatewayDiscover();
@@ -77,7 +97,7 @@ public class UPNnGateway {
 					"\n\tLocal interface address: " + gw.getLocalAddress().getHostAddress());
 		}
 
-		activeGW = gatewayDiscover.getValidGateway();
+		GatewayDevice activeGW = gatewayDiscover.getValidGateway();
 
 		if(activeGW != null) {
 			addLogLine("Using gateway: " + activeGW.getFriendlyName());
@@ -109,7 +129,7 @@ public class UPNnGateway {
 		}
 
 		InetAddress localAddress = activeGW.getLocalAddress();
-		addLogLine("Using local address: "+ (UPNnGateway.localAddress = localAddress.getHostAddress()));
+		addLogLine("Using local address: "+ (UPnPGateway.localAddress = localAddress.getHostAddress()));
 		
 		mappedAddress = activeGW.getExternalIPAddress();
 		addLogLine("External address: "+ mappedAddress);
@@ -123,7 +143,7 @@ public class UPNnGateway {
 			String choice = (String)PopupUI.getData()[0];
 			
 			if(choice.equals("YES")) {
-				setRemap(true);
+				setOverwriteExisting(true);
 				addLogLine("Remapping {"+port+"} at ("+mappedAddress+")->("+localAddress+")");
 				removePortMap(port);
 				mapToPort(port);
@@ -138,6 +158,8 @@ public class UPNnGateway {
 			if(activeGW.addPortMapping(port, port, localAddress.getHostAddress(), "TCP", "[TEXTGAME SERVER]"))
 				addLogLine("Mapping SUCCESSFUL");
 		}
+		
+		gatewayOpen = true;
 	}
 	
 	/**
@@ -146,23 +168,34 @@ public class UPNnGateway {
 	 * @param port the port to remove.
 	 * @throws Exception
 	 */
-	public static void removePortMap(int port) throws Exception {
-		if(!remap)
+	private static void removePortMap(int port) throws Exception {
+		if(!overwriteExisting)
 			return;
-		
-		if(activeGW == null) {
-			GatewayDiscover gatewayDiscover = new GatewayDiscover();
-			activeGW = gatewayDiscover.getValidGateway();
-			mappedAddress = activeGW.getExternalIPAddress();
+	
+		GatewayDiscover gatewayDiscover = new GatewayDiscover();
+		Map<InetAddress, GatewayDevice> gateways = gatewayDiscover.discover();
+
+		if(gateways.isEmpty()) {
+			addLogLine("No gateways found");
+			addLogLine("Stopping UPnP");
+			return;
 		}
+
+		GatewayDevice activeGW = gatewayDiscover.getValidGateway();
+		PortMappingEntry portMapping = new PortMappingEntry();
 		
-		addLogLine("Stopping UPnP @ ("+mappedAddress+":"+port+")");
-		
-		if(activeGW.deletePortMapping(port, "TCP")) {
-			addLogLine("Port mapping removal: SUCCESSFUL");
-        } else {
-			addLogLine("Port mapping removal: FAILED");
-        }
+		activeGW.getGenericPortMappingEntry(0, portMapping);
+
+		if(activeGW.getSpecificPortMappingEntry(port, "TCP", portMapping)) {
+			addLogLine("Remapping port "+port);
+			if(activeGW.deletePortMapping(port, "TCP")) {
+				addLogLine("Port mapping removal: SUCCESSFUL");
+			} else
+				addLogLine("Port mapping removal: FAILED");
+		} else {
+			addLogLine("Port at "+port+" is not mapped");
+			throw new Exception("Port is not mapped");
+		}
 	}
 	
 	/**
@@ -171,7 +204,7 @@ public class UPNnGateway {
 	 * @return the address.
 	 */
 	public static String getMappedAddress() {
-		if(!open)
+		if(!gatewayOpen)
 			System.err.println("UPnP gateway not open!");
 			
 		return mappedAddress;
@@ -183,19 +216,26 @@ public class UPNnGateway {
 	 * @return the address.
 	 */
 	public static String getLocalAddress() {
-		if(!open)
+		if(!gatewayOpen)
 			System.err.println("UPnP gateway not open!");
 			
 		return localAddress;
 	}
 	
 	/**
-	 * Removes the UPnP gateway.
+	 * Removes the UPnP gateway and all ports.
 	 */
 	public static void disconnect() {
+		if(!gatewayOpen)
+			return;
+		
+		overwriteExisting = true;
+		
 		try {
-			removePortMap(port);
-			open = false;
+			for(int i = 0; i < ports.size(); i++)
+				removePortMap(ports.remove(i));
+			
+			gatewayOpen = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -206,8 +246,8 @@ public class UPNnGateway {
 	 * 
 	 * @param remap whether or not to overwite.
 	 */
-	public static void setRemap(boolean remap) {
-		UPNnGateway.remap = remap;
+	public static void setOverwriteExisting(boolean remap) {
+		UPnPGateway.overwriteExisting = remap;
 	}
 	
 	/**
@@ -216,5 +256,5 @@ public class UPNnGateway {
 	private static void addLogLine(String line) {
 		DeveloperLogger.appendText(line);
 	}
-
+	
 }
