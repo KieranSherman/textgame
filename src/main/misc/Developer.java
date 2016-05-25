@@ -11,7 +11,9 @@ import main.ui.components.display.manual.ManualPanelUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
 import network.Adapter;
+import network.client.Client;
 import network.packet.types.Packet03Message;
+import network.server.Server;
 import network.server.ServerModifier;
 import sound.SoundPlayer;
 import util.Action;
@@ -97,8 +99,13 @@ public class Developer {
 			}
 		else
 			if(args[0].equals("notes")) {
-				Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
-				DefaultLogger.appendColoredText("[sent notes]", Color.GRAY);
+				if(!(Client.isRunning() || Server.isRunning())) {
+					DefaultLogger.appendColoredText("[no network detected]", Color.RED);
+					SoundPlayer.play("error");
+				} else  {
+					Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
+					DefaultLogger.appendColoredText("[sent notes]", Color.GRAY);
+				}
 			}
 		else
 			if(args[0].equals("help")) {
@@ -129,8 +136,6 @@ public class Developer {
 					DefaultLogger.appendColoredText("[developer commands enabled]", Resources.CONSOLE_GREEN);
 				else
 					DefaultLogger.appendColoredText("[developer commands disabled]", Resources.CONSOLE_GREEN);
-				
-				return true;
 			}
 		else {
 			return false;

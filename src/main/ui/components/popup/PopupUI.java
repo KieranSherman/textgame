@@ -362,7 +362,7 @@ public class PopupUI {
 	    textArea.setLineWrap(true);
 	    textArea.setWrapStyleWord(true);
 	    textArea.setCaretColor(Color.WHITE);
-	    textArea.setFont(Resources.DOS.deriveFont(14f));
+	    textArea.setFont(Resources.USER_INPUT.deriveFont(14f));
 	    textArea.setForeground(Color.WHITE);
 	    textArea.setBackground(new Color(20, 20, 20));
 	    textArea.setSelectionColor(Color.GRAY);

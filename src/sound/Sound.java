@@ -68,6 +68,14 @@ public class Sound {
 	}
 	
 	/**
+	 * Stop the sound.
+	 */
+	protected void stop() {
+		if(clip != null)
+			clip.stop();
+	}
+	
+	/**
 	 * Set the gain.
 	 */
 	protected void setGain(float decibels) {

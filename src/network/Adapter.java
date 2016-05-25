@@ -281,6 +281,7 @@ public class Adapter {
 		}
 		else
 		if(Server.isRunning()) {
+			DefaultLogger.appendColoredText("[server closing...]", Color.GRAY);
 			Server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
