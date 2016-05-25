@@ -14,12 +14,19 @@ import javax.swing.JTextArea;
 import main.ui.components.display.DisplayUI;
 import util.Resources;
 
+/**
+ * Class consists exclusively of static methods to affect the manual display.
+ * 
+ * @author kieransherman
+ *
+ */
 public class ManualPanelUI {
 	
 	private static boolean open = false;
 	private static JTextArea manualDisplay;
 	private static JPanel manualPanel;
 	
+	// Prevent object instantiation
 	private ManualPanelUI() {}
 	
 	static {
@@ -58,6 +65,9 @@ public class ManualPanelUI {
 		manualPanel.setMinimumSize(new Dimension(300, Integer.MAX_VALUE));
 	}
 	
+	/**
+	 * Show the manual panel.
+	 */
 	public static void showManualPanel() {
 		if(open)
 			return;
@@ -67,12 +77,20 @@ public class ManualPanelUI {
 		open = true;
 	}
 	
+	/**
+	 * Remove the manual panel.
+	 */
 	public static void removeManualPanel() {
 		DisplayUI.notesPanel.remove(manualPanel);
 		DisplayUI.notesPanel.revalidate();
 		open = false;
 	}
 	
+	/**
+	 * Set the manual's text.
+	 * 
+	 * @param str the text to set.
+	 */
 	public static void setText(String str) {
 		manualDisplay.setText(str);
 	}
