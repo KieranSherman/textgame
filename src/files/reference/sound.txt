@@ -20,7 +20,7 @@ new Sound("tapeInsert", "src/files/sounds/tape/tape-insert.wav", -8);
 new Sound("tapeEject", "src/files/sounds/tape/tape-eject.wav", -21);
 new Sound("tapeClick", "src/files/sounds/tape/tape-click.wav", -21);
 
-new Sound("error", "src/files/sounds/computer/error.wav", -10);
+new Sound("error", "src/files/sounds/computer/error.wav", -15);
 new Sound("computerStartup", "src/files/sounds/computer/startup.wav", -20);
 new Sound("computerHardDrive", "src/files/sounds/computer/hard-drive.wav", -30);
 new Sound("computerHum", "src/files/sounds/computer/hum.wav", -20);
@@ -28,4 +28,4 @@ new Sound("computerBeep1", "src/files/sounds/computer/computer-beep1.wav", -6);
 new Sound("computerBeep2", "src/files/sounds/computer/computer-beep2.wav", 0);
 new Sound("powerdown", "src/files/sounds/computer/powerdown.wav", -12);
 
-new Sound("remix", "src/files/sounds/music/remix.wav", -12);
+new Sound("remix", "src/files/sounds/music/remix.wav", -18);

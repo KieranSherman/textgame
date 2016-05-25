@@ -310,7 +310,7 @@ public class Server {
 	 * Checks the ban list for hostAddress.
 	 */
 	private static boolean checkBanList(String hostAddress) {
-		for(String address : Resources.BANLIST)
+		for(String address : Resources.BAN_LIST_ENTRIES)
 			if(address.equals(hostAddress)) {
 				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;

@@ -29,9 +29,11 @@ import util.Resources;
  */
 public class NotificationUI {
 	
-	private volatile static JPanel notifications, background;
+	private volatile static JPanel notifications;
+	private volatile static JPanel background;
 	private volatile static ArrayList<Notification> notificationQueue;
-	private volatile static int notificationSize, notificationCapacity;
+	private volatile static int notificationSize;
+	private volatile static int notificationCapacity;
 	
 	static {
 		notificationQueue = new ArrayList<Notification>();
@@ -160,6 +162,11 @@ public class NotificationUI {
 		t.start();
 	}
 
+	public static void setNotificationCapacity(int notificationCapacity) {
+		NotificationUI.notificationCapacity = notificationCapacity;
+		((GridLayout)notifications.getLayout()).setRows(notificationCapacity);
+	}
+	
 	/**
 	 * Returns the {@link JPanel} of the {@link NotificationUI}.
 	 * 

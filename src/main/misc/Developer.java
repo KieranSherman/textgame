@@ -7,7 +7,7 @@ import java.util.Date;
 
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
-import main.ui.components.display.manual.ManualPanelUI;
+import main.ui.components.display.manual.Manual;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
 import network.Adapter;
@@ -45,7 +45,7 @@ public class Developer {
 		if(str == null)
 			return;
 
-		str = str.toLowerCase();
+		str = str.toLowerCase().trim();
 		String [] args = str.split("\\s+");
 		
 		if(!Developer.userCommand(args) && !Developer.developerCommand(args)) {
@@ -118,10 +118,10 @@ public class Developer {
 				if(args.length == 2)
 					str = args[1];
 				
-				String entry = Developer.getManualEntry(str);
+				String entry = Manual.getManualEntry(str);
 				
-				ManualPanelUI.setText(entry);
-				ManualPanelUI.showManualPanel();
+				Manual.setText(entry);
+				Manual.showManualPanel();
 			}
 		else
 			if(args[0].equals("devmode_set")) {
@@ -303,7 +303,7 @@ public class Developer {
 				for(int i = 1; i < descriptionSplit.size(); i++)
 					sf.addArgument(descriptionSplit.get(i), 3, 3);
 				
-				Resources.writeTextToFile("src/files/reference/lists/buglist.txt", sf.getFormattedString()+"\n", true);
+				Resources.writeTextToFile(Resources.BUG_LIST, sf.getFormattedString()+"\n", true);
 				
 				System.out.println(sf.getFormattedString());
 				DefaultLogger.appendColoredText("[bug filed: "+bugName+"]", Resources.CONSOLE_GREEN);
@@ -313,54 +313,6 @@ public class Developer {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * Returns the manual for the given command.
-	 * 
-	 * @param str the command.
-	 * @return the manual entry for the command.
-	 */
-	public static String getManualEntry(String str) {
-		ArrayList<String> manList = Resources.MAN_LIST;
-		
-		int indexOfCommand = -1;
-		
-		for(int i = 0; i < manList.size(); i++)
-			if(manList.get(i).trim().startsWith(str)) {
-				indexOfCommand = i;
-				break;
-			}
-		
-		if(indexOfCommand == -1)
-			return "unrecognized command: "+str+"\n";
-		
-		String header = manList.get(indexOfCommand).split("\n")[1];
-		String tagHeader = "";
-		String regex = "";
-		ArrayList<String> tags = new ArrayList<String>();
-
-		for(String tagID : header.split("\\s+")) {
-			String tag = Resources.getTagString(tagID);
-			
-			if(tag != null) {
-				tags.add(tag);
-				regex += tagID+" ";
-			}
-		}
-		
-		tagHeader = (tags.isEmpty() ? "" : " "+tags.toString().replaceAll("[\\[\\]]", "").replace(",", " "))+"\n";
-		
-		String entry = "";
-		
-		if(!regex.equals("")) {
-			for(String s : regex.split(" "))
-				entry = manList.get(indexOfCommand).replace(s, "");
-		
-			return tagHeader+entry;
-		}
-		
-		return manList.get(indexOfCommand);
 	}
 	
 	/**

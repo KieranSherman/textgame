@@ -204,7 +204,7 @@ public class DisplayUI {
 	public static void loadNotesHelp() {
 		FileReader fr = null;
 		try {
-			fr = new FileReader(new File(Resources.DIRECTORY+"src/files/reference/notes-help.txt"));
+			fr = new FileReader(new File(Resources.HELP));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

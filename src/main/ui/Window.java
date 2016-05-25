@@ -61,8 +61,6 @@ public class Window {
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				windowFrame.setVisible(true);
-				
 				Action load = new Action() {
 					public void pre() {
 						SoundPlayer.play("tapeInsert");
@@ -84,6 +82,7 @@ public class Window {
 				};
 				
 				NotificationUI.queueNotification("AUTHORIZING", 500, load, false);
+				windowFrame.setVisible(true);
 			}
 		});
 	}

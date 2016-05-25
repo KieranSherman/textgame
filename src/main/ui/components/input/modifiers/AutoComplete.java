@@ -39,7 +39,7 @@ public class AutoComplete implements DocumentListener {
 	 */
 	public AutoComplete(JTextField textField) {
 		this.textField = textField;
-		this.keywords = Resources.USER_COMMANDLIST;
+		this.keywords = Resources.USER_COMMANDLIST_ENTRIES;
 		Collections.sort(keywords);
 	}
 	

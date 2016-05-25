@@ -1,0 +1,10 @@
+server
+client
+man
+notes
+clear
+status
+logout
+help
+true
+false
