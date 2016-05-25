@@ -1,4 +1,4 @@
-package main.ui.components.input;
+package main.ui.components.input.modifiers;
 
 import java.awt.event.ActionEvent;
 import java.util.Collections;

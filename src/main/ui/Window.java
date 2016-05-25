@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,9 +18,7 @@ import main.misc.Developer;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.display.status.StatusUI;
-import main.ui.components.handlers.WindowHandler;
 import main.ui.components.input.InputUI;
-import main.ui.components.popup.PopupUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
@@ -73,11 +68,13 @@ public class Window {
 						SoundPlayer.play("tapeInsert");
 						SoundPlayer.play("computerBeep1");
 					}
+					
 					public void execute() {
 						DisplayUI.initialize();
 						Window.input.setEnabled(true);
 						Window.input.requestFocus();
 					}
+					
 					public void post() {
 						NotificationUI.queueNotification("LOGIN FINISHING", 500, null, false);
 						
@@ -98,20 +95,17 @@ public class Window {
 	private static void createWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				windowFrame = new JFrame(Resources.VERSION);
-				windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				windowFrame.addWindowListener(new WindowHandler());
-				windowFrame.setResizable(false);
-				
 				windowPanel = new JPanel();
 				windowPanel.setBackground(new Color(15, 15, 15));
 				windowPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 				windowPanel.setLayout(new BorderLayout());
-				windowPanel.setPreferredSize(new Dimension(Resources.WIDTH, Resources.HEIGHT));
-				
+				windowPanel.setPreferredSize(new Dimension(Resources.WINDOW_WIDTH, Resources.WINDOW_HEIGHT));
 				windowPanel.add(DisplayUI.createDisplay(), BorderLayout.CENTER);
 				windowPanel.add(InputUI.createInput(), BorderLayout.SOUTH);
 				
+				windowFrame = new JFrame(Resources.CURRENT_VERSION);
+				windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				windowFrame.setResizable(false);
 				windowFrame.add(windowPanel);
 				windowFrame.pack();
 				windowFrame.setLocationByPlatform(true);

@@ -26,5 +26,6 @@ new Sound("computerHardDrive", "src/files/sounds/computer/hard-drive.wav", -30);
 new Sound("computerHum", "src/files/sounds/computer/hum.wav", -20);
 new Sound("computerBeep1", "src/files/sounds/computer/computer-beep1.wav", -6);
 new Sound("computerBeep2", "src/files/sounds/computer/computer-beep2.wav", 0);
+new Sound("powerdown", "src/files/sounds/computer/powerdown.wav", -12);
 
 new Sound("remix", "src/files/sounds/music/remix.wav", -12);

@@ -8,5 +8,6 @@ adapter_block
 devmode_set
 remove_upnp_map_at_port
 add_upnp_map_at_port
-set_upnp_remap
+upnp_overwrite_set
 file_bug_report
+mute_set

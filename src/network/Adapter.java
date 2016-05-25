@@ -97,7 +97,7 @@ public class Adapter {
 	 */
 	public static void destroyClient() {
 		Client.disconnect();
-		Window.getFrame().setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.CURRENT_VERSION);
 	}
 	
 	
@@ -149,7 +149,7 @@ public class Adapter {
 	 */
 	public static void destroyServer() {
 		Server.close();
-		Window.getFrame().setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.CURRENT_VERSION);
 		StatusUI.removeStatusDisplay(NotificationUI.getPanel());
 	}
 	
@@ -297,6 +297,10 @@ public class Adapter {
 			};
 			
 			NotificationUI.queueNotification("SERVER CLOSING", 600, serverDisconnect, true);
+		}
+		else {
+			SoundPlayer.play("error");
+			DefaultLogger.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	

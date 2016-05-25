@@ -6,7 +6,7 @@ import java.net.Socket;
 
 import network.packet.Packet;
 import network.packet.types.Packet01Login;
-import network.upnp.UPNnGateway;
+import network.upnp.UPnPGateway;
 
 /**
  * Class sends packets over a socket.
@@ -35,7 +35,7 @@ public class ServerSender {
 	 * Send a login packet to the client.
 	 */
 	private void init() {
-		sendPacket(new Packet01Login("[you have connected to "+UPNnGateway.getMappedAddress()+"]", null));
+		sendPacket(new Packet01Login("[you have connected to "+UPnPGateway.getMappedAddress()+"]", null));
 	}
 	
 	/**

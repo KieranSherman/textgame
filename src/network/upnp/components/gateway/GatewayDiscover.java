@@ -284,14 +284,11 @@ public class GatewayDiscover {
      *         null if none present
      */
     public GatewayDevice getValidGateway() {
-
         for (GatewayDevice device : devices.values()) {
             try {
-                if (device.isConnected()) {
-                    return device;
-                }
-            } catch (Exception e) {
-            }
+                if(device.isConnected())
+                	return device;
+            } catch (Exception e) {}
         }
 
         return null;
