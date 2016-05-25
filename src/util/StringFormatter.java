@@ -183,7 +183,7 @@ public class StringFormatter {
 			if(splitWord) {
 				indexLastWord = current.substring(0, lineCharMax).length()-current.substring(0, lineCharMax).lastIndexOf(' ');
 				
-				if(indexLastWord == lineCharMax)
+				if(indexLastWord >= lineCharMax-(count >= 1 ? newLineSymbol.length() : 1))
 					indexLastWord = 0;
 				
 				modifier += indexLastWord;

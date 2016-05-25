@@ -269,11 +269,11 @@ public class Adapter {
 			
 			SoundPlayer.play("servoEject");
 			Action clientDisconnect = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
 				public void execute() {
 					Client.disconnect();
+				}
+				public void post() {
+					SoundPlayer.play("tapeInsert");
 				}
 			};
 			
@@ -286,14 +286,12 @@ public class Adapter {
 			
 			SoundPlayer.play("servoEject");
 			Action serverDisconnect = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
 				public void execute() {
 					Server.close();
 				}
 				public void post() {
 					StatusUI.removeStatusDisplay(NotificationUI.getPanel());
+					SoundPlayer.play("tapeInsert");
 				}
 			};
 			

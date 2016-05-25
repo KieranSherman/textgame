@@ -163,10 +163,15 @@ public class PopupUI {
 	    textField.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
-	    		data = new Object[] {textField.getText()};
+	    		String command = textField.getText();
+	    		data = new Object[] {command};
 	    		dialog.dispose();
-	    		inputHistory.add(textField.getText());
-				historyIndex = inputHistory.size();
+	    		
+	    		if(!command.equals("")) {
+	    			inputHistory.add(command);
+	    			historyIndex = inputHistory.size();
+	    		}
+	    		
 	    		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 				popupOpen = false;
 	    	}
