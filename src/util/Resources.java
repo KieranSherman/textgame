@@ -42,7 +42,6 @@ public class Resources {
 
 	public static final Font USER_INPUT;
 	public static final Font DOS;
-	public static final Font PLAY;
 	public static final Font MAN_DISPLAY;
 	
 	public static final Color CONSOLE_RED;
@@ -87,7 +86,6 @@ public class Resources {
 		
 		USER_INPUT = new Font("Courier", Font.PLAIN, 12);
 		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
-		PLAY = loadFont(DIRECTORY+"src/files/fonts/Play.ttf").deriveFont(13f);
 		MAN_DISPLAY = loadFont(DIRECTORY+"src/files/fonts/Trebuchet.ttf").deriveFont(13f);
 		
 		CONSOLE_RED = new Color(185, 0, 15);
