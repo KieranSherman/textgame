@@ -4,16 +4,24 @@ import java.util.ArrayList;
 
 import util.Resources;
 
+/**
+ * Class consists exclusively of static methods that modfiy sound operations.
+ * 
+ * @author kieransherman
+ */
 public class SoundPlayer {
 	
 	protected static ArrayList<Sound> allSounds;
+	private static boolean mute;
 	
+	// Prevent object instantiation
 	private SoundPlayer() {}
 	
 	static {
 		allSounds = new ArrayList<Sound>();
 		
-		String [] soundData = Resources.readText(Resources.DIRECTORY+"src/files/reference/sound.txt");
+		String [] soundData = Resources.parseTextFromFile(Resources.SOUND, "\n");
+		
 		String [] data;
 		String name, filePath, gain;
 		Sound sound;
@@ -37,20 +45,48 @@ public class SoundPlayer {
 		}
 	}
 	
+	/**
+	 * Play the sound registered with the sound's name.
+	 * 
+	 * @param soundName the sound name.
+	 */
 	public static void play(String soundName) {
+		if(mute)
+			return;
+		
 		int index = getIndex(soundName);
 		
 		if(index != -1)
 			allSounds.get(index).play();
 	}
 	
+	/**
+	 * Loop the sound registered with the sound's name.
+	 * 
+	 * @param soundName the sound name.
+	 */
 	public static void loop(String soundName) {
+		if(mute)
+			return;
+		
 		int index = getIndex(soundName);
 		
 		if(index != -1)
 			allSounds.get(index).loop();
 	}
 	
+	/**
+	 * Sets whether sounds will be muted or not.
+	 * 
+	 * @param mute whether or not to mute sounds.
+	 */
+	public static void setMuted(boolean mute) {
+		SoundPlayer.mute = mute;
+	}
+	
+	/**
+	 * Return the index of a sound if registered.
+	 */
 	private static int getIndex(String soundName) {
 		for(int i = 0; i < allSounds.size(); i++)
 			if(allSounds.get(i).getName().equals(soundName))

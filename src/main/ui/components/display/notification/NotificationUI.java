@@ -16,16 +16,24 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import main.ui.components.display.background.PanelBackground;
-import main.ui.components.display.status.StatusUI;
 import sound.SoundPlayer;
 import util.Action;
 import util.Resources;
 
+/**
+ * This class consists exclusively of static methods that affect the notification display.
+ * 
+ * @author kieransherman
+ * @see #createNotificationDisplay(JPanel, String)
+ *
+ */
 public class NotificationUI {
 	
-	private volatile static JPanel notifications, mainPanel;
+	private volatile static JPanel notifications;
+	private volatile static JPanel background;
 	private volatile static ArrayList<Notification> notificationQueue;
-	private volatile static int notificationSize, notificationCapacity;
+	private volatile static int notificationSize;
+	private volatile static int notificationCapacity;
 	
 	static {
 		notificationQueue = new ArrayList<Notification>();
@@ -33,42 +41,39 @@ public class NotificationUI {
 		notificationCapacity = 10;
 	}
 	
+	// Prevent object instantiation
 	private NotificationUI() {}
 	
-	public static JPanel createNotificationDisplay() {
+	/**
+	 * Adds a notification panel to the specified panel at a {@link BorderLayout} position.
+	 * 
+	 * @param addToPanel the panel to add the notification panel to.
+	 * @param borderLayout the {@link BorderLayout} position.
+	 */
+	public static void createNotificationDisplay(JPanel addToPanel, String borderLayout) {
 		notifications = new JPanel(new GridLayout(notificationCapacity, 1, 0, 8));
 		notifications.setOpaque(false);
-		notifications.setPreferredSize(new Dimension(200, Resources.HEIGHT));
+		notifications.setPreferredSize(new Dimension(200, Resources.WINDOW_HEIGHT));
 		notifications.setBorder(Resources.getBorder("TODO", new Color(40, 190, 230, 180)));
 		
-		mainPanel = new PanelBackground(Resources.notesBG);
-		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(notifications, BorderLayout.CENTER);
+		background = new PanelBackground(Resources.notesBG);
+		background.setLayout(new BorderLayout());
+		background.add(notifications);
 		
-		return mainPanel;
+		addToPanel.add(background, borderLayout);
 	}
 	
-	public static void createStatusDisplay() {
-		if(mainPanel.getComponentCount() > 1)
-			return;
-		
-		((GridLayout)notifications.getLayout()).setRows((notificationCapacity = 6));
-		
-		mainPanel.add(StatusUI.createStatusPane(), BorderLayout.SOUTH);
-		mainPanel.revalidate();
-	}
-	
-	public static void removeStatusDisplay() {
-		if(mainPanel.getComponentCount() < 2)
-			return;
-		
-		((GridLayout)notifications.getLayout()).setRows((notificationCapacity = 10));
-		
-		mainPanel.remove(1);
-		mainPanel.revalidate();
-	}
-	
-	public static void queueNotification(Object obj, int disposeTime, Action action, boolean playSound) {
+	/**
+	 * Creates and queues a notification.  If the current display is not full, it is immediately removed
+	 * from the queue and executed.  Otherwise, it remains in the queue until the current
+	 * display is no longer full.
+	 * 
+	 * @param label the notification's label.
+	 * @param disposeTime the dispose time of the notification.
+	 * @param action the action to execute after disposed.
+	 * @param playSound whether or not to play a notification sound.
+	 */
+	public static void queueNotification(String label, int disposeTime, Action action, boolean playSound) {
 		JPanel notification = new PanelBackground(Resources.notesBG);
 
 		JTextPane area = new JTextPane();
@@ -79,11 +84,11 @@ public class NotificationUI {
 		area.setFont(Resources.DOS.deriveFont(12f));
 		area.setForeground(new Color(255, 255, 255, 180));
 		
-		if(obj.toString().length() > 20) {
-			area.setText(obj.toString().substring(0, 18)+"...");
-			notification.setToolTipText(obj.toString());
+		if(label.toString().length() > 20) {
+			area.setText(label.toString().substring(0, 18)+"...");
+			notification.setToolTipText(label.toString());
 		} else {
-			area.setText(obj.toString());
+			area.setText(label.toString());
 		}
 		
 		StyledDocument doc = area.getStyledDocument();
@@ -96,7 +101,7 @@ public class NotificationUI {
 		pB.setFont(Resources.DOS.deriveFont(12f));
 		pB.setStringPainted(true);
 		
-		notification.setPreferredSize(new Dimension(Resources.WIDTH/6, 50));
+		notification.setPreferredSize(new Dimension(Resources.WINDOW_WIDTH/6, 50));
 		notification.setLayout(new BorderLayout());
 		notification.add(area, BorderLayout.CENTER);
 		
@@ -109,6 +114,10 @@ public class NotificationUI {
 		addNotification(new Notification(notification, disposeTime, action), playSound);
 	}
 	
+	/**
+	 * Checks to see if the current notification display is full.  If so, the notification is queued.
+	 * Otherwise, the notification is executed on its own thread immediately.
+	 */
 	private static void addNotification(Notification notification, boolean playSound) {
 		if(notificationSize >= notificationCapacity) {
 			notificationQueue.add(notification);
@@ -153,4 +162,23 @@ public class NotificationUI {
 		t.start();
 	}
 
+	/**
+	 * Sets the new maximum capacity for the notification display.
+	 * 
+	 * @param notificationCapacity the maximum capacity.
+	 */
+	public static void setNotificationCapacity(int notificationCapacity) {
+		NotificationUI.notificationCapacity = notificationCapacity;
+		((GridLayout)notifications.getLayout()).setRows(notificationCapacity);
+	}
+	
+	/**
+	 * Returns the {@link JPanel} of the {@link NotificationUI}.
+	 * 
+	 * @return the notification JPanel.
+	 */
+	public static JPanel getPanel() {
+		return background;
+	}
+	
 }

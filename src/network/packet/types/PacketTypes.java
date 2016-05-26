@@ -1,7 +1,10 @@
 package network.packet.types;
 
-/*
- * Different types of packets
+/**
+ * Enum models different types of packets.
+ * 
+ * @author kieransherman
+ * 
  */
 public enum PacketTypes {
 	LOGIN(01), DISCONNECT(02), MESSAGE(03), ACTION(04);

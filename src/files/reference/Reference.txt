@@ -2,13 +2,21 @@
 														References
 =================================================================================================================================
 
-VERSION: 	v1.30
+VERSION: 	v1.34
 
 =================================================================================================================================
 													   Recent Updates
 =================================================================================================================================
 
-v1/30 - UPNP implementation
+v1.34 - new manual panel, basic gub fixes
+
+v1.33 - setup basic singleplayer and multiplayer game classes
+
+v1.32 - added terminal and command history
+
+v1.31 - everything now has a javadoc
+
+v1.30 - UPNP implementation
 
 v1.29 - major graphical/UI changes
 

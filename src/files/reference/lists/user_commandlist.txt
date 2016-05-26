@@ -1,7 +1,0 @@
-server
-client
-notes
-clear
-status
-logout
-help

@@ -225,7 +225,7 @@ public class GatewayDevice {
                 serviceType, "GetStatusInfo", null);
 
         String connectionStatus = nameValue.get("NewConnectionStatus");
-        if (connectionStatus != null && connectionStatus.equalsIgnoreCase("Connected")) {
+        if (connectionStatus != null && connectionStatus.equalsIgnoreCase("connected")) {
             return true;
         }
 

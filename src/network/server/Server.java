@@ -28,8 +28,11 @@ import util.out.DeveloperLogger;
 import util.out.Formatter;
 import util.out.DefaultLogger;
 
-/*
- * Class models a threadable server in a network
+/**
+ * Class consists of exclusively static methods and models a threadable server.
+ * 
+ * @author kieransherman
+ * 
  */
 public class Server {
 	
@@ -55,10 +58,13 @@ public class Server {
 		serverConnections = new ArrayList<ServerConnection>();
 	}
 	
+	// Prevent object instantiation
 	private Server() {}
 	
 	/**
-	 * Initializes the server
+	 * Initializes the server on a port.
+	 * 
+	 * @param portNumber the port to start the server on.
 	 */
 	public static void initialize(int portNumber) {
 		Server.portNumber = portNumber;
@@ -66,7 +72,7 @@ public class Server {
 	}
 	
 	/**
-	 * Starts the server
+	 * Starts the server on a thread.
 	 */
 	public static void startServer() {
 		serverThread = new Thread("ServerThread-Main") {
@@ -79,8 +85,8 @@ public class Server {
 	}
 	
 	/**
-	 * opens a server; waits for incoming connections;
-	 * sends confirmation login packet; receives and parses packets
+	 * Opens a server and UPnP gateway.  Waits for incoming connections. Sends confirmation login packet. 
+	 * Receives and parses packets.
 	 */
 	private static void run() {
 		String error = null;
@@ -115,7 +121,7 @@ public class Server {
 	}
 	
 	/**
-	 * Opens a connection at the client's socket
+	 * Opens a ServerConnection at the client's socket.
 	 */
 	private static void openConnection(Socket clientSocket) {
 		ServerConnection serverConnection = new ServerConnection(clientSocket);
@@ -127,7 +133,9 @@ public class Server {
 	}
 	
 	/**
-	 * Removes a serverConnection
+	 * Removes a {@link ServerConnection}.
+	 * 
+	 * @param serverConnection the connection to remove.
 	 */
 	public static void removeConnection(ServerConnection serverConnection) {
 		int index = serverConnections.indexOf(serverConnection);
@@ -151,7 +159,10 @@ public class Server {
 	}
 	
 	/**
-	 * Sends a packet to a client at hostAddress
+	 * Sends a packet to a client at a specific address.
+	 * 
+	 * @param packet the packet to send.
+	 * @param hostAddress the address to send the packet to.
 	 */
 	public static void sendPacketToClient(Packet packet, String hostAddress) {
 		for(ServerConnection sConnection : serverConnections)
@@ -162,17 +173,22 @@ public class Server {
 	}
 	
 	/**
-	 * Sends a packet to all connected clients
+	 * Sends a packet to all connected clients.
+	 * 
+	 * @param packet the packet to send.
 	 */
 	public static void sendPacketToAllClients(Packet packet) {
-		Formatter.formatServer(packet);
+		Formatter.formatServerPacket(packet);
 		
 		for(ServerConnection sConnection : serverConnections)
 			sConnection.sendPacket(packet);
 	}
 	
 	/**
-	 * Relays a packet to all clients except for client at hostAddress
+	 * Sends a packet to all connected clients except for a client at a specific address.
+	 * 
+	 * @param packet the packet to send.
+	 * @param hostAddress the address to avoid.
 	 */
 	public static void sendPacketToAllOtherClients(Packet packet, String hostAddress) {
 		Formatter.deconstruct(packet);
@@ -188,9 +204,10 @@ public class Server {
 	}
 	
 	/**
-	 * Attempts to register a user provided they're not banned, 
-	 * their username isn't taken, they're not already connected,
-	 * and the maximum number of clients hasn't been reached
+	 * Attempts to register a user provided they're not banned, their username isn't taken, they're
+	 * not already connected, and the server isn't full.
+	 * 
+	 * @param packet the login packet received from the client.
 	 */
 	public static void registerUser(Packet01Login packet) {
 		String hostAddress = packet.getHostAddress();
@@ -226,7 +243,7 @@ public class Server {
 	}
 	
 	/**
-	 * Sets a server connection's user
+	 * Sets a server connection's user.
 	 */
 	private synchronized static void addUser(String hostAddress, String username) {
 		ServerConnection userConnection = serverConnections.get(0);
@@ -246,7 +263,12 @@ public class Server {
 			@Override
 			public void execute() {
 				PopupUI.promptChoice(username, new String[] {"BAN", "KICK", "CANCEL"});
-				String choice = PopupUI.getData();
+				
+				String choice;
+				if(PopupUI.getData() == null)
+					choice = "CANCEL";
+				else
+					choice = (String)PopupUI.getData()[0];
 				
 				if(choice.equalsIgnoreCase("cancel"))
 					return;
@@ -266,7 +288,7 @@ public class Server {
 	}
 		
 	/**
-	 * Disconnects a user at hostAddress with a message
+	 * Disconnects a user at hostAddress with a message.
 	 */
 	private synchronized static void disconnectUser(String hostAddress, String message) {
 		for(ServerConnection sConnection : serverConnections)
@@ -278,17 +300,17 @@ public class Server {
 	}
 
 	/**
-	 * Checks to see if the maximum number of clients has joined
+	 * Checks to see if the maximum number of clients has joined.
 	 */
 	private static boolean checkMaximum() {
 		return clientConnectionMaximum != -1 && serverConnections.size() >= clientConnectionMaximum;
 	}
 	
 	/**
-	 * Checks the ban list for hostAddress
+	 * Checks the ban list for hostAddress.
 	 */
 	private static boolean checkBanList(String hostAddress) {
-		for(String address : Resources.BANLIST)
+		for(String address : Resources.BAN_LIST_ENTRIES)
 			if(address.equals(hostAddress)) {
 				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
@@ -304,7 +326,7 @@ public class Server {
 	}
 	
 	/**
-	 * Checks connected clients to see if username is already taken
+	 * Checks connected clients to see if username is already taken.
 	 */
 	private static boolean checkUsername(String username) {
 		if(usernameTaken(username)) {
@@ -316,7 +338,7 @@ public class Server {
 	}
 	
 	/**
-	 * Checks connected clients to see if connection request is already connected
+	 * Checks connected clients to see if connection request is already connected.
 	 */
 	private static boolean checkConnected(String hostAddress) {
 		if(alreadyConnected(hostAddress)) {
@@ -371,7 +393,7 @@ public class Server {
 	}
 	
 	/**
-	 * Returns the user who sent packet
+	 * Returns the user at hostAddress.
 	 */
 	private static ServerConnection getServerConnectionAtAddress(String hostAddress) {
 		for(ServerConnection sConnection : serverConnections)
@@ -382,7 +404,7 @@ public class Server {
 	}
 	
 	/**
-	 * Checks to see if hostAddress matches the localhost
+	 * Checks to see if a hostAddress is the localhost.
 	 */
 	private static boolean isLocalHost(String hostAddress) {
 		try {
@@ -396,7 +418,7 @@ public class Server {
 	}
 	
 	/**
-	 * Add hostAddress to the ban list
+	 * Add hostAddress to the ban list.
 	 */
 	private static void addToBanList(String hostAddress) {
 		FileWriter fw = null;
@@ -419,7 +441,7 @@ public class Server {
 	}
 	
 	/**
-	 * Notifies the server to close
+	 * Notifies the server to close and removes the UPnP gateway.
 	 */
 	public static void close() {
 		UPnPGateway.disconnect();
@@ -436,15 +458,20 @@ public class Server {
 		DefaultLogger.appendColoredText("[server closed]", Color.GRAY);
 	}
 	
+	
 	/**
-	 * Returns if the server is initialized
+	 * Returns whether or not the server has been initialized.
+	 * 
+	 * @return whether the server is initialized.
 	 */
 	public static boolean isInitialized() {
 		return Server.initialized;
 	}
 	
 	/**
-	 * Returns if the server is running
+	 * Returns whether or not the server thread is running.
+	 * 
+	 * @return whether the server is running.
 	 */
 	public static boolean isRunning() {
 		return serverThread != null;
