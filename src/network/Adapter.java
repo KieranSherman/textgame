@@ -97,7 +97,7 @@ public class Adapter {
 	 */
 	public static void destroyClient() {
 		Client.disconnect();
-		Window.getFrame().setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.CURRENT_VERSION);
 	}
 	
 	
@@ -145,11 +145,11 @@ public class Adapter {
 	}
 	
 	/**
-	 * Destroy the server
+	 * Destroy the server.
 	 */
 	public static void destroyServer() {
 		Server.close();
-		Window.getFrame().setTitle(Resources.VERSION);
+		Window.getFrame().setTitle(Resources.CURRENT_VERSION);
 		StatusUI.removeStatusDisplay(NotificationUI.getPanel());
 	}
 	
@@ -269,11 +269,11 @@ public class Adapter {
 			
 			SoundPlayer.play("servoEject");
 			Action clientDisconnect = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
 				public void execute() {
 					Client.disconnect();
+				}
+				public void post() {
+					SoundPlayer.play("tapeInsert");
 				}
 			};
 			
@@ -281,22 +281,25 @@ public class Adapter {
 		}
 		else
 		if(Server.isRunning()) {
+			DefaultLogger.appendColoredText("[server closing...]", Color.GRAY);
 			Server.sendPacketToAllClients(new Packet02Disconnect("[server is closing...]"));
 			
 			SoundPlayer.play("servoEject");
 			Action serverDisconnect = new Action() {
-				public void pre() {
-					SoundPlayer.play("tapeInsert");
-				}
 				public void execute() {
 					Server.close();
 				}
 				public void post() {
 					StatusUI.removeStatusDisplay(NotificationUI.getPanel());
+					SoundPlayer.play("tapeInsert");
 				}
 			};
 			
 			NotificationUI.queueNotification("SERVER CLOSING", 600, serverDisconnect, true);
+		}
+		else {
+			SoundPlayer.play("error");
+			DefaultLogger.appendColoredText("[no network detected]", Color.RED);
 		}
 	}
 	

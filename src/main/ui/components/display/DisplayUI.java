@@ -24,12 +24,14 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import main.misc.Developer;
 import main.ui.Window;
 import main.ui.components.display.background.PanelBackground;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.display.scrollbars.ScrollBarUI_Horizontal;
 import main.ui.components.display.scrollbars.ScrollBarUI_Vertical;
 import util.Resources;
+import util.StringFormatter;
 
 /**
  * This class consists exclusively of static methods that affect the display.
@@ -44,8 +46,9 @@ import util.Resources;
  */
 public class DisplayUI {
 	
+	public static JPanel notesPanel;
 	private static JTextArea terminalHead;
-	private static JSplitPane splitPane;
+	public static JSplitPane splitPane;
 	
 	private static int lines;
 	
@@ -57,15 +60,17 @@ public class DisplayUI {
 	 */
 	public static void initialize() {
 		terminalHead.setText(
-				"BUILD "+Resources.VERSION+"\n"
+				"BUILD "+Resources.CURRENT_VERSION+"\n"
 				+ System.getProperty("user.home").toUpperCase()+": *ACCESS GRANTED*\n\n"
 				+ "\tKLETUS INDUSTRIES UNIFIED OPERATING SYSTEM\n"
 				+ "\t  COPYRIGHT 3015-3067 KLETUS INDUSTRIES\n"
 				+ "\t             -TERMINAL 1-");
 		terminalHead.setForeground(new Color(102, 186, 49, 150));
 		
-		splitPane.setDividerLocation(Window.terminal.getWidth()/2);
+		splitPane.setDividerLocation(Window.terminal.getWidth()/2+15);
 		splitPane.setEnabled(true);
+		
+		Developer.parseCommand("man man");
 	}
 	
 	/**
@@ -75,12 +80,10 @@ public class DisplayUI {
 	 */
 	public static JPanel createDisplay() {
 		splitPane = new SplitPaneUI();
-		
 		splitPane.setLeftComponent(getTerminalPanel());
 		splitPane.setRightComponent(getNotesPanel());
 		splitPane.setBorder(Resources.getBorder("COMMLINK", new Color(255, 40, 40, 180)));
-		
-		splitPane.setDividerLocation(Resources.WIDTH);
+		splitPane.setDividerLocation(Integer.MAX_VALUE);
 		splitPane.setBackground(new Color(15, 15, 15));
 		splitPane.setEnabled(false);
 
@@ -104,10 +107,10 @@ public class DisplayUI {
 		Window.style = Window.context.addStyle("TextGame", null);
 
 		Window.terminal = new JTextPane(Window.doc);
+		Window.terminal.setOpaque(false);
 		Window.terminal.setEditable(false);
 		Window.terminal.setFont(Resources.DOS.deriveFont(13f));
 		Window.terminal.setMargin(new Insets(30, 60, 0, 10));
-		Window.terminal.setOpaque(false);
 		Window.terminal.setParagraphAttributes(set, false);
 		Window.terminal.addMouseListener(new MouseListener() {
 			@Override
@@ -126,11 +129,10 @@ public class DisplayUI {
 		});
 		Window.terminal.setHighlighter(null);
 		
-		terminalHead = new JTextArea(
-				System.getProperty("user.home").toUpperCase()+": *ACCESS DENIED*\n\n");
+		terminalHead = new JTextArea(System.getProperty("user.home").toUpperCase()+": *ACCESS DENIED*\n\n");
 		terminalHead.setFont(Resources.DOS.deriveFont(13f));
 		terminalHead.setForeground(new Color(255, 50, 50, 175));
-		terminalHead.setMargin(new Insets(20, 60, 0, 20));
+		terminalHead.setMargin(new Insets(20, 60, 0, 100));
 		terminalHead.setOpaque(false);
 		terminalHead.setEditable(false);
 		terminalHead.setHighlighter(null);
@@ -151,12 +153,12 @@ public class DisplayUI {
 	private static JPanel getNotesPanel() {
 		Window.notes = new JTextPane();
 		Window.notes.setOpaque(false);
+		Window.notes.setMargin(new Insets(0, 10, 0, 10));
 		Window.notes.setLayout(new BorderLayout());
 		Window.notes.setForeground(new Color(255, 255, 255, 175));
 		Window.notes.setFont(Resources.DOS.deriveFont(16f));
 		Window.notes.setCaretColor(Color.WHITE);
 		Window.notes.setSelectionColor(Color.GRAY);
-		Window.notes.setBorder(new EmptyBorder(0, 0, 0, 20));
 		Window.notes.setText("[ ` ] { HELP }\n\n");
 		
 		JTextArea noteHead = new JTextArea(
@@ -170,13 +172,13 @@ public class DisplayUI {
 		noteHead.setEditable(false);
 		noteHead.setHighlighter(null);
 		
-		JPanel notesPanel = new JPanel();
-		notesPanel.setOpaque(false);
-		notesPanel.setLayout(new BorderLayout());
-		notesPanel.add(Window.notes, BorderLayout.CENTER);
-		notesPanel.add(noteHead, BorderLayout.NORTH);
+		JPanel notesContainer = new JPanel();
+		notesContainer.setOpaque(false);
+		notesContainer.setLayout(new BorderLayout());
+		notesContainer.add(Window.notes, BorderLayout.CENTER);
+		notesContainer.add(noteHead, BorderLayout.NORTH);
 		
-		JScrollPane scrollPane_NOTES = new JScrollPane(notesPanel);
+		JScrollPane scrollPane_NOTES = new JScrollPane(notesContainer);
 		scrollPane_NOTES.setOpaque(false);
 		scrollPane_NOTES.getViewport().setOpaque(false);
 		scrollPane_NOTES.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -189,11 +191,11 @@ public class DisplayUI {
 		scrollPane_NOTES.getVerticalScrollBar().setOpaque(false);
 		scrollPane_NOTES.setBorder(null);
 		
-		JPanel rightPanel = new PanelBackground(Resources.notesBG);
-		rightPanel.setLayout(new BorderLayout());
-		rightPanel.add(scrollPane_NOTES, BorderLayout.CENTER);
+		notesPanel = new PanelBackground(Resources.notesBG);
+		notesPanel.setLayout(new BorderLayout());
+		notesPanel.add(scrollPane_NOTES, BorderLayout.CENTER);
 		
-		return rightPanel;
+		return notesPanel;
 	}
 	
 	/**
@@ -202,7 +204,7 @@ public class DisplayUI {
 	public static void loadNotesHelp() {
 		FileReader fr = null;
 		try {
-			fr = new FileReader(new File(Resources.DIRECTORY+"src/files/reference/notes-help.txt"));
+			fr = new FileReader(new File(Resources.HELP));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -230,25 +232,27 @@ public class DisplayUI {
 	 * 
 	 * @param str the {@code String} to insert.
 	 */
-	public static void insertTextToDoc(String str) {
-		try {
-			Window.doc.insertString(Window.doc.getLength(), str, Window.style);
-			
-			int lineCount = 0;
-			for(int i = 0; i < str.length(); i++)
-				if(str.charAt(i) == '\n')
-					lineCount++;
-			
-			lines += lineCount;
-			
-			while(lines > 36) {
-				Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
-				lines--;
+	public synchronized static void insertTextToDoc(String str) {
+		for(String s : StringFormatter.getWordWrap(str, 60)) {
+			try {
+				s += (s.contains("\n") ? "" : "\n");
+				
+				Window.doc.insertString(Window.doc.getLength(), s, Window.style);
+				
+				int lineCount = 0;
+				for(int i = 0; i < s.length(); i++)
+					if(s.charAt(i) == '\n')
+						lineCount++;
+				
+				lines += lineCount;
+				
+				while(lines > 36) {
+					Window.doc.remove(0, Window.doc.getText(0, Window.doc.getLength()).split("\n")[0].length()+1);
+					lines--;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			Window.terminal.setCaretPosition(Window.doc.getLength());
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	

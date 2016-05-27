@@ -7,10 +7,13 @@ import java.util.Date;
 
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
+import main.ui.components.display.manual.Manual;
 import main.ui.components.display.notification.NotificationUI;
 import main.ui.components.popup.PopupUI;
 import network.Adapter;
+import network.client.Client;
 import network.packet.types.Packet03Message;
+import network.server.Server;
 import network.server.ServerModifier;
 import sound.SoundPlayer;
 import util.Action;
@@ -42,85 +45,98 @@ public class Developer {
 		if(str == null)
 			return;
 
-		str = str.toLowerCase();
+		str = str.toLowerCase().trim();
 		String [] args = str.split("\\s+");
 		
 		if(!Developer.userCommand(args) && !Developer.developerCommand(args)) {
 			DefaultLogger.appendColoredText("[unrecognized command]", Color.RED);
 			SoundPlayer.play("error");
 		}
-
 	}
-	
 
 	/**
 	 * Returns whether or not the String[] is a user command.
 	 */
 	private static boolean userCommand(String[] args) {
-		if(args[0].equals("server")) {
-			String port = "9999";
-			
-			for(String s : args)
-				if(s.contains("p:"))
-					port = s.substring(s.indexOf(":")+1);
-			
-			Adapter.createServer(Integer.parseInt(port));
-			Window.getFrame().setTitle(Resources.VERSION+" | running server");
-		}
+			if(args[0].equals("server")) {
+				String port = "9999";
+				
+				for(String s : args)
+					if(s.contains("p:"))
+						port = s.substring(s.indexOf(":")+1);
+				
+				Adapter.createServer(Integer.parseInt(port));
+				Window.getFrame().setTitle(Resources.CURRENT_VERSION+" | running server");
+			}
 		else
-		if(args[0].equals("client")) {
-			String address = "localhost";
-			String port = "9999";
-			
-			for(String s : args)
-				if(s.contains("a:"))
-					address = s.substring(s.indexOf(":")+1);
-			
-			for(String s : args)
-				if(s.contains("p:"))
-					port = s.substring(s.indexOf(":")+1);
-						
-			Adapter.createClient(address, Integer.parseInt(port));
-			Window.getFrame().setTitle(Resources.VERSION+" | running client");
-		}
+			if(args[0].equals("client")) {
+				String address = "localhost";
+				String port = "9999";
+				
+				for(String s : args)
+					if(s.contains("a:"))
+						address = s.substring(s.indexOf(":")+1);
+				
+				for(String s : args)
+					if(s.contains("p:"))
+						port = s.substring(s.indexOf(":")+1);
+							
+				Adapter.createClient(address, Integer.parseInt(port));
+				Window.getFrame().setTitle(Resources.CURRENT_VERSION+" | running client");
+			}
 		else
-		if(args[0].equals("clear")) {
-			DisplayUI.clear();
-		}
+			if(args[0].equals("clear")) {
+				DisplayUI.clear();
+			}
 		else
-		if(args[0].equals("status")) {
-			Adapter.status();
-		}
+			if(args[0].equals("status")) {
+				Adapter.status();
+			}
 		else
-		if(args[0].equals("logout")) {
-			Adapter.close();
-			Window.getFrame().setTitle(Resources.VERSION);
-		}
+			if(args[0].equals("logout")) {
+				Adapter.close();
+				Window.getFrame().setTitle(Resources.CURRENT_VERSION);
+			}
 		else
-		if(args[0].equals("notes")) {
-			Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
-			DefaultLogger.appendColoredText("[sent notes]", Color.GRAY);
-		}
+			if(args[0].equals("notes")) {
+				if(!(Client.isRunning() || Server.isRunning())) {
+					DefaultLogger.appendColoredText("[no network detected]", Color.RED);
+					SoundPlayer.play("error");
+				} else  {
+					Adapter.sendPacket(new Packet03Message("START >>>>>>>\n"+Window.notes.getText()+"\n<<<<<<< END"));
+					DefaultLogger.appendColoredText("[sent notes]", Color.GRAY);
+				}
+			}
 		else
-		if(args[0].equals("help")) {
-			DisplayUI.loadNotesHelp();
-		}
+			if(args[0].equals("help")) {
+				DisplayUI.loadNotesHelp();
+			}
 		else
-		if(args[0].equals("devmode_set")) {
-			String devMode = "false";
-			
-			if(args.length == 2)
-				devMode = args[1];
-			
-			developerMode = Boolean.parseBoolean(devMode);
-			
-			if(developerMode)
-				DefaultLogger.appendColoredText("[developer commands enabled]", Resources.DARK_GREEN);
-			else
-				DefaultLogger.appendColoredText("[developer commands disabled]", Resources.DARK_GREEN);
-			
-			return true;
-		}
+			if(args[0].equals("man")) {
+				String str = "man";
+				
+				if(args.length == 2)
+					str = args[1];
+				
+				String entry = Manual.getManualEntry(str);
+				
+				Manual.setText(entry);
+				Manual.showManualPanel();
+			}
+		else
+			if(args[0].equals("devmode_set")) {
+				String devMode = "false";
+				
+				if(args.length == 2)
+					devMode = args[1];
+				
+				developerMode = Boolean.parseBoolean(devMode);
+				
+				if(developerMode)
+					DefaultLogger.appendColoredText("[developer commands enabled]", Resources.CONSOLE_GREEN);
+				else
+					DefaultLogger.appendColoredText("[developer commands disabled]", Resources.CONSOLE_GREEN);
+			}
 		else {
 			return false;
 		}
@@ -142,7 +158,7 @@ public class Developer {
 					localHostMaximum = Integer.parseInt(args[1]);
 			
 				ServerModifier.setLocalHostMaximum(localHostMaximum);
-				DefaultLogger.appendColoredText("[local_host_maximum set to "+localHostMaximum+"]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[local_host_maximum set to "+localHostMaximum+"]", Resources.CONSOLE_GREEN);
 			}
 		else
 			if(args[0].equals("same_client_maximum")) {
@@ -152,7 +168,7 @@ public class Developer {
 					sameClientMaximum = Integer.parseInt(args[1]);
 			
 				ServerModifier.setSameClientMaximum(sameClientMaximum);
-				DefaultLogger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[same_client_maximum set to "+sameClientMaximum+"]", Resources.CONSOLE_GREEN);
 			}
 		else
 			if(args[0].equals("client_connection_maximum")) {
@@ -162,7 +178,7 @@ public class Developer {
 					clientConnectionMaximum = Integer.parseInt(args[1]);
 			
 				ServerModifier.setClientConnectionMaximum(clientConnectionMaximum);
-				DefaultLogger.appendColoredText("[client_connection_maximum set to "+clientConnectionMaximum+"]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[client_connection_maximum set to "+clientConnectionMaximum+"]", Resources.CONSOLE_GREEN);
 			}
 		else
 			if(args[0].equals("play_remix")) {
@@ -231,7 +247,6 @@ public class Developer {
 					port = Integer.parseInt(args[1]);
 				
 				ServerModifier.removeUPnPMapAtPort(port);
-				DefaultLogger.appendColoredText("[removed UPnP map at "+port+"]", Color.RED);
 			}
 		else
 			if(args[0].equals("add_upnp_map_at_port")) {
@@ -241,17 +256,26 @@ public class Developer {
 					port = Integer.parseInt(args[1]);
 				
 				ServerModifier.addUPnPMapAtPort(port);
-				DefaultLogger.appendColoredText("[added UPnP map at "+port+"]", Resources.DARK_GREEN);
 			}
 		else
-			if(args[0].equals("set_upnp_remap")) {
+			if(args[0].equals("upnp_overwrite_set")) {
 				String remap = "false";
 				
 				if(args.length == 2)
 					remap = args[1];
 				
 				ServerModifier.setUPnPRemap(Boolean.parseBoolean(remap));
-				DefaultLogger.appendColoredText("[set UPnP remap to "+remap+"]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[set UPnP overwrite to "+remap+"]", Resources.CONSOLE_GREEN);
+			}
+		else
+			if(args[0].equals("mute_set")) {
+				String muted = "false";
+				
+				if(args.length == 2)
+					muted = args[1];
+				
+				SoundPlayer.setMuted(Boolean.parseBoolean(muted));
+				DefaultLogger.appendColoredText("[set sound muted to "+muted+"]", Resources.CONSOLE_GREEN);
 			}
 		else
 			if(args[0].equals("file_bug_report")) {
@@ -279,10 +303,10 @@ public class Developer {
 				for(int i = 1; i < descriptionSplit.size(); i++)
 					sf.addArgument(descriptionSplit.get(i), 3, 3);
 				
-				Resources.writeTextToFile("src/files/reference/lists/buglist.txt", sf.getFormattedString()+"\n", true);
+				Resources.writeTextToFile(Resources.BUG_LIST, sf.getFormattedString()+"\n", true);
 				
 				System.out.println(sf.getFormattedString());
-				DefaultLogger.appendColoredText("[bug filed: "+bugName+"]", Resources.DARK_GREEN);
+				DefaultLogger.appendColoredText("[bug filed: "+bugName+"]", Resources.CONSOLE_GREEN);
  			}
 		else {
 			return false;

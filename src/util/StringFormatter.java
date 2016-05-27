@@ -128,34 +128,72 @@ public class StringFormatter {
 	 * @return the ArrayList containing the new lines.
 	 */
 	public static ArrayList<String> getWordWrap(String str, int lineCharMax) {
+		ArrayList<String> strSplit = new ArrayList<String>();
+		
+		String[] newLineSplit = str.split("\n");
+		
+		for(int i = 0; i < newLineSplit.length; i++)
+			strSplit.addAll(wrapText(newLineSplit[i], lineCharMax));
+		
+		return strSplit;
+	}
+	
+	/**
+	 * Returns an {@link ArrayList} of type {@code String} containing lines of an original String 
+	 * split up by word wrap by a maximum line character count.
+	 * 
+	 */
+	private static ArrayList<String> wrapText(String str, int lineCharMax) {
+		String newLineSymbol = "--";
 		int modifier = 0;
 		int count = 0;
 		ArrayList<String> strSplit = new ArrayList<String>();
 		
 		while(true) {
-			String line;
+			String split, current;
 			boolean splitWord = false;
 			int indexLastWord = 0;
 			int start = count*lineCharMax-modifier;
 			
-			if(start > str.length())
+			if(start >= str.length())
 				break;
 			
-			if(str.substring(start).length() > lineCharMax) {
-				if(str.charAt(start+lineCharMax) == ' ')
+			if(count >= 1) {
+				current = newLineSymbol + str.substring(start);
+				modifier += newLineSymbol.length();
+			} else {
+				current = str.substring(start);
+			}
+			
+			if(current.contains("\t")) {
+				int tabCount = current.split("\t").length - 1;
+				tabCount = tabCount == -1 ? 0 : tabCount;
+				
+				current = current.replaceAll("\t", "        ");
+				modifier += (8*tabCount)-1;
+			}
+			
+			if(current.length() > lineCharMax && !current.equals(newLineSymbol)) {
+				if(current.charAt(lineCharMax) == ' ')
 					splitWord = false;
 				else
 					splitWord = true;
 			}
 			
 			if(splitWord) {
-				indexLastWord = str.substring(start, start+lineCharMax).length()-str.substring(start, start+lineCharMax).lastIndexOf(' ');
+				indexLastWord = current.substring(0, lineCharMax).length()-current.substring(0, lineCharMax).lastIndexOf(' ');
+				
+				if(indexLastWord >= lineCharMax-(count >= 1 ? newLineSymbol.length() : 1))
+					indexLastWord = 0;
+				
 				modifier += indexLastWord;
 			}
 			
-			line = str.substring(start, start+(str.substring(start).length() > lineCharMax ? lineCharMax-indexLastWord : str.substring(start).length()));
+			split = current.substring(0, (current.length() > lineCharMax ? lineCharMax-indexLastWord : current.length()));
 			
-			strSplit.add(line.trim());
+			if(!split.trim().equals(newLineSymbol))
+				strSplit.add(split);
+			
 			count++;
 		}
 		

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
@@ -31,57 +32,94 @@ import util.out.Colorer.ColorRules;
  *
  */
 public class Resources {
-	public static String DIRECTORY = "";
+	public static final String DIRECTORY;
 
-	public final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	public static final Dimension SCREEN_SIZE;
 	
-	public final static int HEIGHT = 800, WIDTH = 1300;	//height and width of window
-	
-	public final static Font USER_INPUT = new Font("Courier", Font.PLAIN, 12);	//font for user output
-	public final static Font DOS;
-	
-	public final static Color DARK_RED = new Color(185, 0, 15);		//dark red color
-	public final static Color DARK_GREEN = new Color(15, 170, 0);	//dark green color
-	
-	public final static String VERSION;
-	public static ArrayList<String> ALL_VERSIONS;
-	
-	public final static String[] BANLIST;
-	public static ArrayList<String> MASTER_COMMANDLIST;
-	public final static ArrayList<String> USER_COMMANDLIST;
-	public final static ArrayList<String> DEV_COMMANDLIST;
+	public static final int WINDOW_HEIGHT;
+	public static final int WINDOW_WIDTH;
+	public static final int RENDER_SPEED;
 
+	public static final Font USER_INPUT;
+	public static final Font DOS;
+	public static final Font MAN_DISPLAY;
+	
+	public static final Color CONSOLE_RED;
+	public static final Color CONSOLE_GREEN;
+	
+	public static final String BAN_LIST;
+	public static final String BUG_LIST;
+	public static final String DEV_COMMANDLIST;
+	public static final String TAG_LIST;
+	public static final String MAN_LIST;
+	public static final String USER_COMMANDLIST;
+	public static final String HELP;
+	public static final String REFERENCE;
+	public static final String SOUND;
+	public static final String CURRENT_VERSION;
+	
+	public static final String[] BAN_LIST_ENTRIES;
+	
+	public static final ArrayList<String> USER_COMMANDLIST_ENTRIES;
+	public static final ArrayList<String> DEV_COMMANDLIST_ENTRIES;
+	public static final ArrayList<String> MAN_LIST_ENTRIES;
+	public static final ArrayList<String> TAG_LIST_ENTRIES;
+	
+	public static ArrayList<String> all_versions;
+	public static ArrayList<String> master_commandList;
 	public static ArrayList<String> tempBanList;
-	
-	public static final int RENDER_SPEED = 80;
-	public static Image commandBG, terminalBG, devterminalBG, notesBG;
+
+	public static final Image terminalBG;
+	public static final Image notesBG;
 	
 	// Prevent object instantiation
 	private Resources() {}
-	
-	static {
-		loadActionWords(DIRECTORY+"src/files/Actions.txt");
-		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
 		
-		commandBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/command.gif");
+	static {
+		DIRECTORY = "";
+		
+		SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		WINDOW_HEIGHT = 800;
+		WINDOW_WIDTH = 1300;
+		RENDER_SPEED = 80;
+		
+		USER_INPUT = new Font("Courier", Font.PLAIN, 12);
+		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
+		MAN_DISPLAY = loadFont(DIRECTORY+"src/files/fonts/Trebuchet.ttf").deriveFont(13f);
+		
+		CONSOLE_RED = new Color(185, 0, 15);
+		CONSOLE_GREEN = new Color(15, 170, 0);
+		
+		BAN_LIST = "src/files/reference/lists/developer/banlist.txt";
+		BUG_LIST = "src/files/reference/lists/developer/buglist.txt";
+		DEV_COMMANDLIST = "src/files/reference/lists/developer/developer_commandlist.txt";
+		TAG_LIST = "src/files/reference/lists/developer/taglist.txt";
+		MAN_LIST = "src/files/reference/lists/user/manlist.txt";
+		USER_COMMANDLIST = "src/files/reference/lists/user/user_commandlist.txt";
+		HELP = "src/files/reference/help.txt";
+		REFERENCE = "src/files/reference/reference.txt";
+		SOUND = "src/files/reference/sound.txt";
+		
+		BAN_LIST_ENTRIES = parseTextFromFile(DIRECTORY+BAN_LIST, "\\s+");
+		
+		USER_COMMANDLIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+USER_COMMANDLIST, "\n")));
+		DEV_COMMANDLIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+DEV_COMMANDLIST, "\n")));
+		MAN_LIST_ENTRIES = getLexicographicalText(DIRECTORY+MAN_LIST, "<EOF>");
+		TAG_LIST_ENTRIES = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+TAG_LIST, "\n")));
+
+		all_versions = new ArrayList<String>();
+		master_commandList = new ArrayList<String>();
+		master_commandList.addAll(USER_COMMANDLIST_ENTRIES);
+		master_commandList.addAll(DEV_COMMANDLIST_ENTRIES);
+		tempBanList = new ArrayList<String>();
+		
 		terminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/terminal.gif");
-		devterminalBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/devterminal.gif");
 		notesBG = Toolkit.getDefaultToolkit().getImage(DIRECTORY+"src/files/images/gifs/notes.gif");
 		
-		ALL_VERSIONS = new ArrayList<String>();
-		VERSION = loadVersion(DIRECTORY+"src/files/reference/reference.txt");
-		
-		DOS = loadFont(DIRECTORY+"src/files/fonts/DOS.ttf").deriveFont(13f);
-		
-		BANLIST = parseTextFromFile(DIRECTORY+"src/files/reference/lists/banlist.txt", "\\s+");
-		USER_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/user_commandlist.txt", "\n")));
-		DEV_COMMANDLIST = new ArrayList<String>(Arrays.asList(parseTextFromFile(DIRECTORY+"src/files/reference/lists/developer_commandlist.txt", "\n")));
-		
-		MASTER_COMMANDLIST = new ArrayList<String>();
-		MASTER_COMMANDLIST.addAll(USER_COMMANDLIST);
-		MASTER_COMMANDLIST.addAll(DEV_COMMANDLIST);
-		
-		tempBanList = new ArrayList<String>();
+		CURRENT_VERSION = loadVersion(DIRECTORY+REFERENCE);
+		loadActionWords(DIRECTORY+"src/files/Actions.txt");
+		loadPlaceWords(DIRECTORY+"src/files/Places.txt");
 	}
 	
 	/**
@@ -137,7 +175,7 @@ public class Resources {
 		DecimalFormat formatter = new DecimalFormat("00");
 		int versionNumber = Integer.parseInt(version.substring(3));
 		for(int i = versionNumber; i > 0; i--)
-			ALL_VERSIONS.add("v1."+formatter.format(i));
+			all_versions.add("v1."+formatter.format(i));
 		
 		return version;
 	}
@@ -203,6 +241,51 @@ public class Resources {
 	}
 	
 	/**
+	 * Returns an ArrayList of lexicographically sorted text, but only where
+	 * marked with SORT tags.
+	 * 
+	 * @param filePath the file to sort.
+	 * @return an ArrayList containing sorted lines.
+	 */
+	public static ArrayList<String> getLexicographicalText(String filePath, String delimeter) {
+		ArrayList<String> toSort = new ArrayList<String>();
+		String [] text = parseTextFromFile(filePath, delimeter);
+		
+		int startSort = -1;
+		int endSort = -1;
+		int i;
+		
+		for(i = 0; i < text.length; i++)
+			if(text[i].trim().startsWith("<SORT>")) {
+				startSort = endSort = i;
+				break;
+			}
+		
+		while(++i < text.length && !text[i].trim().startsWith("</SORT>"))
+			endSort++;
+		
+		if(!text[endSort+1].trim().startsWith("</SORT>"))
+			return null;
+		
+		for(i = startSort+1; i < endSort; i++)
+			toSort.add(text[i]);
+		
+		Collections.sort(toSort);
+		
+		ArrayList<String> sorted = new ArrayList<String>();
+		
+		for(i = 0; i < startSort; i++)
+			sorted.add(text[i]);
+		
+		sorted.addAll(toSort);
+		
+		for(i = endSort+2; i < text.length; i++)
+			sorted.add(text[i]);
+		
+		return sorted;
+	}
+	
+	/**
 	 * Returns a TitledBorder.
 	 * 
 	 * @param title the title.
@@ -217,6 +300,41 @@ public class Resources {
 				TitledBorder.CENTER, TitledBorder.TOP, Resources.DOS.deriveFont(16f), titleColor);
 		
 		return titledBorder;
+	}
+	
+	/**
+	 * Returns the value of a tag with a given ID.
+	 * 
+	 * @param tagID the tagID in <> format.
+	 * @return the name of the tag.
+	 */
+	public static String getTagString(String tagID) {
+		int index = -1;
+		
+		for(int i = 0; i < TAG_LIST_ENTRIES.size(); i++)
+			if(TAG_LIST_ENTRIES.get(i).startsWith(tagID)) {
+				index = i;
+				break;
+			}
+		
+		if(index == -1)
+			return null;
+		
+		return Resources.TAG_LIST_ENTRIES.get(index).split("=")[1].trim();
+	}
+	
+	/**
+	 * Returns if a String is a tag.
+	 * 
+	 * @param str the tagId in <> format.
+	 * @return if the tag exists.
+	 */
+	public static boolean isTag(String str) {
+		for(int i = 0; i < TAG_LIST_ENTRIES.size(); i++)
+			if(TAG_LIST_ENTRIES.get(i).startsWith(str))
+				return true;
+		
+		return false;
 	}
 	
 }

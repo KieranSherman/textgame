@@ -29,9 +29,11 @@ import util.Resources;
  */
 public class NotificationUI {
 	
-	private volatile static JPanel notifications, background;
+	private volatile static JPanel notifications;
+	private volatile static JPanel background;
 	private volatile static ArrayList<Notification> notificationQueue;
-	private volatile static int notificationSize, notificationCapacity;
+	private volatile static int notificationSize;
+	private volatile static int notificationCapacity;
 	
 	static {
 		notificationQueue = new ArrayList<Notification>();
@@ -51,7 +53,7 @@ public class NotificationUI {
 	public static void createNotificationDisplay(JPanel addToPanel, String borderLayout) {
 		notifications = new JPanel(new GridLayout(notificationCapacity, 1, 0, 8));
 		notifications.setOpaque(false);
-		notifications.setPreferredSize(new Dimension(200, Resources.HEIGHT));
+		notifications.setPreferredSize(new Dimension(200, Resources.WINDOW_HEIGHT));
 		notifications.setBorder(Resources.getBorder("TODO", new Color(40, 190, 230, 180)));
 		
 		background = new PanelBackground(Resources.notesBG);
@@ -99,7 +101,7 @@ public class NotificationUI {
 		pB.setFont(Resources.DOS.deriveFont(12f));
 		pB.setStringPainted(true);
 		
-		notification.setPreferredSize(new Dimension(Resources.WIDTH/6, 50));
+		notification.setPreferredSize(new Dimension(Resources.WINDOW_WIDTH/6, 50));
 		notification.setLayout(new BorderLayout());
 		notification.add(area, BorderLayout.CENTER);
 		
@@ -160,6 +162,16 @@ public class NotificationUI {
 		t.start();
 	}
 
+	/**
+	 * Sets the new maximum capacity for the notification display.
+	 * 
+	 * @param notificationCapacity the maximum capacity.
+	 */
+	public static void setNotificationCapacity(int notificationCapacity) {
+		NotificationUI.notificationCapacity = notificationCapacity;
+		((GridLayout)notifications.getLayout()).setRows(notificationCapacity);
+	}
+	
 	/**
 	 * Returns the {@link JPanel} of the {@link NotificationUI}.
 	 * 

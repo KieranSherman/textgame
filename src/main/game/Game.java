@@ -27,9 +27,9 @@ public class Game {
 	 * Starts the game.
 	 */
 	public static void play(int gameMode) {
-		if (gameMode == 0)
+		if(gameMode == 0)
 			SingleplayerGame.play();
-		if (gameMode == 1)
+		else if(gameMode == 1)
 			MultiplayerGame.play();
 	}
 	
@@ -42,4 +42,5 @@ public class Game {
 		if(SingleplayerGame.isRunning() || MultiplayerGame.isRunning())
 			GameParse.parseInput(input);
 	}
+	
 }

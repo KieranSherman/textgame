@@ -21,7 +21,7 @@ import network.packet.types.Packet01Login;
 import network.packet.types.Packet02Disconnect;
 import network.packet.types.Packet03Message;
 import network.server.util.ServerConnection;
-import network.upnp.UPNnGateway;
+import network.upnp.UPnPGateway;
 import util.Action;
 import util.Resources;
 import util.out.DeveloperLogger;
@@ -100,8 +100,8 @@ public class Server {
 			return;
 		}
 		
-		UPNnGateway.openGatewayAtPort(portNumber);
-		DefaultLogger.appendColoredText("[server started at "+UPNnGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
+		UPnPGateway.openGatewayAtPort(portNumber);
+		DefaultLogger.appendColoredText("[server started at "+UPnPGateway.getMappedAddress()+":"+serverSocket.getLocalPort()+"]", Color.CYAN);
 		
 		new Thread("ServerThread-ServerListenerThread") {
 			public void run() {
@@ -310,7 +310,7 @@ public class Server {
 	 * Checks the ban list for hostAddress.
 	 */
 	private static boolean checkBanList(String hostAddress) {
-		for(String address : Resources.BANLIST)
+		for(String address : Resources.BAN_LIST_ENTRIES)
 			if(address.equals(hostAddress)) {
 				DefaultLogger.appendColoredText("[user at ("+address+") is banned]", Color.RED);
 				return true;
@@ -444,7 +444,7 @@ public class Server {
 	 * Notifies the server to close and removes the UPnP gateway.
 	 */
 	public static void close() {
-		UPNnGateway.disconnect();
+		UPnPGateway.disconnect();
 
 		try {
 			if(serverSocket != null)

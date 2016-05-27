@@ -12,6 +12,7 @@ import util.Resources;
 public class SoundPlayer {
 	
 	protected static ArrayList<Sound> allSounds;
+	private static boolean mute;
 	
 	// Prevent object instantiation
 	private SoundPlayer() {}
@@ -19,7 +20,7 @@ public class SoundPlayer {
 	static {
 		allSounds = new ArrayList<Sound>();
 		
-		String [] soundData = Resources.parseTextFromFile(Resources.DIRECTORY+"src/files/reference/sound.txt", "\n");
+		String [] soundData = Resources.parseTextFromFile(Resources.SOUND, "\n");
 		
 		String [] data;
 		String name, filePath, gain;
@@ -50,6 +51,9 @@ public class SoundPlayer {
 	 * @param soundName the sound name.
 	 */
 	public static void play(String soundName) {
+		if(mute)
+			return;
+		
 		int index = getIndex(soundName);
 		
 		if(index != -1)
@@ -62,10 +66,22 @@ public class SoundPlayer {
 	 * @param soundName the sound name.
 	 */
 	public static void loop(String soundName) {
+		if(mute)
+			return;
+		
 		int index = getIndex(soundName);
 		
 		if(index != -1)
 			allSounds.get(index).loop();
+	}
+	
+	/**
+	 * Sets whether sounds will be muted or not.
+	 * 
+	 * @param mute whether or not to mute sounds.
+	 */
+	public static void setMuted(boolean mute) {
+		SoundPlayer.mute = mute;
 	}
 	
 	/**

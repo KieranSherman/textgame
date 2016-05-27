@@ -30,15 +30,16 @@ public class DefaultLogger {
 		if(line == null)
 			return;
 		
+		String newLine = "";
+		
 		for(String word : line.split("\\s+")) {
 			Color color = Colorer.getColor(word);
 			Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 			StyleConstants.setForeground(Window.style, alpha);
-			DisplayUI.insertTextToDoc(word+" ");
+			newLine += (word+" ");
 		}
 		
-		if(!line.contains("\n"))
-			DisplayUI.insertTextToDoc("\n");
+		DisplayUI.insertTextToDoc(newLine);
 	}
 	
 	/**
@@ -63,20 +64,20 @@ public class DefaultLogger {
 	 */
 	public synchronized static void appendPacket(Packet packet) {
 		PacketTypes packetType = packet.getType();
-		String str = (String)packet.getData();
+		String line = (String)packet.getData();
 		
-		if(str == null)
+		if(line == null)
 			return;
 		
 		if(packetType == PacketTypes.ACTION) {
-			appendText(str);
+			appendText(line);
 			return;
 		}
 		
 		Color color = Colorer.getPacketColor(packetType);
 		Color alpha = new Color(color.getRed(), color.getGreen(), color.getBlue(), 160);
 		StyleConstants.setForeground(Window.style, alpha);
-		DisplayUI.insertTextToDoc(str+"\n");
+		DisplayUI.insertTextToDoc(line+"\n");
 		
 		SoundPlayer.play("key"+((int)(Math.random()*10)+1));
 	}
