@@ -29,8 +29,8 @@ public class RegexTester {
 			// "cave" is a PLACE
 			RegexCreator.defineExpressionElement("PLACE", "cave");
 			
-			// "fast" is a MODIFIER
-			RegexCreator.defineExpressionElement("MODIFIER", "fast");
+			// "quickly" is a MODIFIER
+			RegexCreator.defineExpressionElement("MODIFIER", "quickly");
 			// "quiet" is A MODIFIER
 			RegexCreator.defineExpressionElement("MODIFIER", "quiet");
 			
@@ -57,7 +57,7 @@ public class RegexTester {
 
 			RegexCreator.display();
 
-			RegexCreator.parseInput("Move fast to the quiet room");
+			RegexCreator.parseInput("Quickly move to the quiet room");
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}

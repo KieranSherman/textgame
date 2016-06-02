@@ -2,7 +2,6 @@ package regex;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,8 +18,8 @@ import regex.exceptions.InvalidExpressionException;
  */
 public class RegexCreator {
 	
-	private static HashMap<Object, List<Object>> expressionRules;
-	private static HashMap<Object, List<Object>> expressionElements;
+	private static LinkedHashMap<Object, List<Object>> expressionRules;
+	private static LinkedHashMap<Object, List<Object>> expressionElements;
 	
 	static {
 		expressionRules = new LinkedHashMap<Object, List<Object>>();
