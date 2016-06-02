@@ -55,8 +55,10 @@ public class RegexTester {
 			// a PLACE can be proceeded by nothing
 			RegexCreator.defineExpressionRule("PLACE", "NULL");
 
+			// Display the syntax
 			RegexCreator.display();
 
+			// Parse a test input
 			RegexCreator.parseInput("Quickly move to the quiet room");
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
