@@ -1,5 +1,5 @@
 package main.game.shared;
 
-public class Item {
-	
+public class Object {
+
 }
