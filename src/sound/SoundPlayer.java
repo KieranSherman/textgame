@@ -82,8 +82,9 @@ public class SoundPlayer {
 	 */
 	public static void setMuted(boolean mute) {
 		SoundPlayer.mute = mute;
-		 for(Sound s : allSounds)
-			s.stop();
+		if(mute)
+			for(Sound s : allSounds)
+				s.stop();
 	}
 	
 	/**
