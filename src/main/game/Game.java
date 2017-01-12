@@ -12,6 +12,8 @@ import sound.SoundPlayer;
  */
 public class Game {
 	
+	public static boolean initialized = false;
+	
 	private Game() {}
 	
 	/**
@@ -31,6 +33,7 @@ public class Game {
 			SingleplayerGame.play();
 		else if(gameMode == 1)
 			MultiplayerGame.play();
+		initialized = true;
 	}
 	
 	public static synchronized void sendInput(String input) {

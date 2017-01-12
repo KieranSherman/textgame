@@ -9,24 +9,9 @@ public class Room {
 	
 	int numConnections;
 	
+	boolean generated = false;
+	
 	public Room(int connections) {
 		numConnections = connections;
 	}
-
-	public Room getNorth() {
-		return this;
-	}
-
-	public Room getEast() {
-		return this;
-	}
-
-	public Room getSouth() {
-		return this;
-	}
-
-	public Room getWest() {
-		return this;
-	}
-	
 }

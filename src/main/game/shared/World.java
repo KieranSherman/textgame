@@ -6,67 +6,29 @@ import java.util.Random;
 
 public class World {
 	
-	final static int MAX_CONNECTIONS = 4;
+	private static int MAX_CONNECTIONS = 4;
 	
-	final static long SEED = 1234;
+	private static long SEED = 0;
 	
-	static Random random = new Random();
+	private static Random random = new Random();
 	
-	public static List<Room> rooms = new ArrayList<Room>();
+	private static List<Room> rooms = new ArrayList<Room>();
 
-	public static List<List<Integer>> world = new ArrayList<List<Integer>>();
-	
-	public static void main(String[] args) {
-		initialize();
-	}
+	private static List<List<Integer>> world = new ArrayList<List<Integer>>();
 
 	public static void initialize() {
-		//random.setSeed(SEED);
+		generateSeed();
+		random.setSeed(SEED);
 		addFirstRooms();
-		addRooms(rooms.get(1));
-		addRooms(rooms.get(2));
-		addRooms(rooms.get(3));
-		addRooms(rooms.get(4));
-		addRooms(rooms.get(5));
-		addRooms(rooms.get(6));
-		addRooms(rooms.get(7));
-		addRooms(rooms.get(8));
-		addRooms(rooms.get(9));
-		addRooms(rooms.get(10));
-		addRooms(rooms.get(11));
-		addRooms(rooms.get(12));
-		addRooms(rooms.get(13));
-		addRooms(rooms.get(14));
-		addRooms(rooms.get(15));
-		addRooms(rooms.get(16));
-		addRooms(rooms.get(17));
-		addRooms(rooms.get(18));
-		addRooms(rooms.get(19));
-		addRooms(rooms.get(20));
-		addRooms(rooms.get(21));
-		addRooms(rooms.get(22));
-		addRooms(rooms.get(23));
-		addRooms(rooms.get(24));
-		addRooms(rooms.get(25));
-		addRooms(rooms.get(26));
-		addRooms(rooms.get(27));
-		addRooms(rooms.get(28));
-		addRooms(rooms.get(29));
-		addRooms(rooms.get(30));
-		addRooms(rooms.get(31));
-		addRooms(rooms.get(32));
-		addRooms(rooms.get(33));
-		addRooms(rooms.get(34));
-		addRooms(rooms.get(35));
-		addRooms(rooms.get(36));
-		addRooms(rooms.get(37));
-		addRooms(rooms.get(38));
-		addRooms(rooms.get(39));
-		addRooms(rooms.get(40));
 		print();
 	}
 	
-	public static void addFirstRooms() {
+	private static void generateSeed() {
+		Random rand = new Random();
+		SEED = rand.nextLong();
+	}
+	
+	private static void addFirstRooms() {
 		int connect = random.nextInt(MAX_CONNECTIONS) + 1;
 		Room room = new Room(connect);
 		
@@ -87,19 +49,12 @@ public class World {
 			
 			c.add(i);
 		}
-	}
-	
-	public static void addRooms(Room current) {
-		int newRooms = current.numConnections - numConnections(current);
-		if(newRooms == 0)
-			return;
-		for(int i = 0; i < newRooms; i++) {
-			addRoom(current);
-		}
+		room.generated = true;
 	}
 	
 	public static void addRoom(Room current) {
 		int connect1 = random.nextInt(MAX_CONNECTIONS) + 1;
+		System.out.println(connect1);
 		Room r = new Room(connect1);
 		rooms.add(r);
 		for (List<Integer> c : world) {
@@ -148,7 +103,7 @@ public class World {
 		c.set(rooms.indexOf(current), num);
 		world.get(rooms.indexOf(current)).set(rooms.indexOf(r), 5-(num == 0 ? 5 : num));
 		
-		if(connect1 >= 3 && random.nextInt(2) == 1) {
+		if(connect1 >= 3 && random.nextInt(3) == 1) {
 			int back = random.nextInt(rooms.size()-2) + 1;
 			int search = 0;
 			boolean skip = false;
@@ -196,7 +151,7 @@ public class World {
 				if(!two)
 					num = 2;
 				if(!one)
-					num = 1;	
+					num = 1;
 				
 				if (num != 0) {
 					c.set(back, num);
@@ -204,9 +159,10 @@ public class World {
 				}
 			}
 		}
+		current.generated = true;
 	}
 	
-	public static int numConnections(Room r) {
+	private static int numConnections(Room r) {
 		int num = 0;
 		for(int b : world.get(rooms.indexOf(r)))
 			if (b != 0)
@@ -221,5 +177,25 @@ public class World {
 			}
 			System.out.println();
 		}
+	}
+
+	public static int getRoom(int current, int direction) {
+		int r = world.get(current).indexOf(direction);
+		if(r == -1)
+			return r;
+		if(rooms.get(r).generated == false)
+			addRoom(rooms.get(r));
+		return r;
+	}
+	
+	public static boolean roomExists(int current, int direction) {
+		int r = world.get(current).indexOf(direction);
+		if(r == -1)
+			return false;
+		return true;
+	}
+	
+	public static int getRoomConnections(int r) {
+		return rooms.get(r).numConnections;
 	}
 }

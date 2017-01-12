@@ -88,6 +88,14 @@ file_bug_report USAGE <DEV>
 	e.g. "file_bug_report"
 
 <EOF>
+game USAGE
+	game
+	
+	Description: Start a game.
+	
+	e.g. "game"
+
+<EOF>
 help
 	help USAGE
 	
@@ -149,6 +157,14 @@ play_remix USAGE <DEV>
 	e.g. "play remix"
 
 <EOF>
+print USAGE
+	print
+	
+	Description: Print the current game world.
+	
+	e.g. "print"
+
+<EOF>
 remove_upnp_map_at_port USAGE <DEV>
 	remove_upnp_map_at_port [port]
 	
@@ -185,6 +201,13 @@ status USAGE
 	Description: Display the current network status.
 	
 	e.g. "status"
+<EOF>
+travel USAGE
+	travel d:[direction]
+	
+	Description: Travel between rooms in the game.
+	
+	e.g. "travel d:north"
 
 <EOF>
 upnp_overwrite_set USAGE <DEV>

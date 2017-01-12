@@ -5,6 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import main.game.Game;
+import main.game.shared.Player;
+import main.game.shared.World;
+import main.game.singleplayer.SingleplayerGame;
 import main.ui.Window;
 import main.ui.components.display.DisplayUI;
 import main.ui.components.display.manual.Manual;
@@ -58,6 +62,34 @@ public class Developer {
 	 * Returns whether or not the String[] is a user command.
 	 */
 	private static boolean userCommand(String[] args) {
+			if(args[0].equals("game")) {
+				if(!Game.initialized)
+					Game.play(0);
+				else
+					DefaultLogger.appendColoredText("[game already initialized]", Color.RED);
+			}
+		else
+			if(args[0].equals("print")) {
+				if(Game.initialized)
+					World.print();
+				else
+					DefaultLogger.appendColoredText("[game not initialized]", Color.RED);
+			}
+		else
+			if(args[0].equals("travel")) {
+				if(Game.initialized) {
+					String dir = "";
+					
+					for(String s : args)
+						if(s.contains("d:"))
+							dir = s.substring(s.indexOf(":")+1);
+					
+					SingleplayerGame.player.travel(dir);
+				}
+				else
+					DefaultLogger.appendColoredText("[game not initialized]", Color.RED);
+			}
+		else
 			if(args[0].equals("server")) {
 				String port = "9999";
 				
