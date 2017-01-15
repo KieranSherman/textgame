@@ -47,7 +47,6 @@ public class Main {
 	
 	private static void start(String[] args) {
 		Game.init(args);
-		Game.play(0);
 	}
 	
 	private static void shutdown() {

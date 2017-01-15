@@ -1,5 +1,8 @@
 server
 client
+game
+travel
+print
 man
 notes
 clear
