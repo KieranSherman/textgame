@@ -1,0 +1,31 @@
+new Sound("background1", "src/files/sounds/misc/background1.wav", -15);
+new Sound("notification", "src/files/sounds/misc/notification.wav", -14);
+new Sound("clock", "src/files/sounds/misc/clock.wav", -14);
+
+new Sound("key1", "src/files/sounds/keyboard/key1.wav", -12);
+new Sound("key2", "src/files/sounds/keyboard/key2.wav", -12);
+new Sound("key3", "src/files/sounds/keyboard/key3.wav", -12);
+new Sound("key4", "src/files/sounds/keyboard/key4.wav", -12);
+new Sound("key5", "src/files/sounds/keyboard/key5.wav", -12);
+new Sound("key6", "src/files/sounds/keyboard/key6.wav", -12);
+new Sound("key7", "src/files/sounds/keyboard/key7.wav", -12);
+new Sound("key8", "src/files/sounds/keyboard/key8.wav", -12);
+new Sound("key9", "src/files/sounds/keyboard/key9.wav", -12);
+new Sound("key10", "src/files/sounds/keyboard/key10.wav", -12);
+
+new Sound("servoInsert", "src/files/sounds/servo/servo-insert.wav", -18);
+new Sound("servoEject", "src/files/sounds/servo/servo-eject.wav", -18);
+
+new Sound("tapeInsert", "src/files/sounds/tape/tape-insert.wav", -8);
+new Sound("tapeEject", "src/files/sounds/tape/tape-eject.wav", -21);
+new Sound("tapeClick", "src/files/sounds/tape/tape-click.wav", -21);
+
+new Sound("error", "src/files/sounds/computer/error.wav", -15);
+new Sound("computerStartup", "src/files/sounds/computer/startup.wav", -20);
+new Sound("computerHardDrive", "src/files/sounds/computer/hard-drive.wav", -30);
+new Sound("computerHum", "src/files/sounds/computer/hum.wav", -20);
+new Sound("computerBeep1", "src/files/sounds/computer/computer-beep1.wav", -6);
+new Sound("computerBeep2", "src/files/sounds/computer/computer-beep2.wav", 0);
+new Sound("powerdown", "src/files/sounds/computer/powerdown.wav", -12);
+
+new Sound("remix", "src/files/sounds/music/remix.wav", -18);

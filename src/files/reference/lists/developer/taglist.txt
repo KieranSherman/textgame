@@ -1,0 +1,4 @@
+<DEV> = *DEVELOPER COMMAND*
+<USR> = *USER COMMAND*
+<SORT> = begin sort
+</SORT> = end sort

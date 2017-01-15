@@ -1,0 +1,13 @@
+server
+client
+game
+travel
+print
+man
+notes
+clear
+status
+logout
+help
+true
+false

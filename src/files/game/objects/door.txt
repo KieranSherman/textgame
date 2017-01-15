@@ -1,0 +1,7 @@
+move "Ha, you can try."
+take "Seriously, you can barely walk as it is"
+open "The door opens with a loud screech. Hopefully nothing heard you."
+close "A memory of of your mother reminding you to not let the heat out flashes through your mind."
+steal "Seriously, you can barely walk as it is"
+drop "You are not holding a door, nor should you ever."
+look "Yup, it's a door."

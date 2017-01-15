@@ -1,0 +1,74 @@
+=================================================================================================================================
+														References
+=================================================================================================================================
+
+
+VERSION: 	v1.36
+
+
+=================================================================================================================================
+													   Recent Updates
+=================================================================================================================================
+
+v1.36 - basic singleplayer game movement and room generation
+
+v1.34 - new manual panel, basic gui fixes
+
+v1.33 - setup basic singleplayer and multiplayer game classes
+
+v1.32 - added terminal and command history
+
+v1.31 - everything now has a javadoc
+
+v1.30 - UPNP implementation
+
+v1.29 - major graphical/UI changes
+
+v1.28 - major graphical/UI changes and networking improvements 
+
+v1.27 - major graphical and UI changes
+
+v1.26 - notification panel
+
+v1.25 - something
+
+v1.24 - minor bug fixes/design improvements/network improvements
+	*all panels have been assigned a background color
+	*PC no longer displays blue-gray border around panels
+	*both the notes and the display have scroll bars now
+	*display autoscrolls
+	*fixed only displaying every other blocked packet
+	*client-client implementation
+
+v1.23 - added sound support
+	*background music automatically starts at launch
+	
+v1.22 - added JSplitPanel for Notes and Commlink panels
+	*see JSplitPaneUI.java for reference
+
+v1.21 - minor bug fixes, notes panel, general optimization
+	*added a separate panel for notes
+	
+	*networking bug fixes and optimization
+		-client and server no longer send a final disconnect packet,
+			instead the listener determines when a connection has been closed
+		
+		-different color support for different packets and messages
+		
+		-fixed problem where server and client could not attempt to reopen
+			if there was previously an error opening the socket
+	
+	*class optimization
+		-Window.class now relies on its components/ package to initialize
+			most of its members
+
+v1.20 - boot
+	*added a boot option with loading screen
+
+v1.19 - minor bug fixes
+	*fixed a client issue preventing it from rejoining a server
+		if it had been previously disconnected
+
+v1.18 - minor bug fixes
+	*fixed a server issue preventing it from restarting if it
+		had been previously closed

@@ -1,0 +1,19 @@
+//all lines begining with "//" are ignored by the parser
+//all words begining with ":" are ignored by the colorer
+
+//actions
+walk //[direction] 
+run //[direction] 
+sprint //[direction] 
+jog //[direction] 
+crawl //[direction] 
+jump //[direction] 
+sneak //[direction] 
+:cry move
+search //[place] 
+hide //[place] 
+
+
+//direction north south east west up down
+//places under[location] in[location] behind[location]
+//location box tree table chair rock plant
