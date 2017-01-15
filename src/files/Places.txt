@@ -1,5 +1,0 @@
-//all lines begining with "//" are ignored by the parser
-//all words begining with ":" are ignored by the colorer
-
-room home 
-house :restaurant cave
